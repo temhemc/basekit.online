@@ -3,77 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaseKit Online | The Ultimate Builder Suite</title>
+    <title>BaseKit Online | Professional dApp Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <script src="https://unpkg.com/@thirdweb-dev/sdk@3.10.16/dist/thirdweb-dev-sdk.umd.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;800&family=JetBrains+Mono:wght@500&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020408; color: #e2e8f0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020408; color: #e2e8f0; overflow-x: hidden; }
         .base-blue { color: #0052FF; }
         .bg-base-blue { background-color: #0052FF; }
-        .glass-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); transition: all 0.3s; }
-        .glass-card:hover { border-color: #0052FF; transform: translateY(-5px); }
+        .glass-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 50; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
     </style>
 </head>
 <body>
+
     <nav class="flex justify-between items-center px-8 py-6 max-w-7xl mx-auto">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20"><i class="fas fa-toolbox text-white"></i></div>
             <span class="text-2xl font-black tracking-tighter uppercase">BASEKIT<span class="base-blue">.ONLINE</span></span>
         </div>
         <div class="flex items-center gap-4">
-            <select id="langSwitcher" class="bg-transparent border border-white/10 rounded px-2 py-1 text-xs outline-none cursor-pointer hover:border-blue-500">
-                <option value="en" class="bg-black text-white">EN</option>
-                <option value="tr" class="bg-black text-white">TR</option>
-                <option value="de" class="bg-black text-white">DE</option>
+            <select id="langSwitcher" class="bg-transparent border border-white/10 rounded px-2 py-1 text-xs outline-none cursor-pointer text-white">
+                <option value="en" class="bg-black">EN</option>
+                <option value="tr" class="bg-black">TR</option>
+                <option value="de" class="bg-black">DE</option>
             </select>
-            <button id="connectBtn" class="bg-base-blue px-6 py-2 rounded-xl font-bold text-sm uppercase tracking-tight text-white transition hover:scale-105">Connect Wallet</button>
+            <button id="connectBtn" class="bg-base-blue px-6 py-2 rounded-xl font-bold text-sm uppercase text-white transition hover:scale-105">Connect Wallet</button>
         </div>
     </nav>
 
-    <main class="text-center pt-20 px-6 hero-glow min-h-screen">
-        <h1 id="heroTitle" class="text-6xl md:text-8xl font-black tracking-tighter mb-6 leading-none uppercase">DOMINATE THE <br> <span class="base-blue italic text-7xl md:text-9xl">BASE</span> NETWORK</h1>
-        <p id="heroSub" class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-20 font-medium leading-relaxed">More than a hub. Deploy contracts, mint NFTs, and leave your mark on the chain.</p>
+    <main class="text-center pt-16 px-6">
+        <h1 id="heroTitle" class="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-none">DOMINATE THE <br> <span class="base-blue italic">BASE</span> NETWORK</h1>
+        <p id="heroSub" class="text-slate-400 text-lg max-w-2xl mx-auto mb-12">More than a hub. Deploy contracts and mint NFTs on Base instantly.</p>
 
         <div class="grid md:grid-cols-3 gap-6 max-w-7xl mx-auto">
-            <div class="glass-card p-8 rounded-[2rem] text-left">
-                <i class="fas fa-file-code base-blue text-3xl mb-6"></i>
-                <h3 id="card1Title" class="text-2xl font-extrabold mb-3">CONTRACT FACTORY</h3>
-                <p id="card1Sub" class="text-slate-500 text-sm mb-8">Deploy ERC-20 or NFT contracts on Base without coding.</p>
-                <button class="w-full py-4 bg-white/5 border border-white/5 rounded-2xl font-bold hover:bg-white hover:text-black transition">Launch</button>
+            <div class="glass-card p-8 rounded-[2rem] text-left opacity-50">
+                <i class="fas fa-file-code base-blue text-2xl mb-4"></i>
+                <h3 id="c1t" class="text-xl font-bold mb-2">CONTRACT FACTORY</h3>
+                <p id="c1s" class="text-slate-500 text-sm mb-6">Coming Soon</p>
+                <button disabled class="w-full py-3 bg-white/5 rounded-xl text-xs font-bold">LOCKED</button>
             </div>
-            <div class="glass-card p-8 rounded-[2rem] text-left border-blue-600/30 bg-blue-600/5">
-                <i class="fas fa-bolt text-white text-3xl mb-6 bg-blue-600 p-3 rounded-xl"></i>
-                <h3 id="card2Title" class="text-2xl font-extrabold mb-3 uppercase">Instant Minter</h3>
-                <p id="card2Sub" class="text-slate-300 text-sm mb-8 font-medium">Upload image and mint your NFT on Base instantly.</p>
-                <button class="w-full bg-base-blue py-4 rounded-2xl font-black uppercase text-white shadow-lg">Start Minting</button>
+            <div class="glass-card p-8 rounded-[2rem] text-left border-blue-600/40 bg-blue-600/5 shadow-2xl shadow-blue-600/10">
+                <i class="fas fa-bolt text-white bg-blue-600 p-3 rounded-xl mb-4"></i>
+                <h3 id="c2t" class="text-xl font-bold mb-2 uppercase">Instant Minter</h3>
+                <p id="c2s" class="text-slate-300 text-sm mb-6">Upload an image and mint on Base.</p>
+                <button onclick="openMinter()" class="w-full bg-base-blue py-4 rounded-xl font-black uppercase text-white text-sm shadow-lg hover:brightness-110 transition">Start Minting</button>
             </div>
-            <div class="glass-card p-8 rounded-[2rem] text-left">
-                <i class="fas fa-layer-group base-blue text-3xl mb-6"></i>
-                <h3 id="card3Title" class="text-2xl font-extrabold mb-3">BUILDER HUB</h3>
-                <p id="card3Sub" class="text-slate-500 text-sm mb-8">Manage all your deployed contracts in one place.</p>
-                <button class="w-full py-4 bg-white/5 border border-white/5 rounded-2xl font-bold hover:bg-white hover:text-black transition">Access</button>
+            <div class="glass-card p-8 rounded-[2rem] text-left opacity-50">
+                <i class="fas fa-layer-group base-blue text-2xl mb-4"></i>
+                <h3 id="c3t" class="text-xl font-bold mb-2">BUILDER HUB</h3>
+                <p id="c3s" class="text-slate-500 text-sm mb-6">Coming Soon</p>
+                <button disabled class="w-full py-3 bg-white/5 rounded-xl text-xs font-bold">LOCKED</button>
             </div>
         </div>
     </main>
 
+    <div id="minterModal" class="modal px-4">
+        <div class="glass-card p-8 rounded-[2rem] w-full max-w-md border-blue-600/20 shadow-2xl relative">
+            <button onclick="closeMinter()" class="absolute top-6 right-6 text-slate-500 hover:text-white"><i class="fas fa-times"></i></button>
+            <h2 id="mTitle" class="text-2xl font-black mb-6 base-blue uppercase">Mint NFT</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label id="lImg" class="block text-[10px] font-bold text-slate-500 uppercase mb-2">Select Image</label>
+                    <input type="file" id="nftFile" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm">
+                </div>
+                <div>
+                    <label id="lName" class="block text-[10px] font-bold text-slate-500 uppercase mb-2">NFT Name</label>
+                    <input type="text" id="nftName" placeholder="Base Ape #01" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label id="lDesc" class="block text-[10px] font-bold text-slate-500 uppercase mb-2">Description</label>
+                    <textarea id="nftDesc" placeholder="This NFT was minted on BaseKit.online" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm h-24 outline-none focus:border-blue-500"></textarea>
+                </div>
+                <button id="mintFinalBtn" onclick="processMint()" class="w-full bg-base-blue py-4 rounded-xl font-black uppercase text-white text-sm mt-4 shadow-lg">Confirm Mint</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const content = {
-            en: { title: "DOMINATE THE <br> <span class='base-blue italic'>BASE</span> NETWORK", sub: "More than a hub. Deploy contracts, mint NFTs, and leave your mark on the chain.", c1: "CONTRACT FACTORY", c1s: "Deploy ERC-20 or NFT contracts on Base without coding.", c2: "INSTANT MINTER", c2s: "Upload image and mint your NFT on Base instantly.", c3: "BUILDER HUB", c3s: "Manage all your deployed contracts in one place." },
-            tr: { title: "BASE AĞINA <br> <span class='base-blue italic'>HÜKMET</span>", sub: "Bir merkezden daha fazlası. Kontrat dağıt, NFT mintle ve zincirde iz bırak.", c1: "KONTRAT FABRİKASI", c1s: "Kod yazmadan Base üzerinde ERC-20 veya NFT kontratları kurun.", c2: "ANINDA MINT", c2s: "Resminizi yükleyin ve Base üzerinde anında NFT oluşturun.", c3: "BUILDER MERKEZİ", c3s: "Dağıttığınız tüm kontratları tek bir yerden yönetin." },
-            de: { title: "BEHERRSCHE DAS <br> <span class='base-blue italic'>BASE</span> NETZWERK", sub: "Mehr als nur ein Hub. Verträge bereitstellen, NFTs prägen und Spuren hinterlassen.", c1: "VERTRAGSFABRIK", c1s: "ERC-20 oder NFT-Verträge auf Base ohne Codierung bereitstellen.", c2: "SOFORT MINTER", c2s: "Bild hochladen ve NFT sofort auf Base prägen.", c3: "BUILDER HUB", c3s: "Verwalten Sie alle bereitgestellten Verträge an einem Ort." }
+        // Dil Verileri
+        const lang = {
+            en: { title: "DOMINATE THE <br> <span class='base-blue italic'>BASE</span> NETWORK", sub: "More than a hub. Deploy contracts and mint NFTs on Base instantly.", c1t: "CONTRACT FACTORY", c2t: "INSTANT MINTER", c3t: "BUILDER HUB", mTitle: "MINT NFT", lImg: "Select Image", lName: "NFT Name", lDesc: "Description" },
+            tr: { title: "BASE AĞINA <br> <span class='base-blue italic'>HÜKMET</span>", sub: "Bir merkezden daha fazlası. Kontrat dağıt ve anında NFT mintle.", c1t: "KONTRAT FABRİKASI", c2t: "ANINDA MINT", c3t: "BUILDER MERKEZİ", mTitle: "NFT OLUŞTUR", lImg: "Resim Seç", lName: "NFT Adı", lDesc: "Açıklama" },
+            de: { title: "BEHERRSCHE DAS <br> <span class='base-blue italic'>BASE</span> NETZWERK", sub: "Mehr als nur ein Hub. Verträge bereitstellen und NFTs sofort prägen.", c1t: "VERTRAGSFABRIK", c2t: "SOFORT MINTER", c3t: "BUILDER HUB", mTitle: "NFT PRÄGEN", lImg: "Bild Auswählen", lName: "NFT Name", lDesc: "Beschreibung" }
         };
+
+        // Dil Değiştirme
         document.getElementById('langSwitcher').onchange = (e) => {
             const l = e.target.value;
-            document.getElementById('heroTitle').innerHTML = content[l].title;
-            document.getElementById('heroSub').innerText = content[l].sub;
-            document.getElementById('card1Title').innerText = content[l].c1;
-            document.getElementById('card1Sub').innerText = content[l].c1s;
-            document.getElementById('card2Title').innerText = content[l].c2;
-            document.getElementById('card2Sub').innerText = content[l].c2s;
-            document.getElementById('card3Title').innerText = content[l].c3;
-            document.getElementById('card3Sub').innerText = content[l].c3s;
+            document.getElementById('heroTitle').innerHTML = lang[l].title;
+            document.getElementById('heroSub').innerText = lang[l].sub;
+            document.getElementById('c1t').innerText = lang[l].c1t;
+            document.getElementById('c2t').innerText = lang[l].c2t;
+            document.getElementById('c3t').innerText = lang[l].c3t;
+            document.getElementById('mTitle').innerText = lang[l].mTitle;
+            document.getElementById('lImg').innerText = lang[l].lImg;
+            document.getElementById('lName').innerText = lang[l].lName;
+            document.getElementById('lDesc').innerText = lang[l].lDesc;
         };
+
+        // Modal Kontrol
+        function openMinter() { document.getElementById('minterModal').classList.add('active'); }
+        function closeMinter() { document.getElementById('minterModal').classList.remove('active'); }
+
+        // Wallet & Minting (Logic)
+        let sdk;
+        const connectBtn = document.getElementById('connectBtn');
+        
+        connectBtn.onclick = async () => {
+            if (window.ethereum) {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                connectBtn.innerText = accounts[0].slice(0,6) + '...' + accounts[0].slice(-4);
+                connectBtn.classList.add('border-green-500', 'text-green-500');
+                
+                // Thirdweb SDK Başlatma (Base Mainnet)
+                sdk = new Thirdweb.ThirdwebSDK("base", {
+                    clientId: "BURAYA_THIRDWEB_CLIENT_ID_GELECEK" // Burayı güncelleyeceğiz
+                });
+            }
+        };
+
+        async function processMint() {
+            if (!sdk) return alert("Please connect wallet first!");
+            const btn = document.getElementById('mintFinalBtn');
+            btn.innerText = "PROCESSING...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                alert("Thirdweb Client ID eksik! Lütfen dashboard'dan ID'nizi alıp koda ekleyin.");
+                btn.innerText = "Confirm Mint";
+                btn.disabled = false;
+            }, 2000);
+        }
     </script>
 </body>
 </html>
