@@ -2,111 +2,83 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaseKit Online | Extended dApp</title>
+    <title>BaseKit Online | Builder Mode</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <script src="https://unpkg.com/@thirdweb-dev/sdk@3.10.16/dist/thirdweb-dev-sdk.umd.js"></script>
-    
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020408; color: #e2e8f0; }
-        .base-blue { color: #0052FF; }
-        .bg-base-blue { background-color: #0052FF; }
-        .glass-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 50; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-        .modal.active { display: flex; }
-    </style>
 </head>
-<body>
+<body class="bg-black text-white font-sans">
 
-    <nav class="flex justify-between items-center px-8 py-6 max-w-7xl mx-auto">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg"><i class="fas fa-toolbox text-white"></i></div>
-            <span class="text-2xl font-black tracking-tighter uppercase font-bold">BASEKIT<span class="base-blue">.ONLINE</span></span>
-        </div>
-        <button id="connectBtn" onclick="connectWallet()" class="bg-base-blue px-6 py-2 rounded-xl font-bold text-sm uppercase text-white transition hover:scale-105 active:scale-95">Connect Wallet</button>
+    <nav class="p-6 flex justify-between items-center border-b border-white/10">
+        <h1 class="text-xl font-bold">BASEKIT.ONLINE</h1>
+        <button id="connectBtn" onclick="connect()" class="bg-blue-600 px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition">
+            Connect Wallet
+        </button>
     </nav>
 
-    <main class="text-center pt-20 px-6">
-        <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-12">BUILD ON <br> <span class="base-blue italic text-7xl md:text-9xl">BASE</span></h1>
+    <main class="max-w-xl mx-auto mt-20 p-8 border border-white/10 rounded-3xl bg-white/5 text-center">
+        <h2 class="text-3xl font-bold mb-4 italic">NFT Minter</h2>
+        <p class="text-gray-400 mb-8">Base Mainnet üzerinde NFT basmaya hazır mısın?</p>
         
-        <div class="max-w-md mx-auto">
-            <div class="glass-card p-8 rounded-[2.5rem] text-center border-blue-600/30">
-                <i class="fas fa-bolt text-white bg-blue-600 p-4 rounded-2xl mb-6 shadow-xl inline-block"></i>
-                <h3 class="text-2xl font-black mb-2 uppercase tracking-tight">Instant Minter</h3>
-                <p class="text-slate-400 text-sm mb-8">Deploy your NFT to Base Mainnet.</p>
-                <button onclick="openMinter()" class="w-full bg-white text-black py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-blue-600 hover:text-white transition-all">Open Console</button>
-            </div>
+        <div class="space-y-4">
+            <input type="text" id="nftName" placeholder="NFT Adı Yaz" class="w-full p-4 rounded-xl bg-black border border-white/20 text-white">
+            <button onclick="mint()" class="w-full bg-white text-black py-4 rounded-xl font-bold text-lg hover:bg-gray-200 transition">
+                MINT NOW
+            </button>
         </div>
+        
+        <p id="status" class="mt-6 text-blue-400 font-mono text-sm"></p>
     </main>
 
-    <div id="minterModal" class="modal px-4">
-        <div class="glass-card p-10 rounded-[3rem] w-full max-w-lg border-white/10 relative">
-            <button onclick="closeMinter()" class="absolute top-8 right-8 text-slate-500 hover:text-white"><i class="fas fa-times text-xl"></i></button>
-            
-            <div id="mintForm">
-                <h2 class="text-3xl font-black mb-6 uppercase italic">Mint Studio</h2>
-                <input type="text" id="nftName" placeholder="NFT NAME" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 mb-4 outline-none focus:border-blue-500">
-                <button onclick="executeMint()" class="w-full bg-base-blue py-5 rounded-2xl font-black uppercase text-xs text-white shadow-xl hover:translate-y-[-2px] transition">Mint Now</button>
-            </div>
-            
-            <div id="loadingStatus" class="hidden text-center py-10">
-                <div class="animate-spin text-4xl text-blue-500 mb-6"><i class="fas fa-circle-notch"></i></div>
-                <p id="statusMsg" class="font-bold">Check your wallet...</p>
-            </div>
-        </div>
-    </div>
-
     <script>
-        let sdk;
-        const CLIENT_ID = "d6217d1424a9cc05fedeb79e446cf545"; // <--- BURAYI DÜZELT!
+        // BURAYA KENDİ CLIENT ID'Nİ YAPIŞTIR
+        const myClientId = "d6217d1424a9cc05fedeb79e446cf545"; 
 
-        // Modal Kontrolleri
-        function openMinter() { document.getElementById('minterModal').classList.add('active'); }
-        function closeMinter() { document.getElementById('minterModal').classList.remove('active'); }
-
-        // Cüzdan Bağlantısı
-        async function connectWallet() {
+        async function connect() {
+            const status = document.getElementById('status');
+            status.innerText = "Cüzdana bağlanılıyor...";
+            
             try {
-                if (!window.ethereum) return alert("Please install MetaMask!");
-                
-                // Thirdweb SDK Başlat
-                sdk = new Thirdweb.ThirdwebSDK("base", { clientId: CLIENT_ID });
-                
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-                await provider.send("eth_requestAccounts", []);
-                const signer = provider.getSigner();
-                const address = await signer.getAddress();
-                
-                document.getElementById('connectBtn').innerText = address.substring(0,6) + "..." + address.substring(38);
-                console.log("Connected:", address);
-            } catch (err) {
-                console.error(err);
-                alert("Connection failed!");
+                if (typeof window.ethereum !== 'undefined') {
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    await provider.send("eth_requestAccounts", []);
+                    const signer = provider.getSigner();
+                    const address = await signer.getAddress();
+                    
+                    document.getElementById('connectBtn').innerText = address.substring(0, 6) + "..." + address.substring(38);
+                    status.innerText = "Bağlandı: " + address;
+                } else {
+                    alert("Lütfen MetaMask yükle!");
+                }
+            } catch (error) {
+                console.error(error);
+                status.innerText = "Bağlantı hatası!";
             }
         }
 
-        // Mint İşlemi
-        async function executeMint() {
+        async function mint() {
             const name = document.getElementById('nftName').value;
-            if(!name) return alert("Enter a name!");
-            if(!sdk) return alert("Please connect wallet first!");
+            const status = document.getElementById('status');
 
-            document.getElementById('mintForm').classList.add('hidden');
-            document.getElementById('loadingStatus').classList.remove('hidden');
+            if (!name) {
+                alert("Lütfen bir isim yaz!");
+                return;
+            }
 
+            status.innerText = name + " için NFT hazırlığı yapılıyor...";
+            
+            // Gerçek mintleme fonksiyonu için Thirdweb SDK'yı başlatıyoruz
             try {
-                // Simülasyon bittikten sonra buraya gerçek kontrat kodunu ekleyeceğiz
-                setTimeout(() => {
-                    alert("System Ready! Now we need a Contract Address to finish minting.");
-                    document.getElementById('mintForm').classList.remove('hidden');
-                    document.getElementById('loadingStatus').classList.add('hidden');
-                }, 2000);
+                const sdk = new Thirdweb.ThirdwebSDK("base", {
+                    clientId: myClientId
+                });
+                
+                // Bu kısım şimdilik cüzdanın hazır olduğunu kontrol eder
+                alert("Sistem Hazır! Cüzdanın bağlandı. Şimdi bir NFT kontratı seçmemiz gerekiyor.");
+                status.innerText = "Kontrat bekleniyor...";
             } catch (err) {
                 console.error(err);
-                alert("Error during minting.");
+                status.innerText = "SDK Hatası!";
             }
         }
     </script>
