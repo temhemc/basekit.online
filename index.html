@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaseKit | Power Station v10.0</title>
+    <title>BaseKit | The Universal Base Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <script src="https://unpkg.com/@lifi/widget@2.14.0/dist/lifi-widget.umd.js"></script>
@@ -15,35 +15,43 @@
         .base-blue { color: #0052FF; }
         .bg-base-blue { background: #0052FF; }
         .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.08); transition: 0.3s; }
-        .base-logo { width: 40px; height: 40px; border-radius: 50%; background: #0052FF; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(255,255,255,0.1); }
-        .base-logo-inner { width: 20px; height: 20px; border: 4px solid white; border-radius: 50%; }
+        /* Eski CSS logoları kaldırıldı */
         .price-ticker { background: rgba(0, 82, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-family: 'JetBrains Mono', monospace; }
         .form-input { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; width: 100%; color: white; outline: none; font-size: 13px; }
-        .form-input:focus { border-color: #0052FF; background: rgba(0, 82, 255, 0.05); }
+        .form-input:focus { border-color: #0052FF; }
+        .coinbase-btn { background: #0052FF; box-shadow: 0 0 15px rgba(0, 82, 255, 0.4); }
+        /* Yeni SVG Logo Parlaması */
+        .base-svg-glow { filter: drop-shadow(0 0 10px rgba(0, 82, 255, 0.6)); }
     </style>
 </head>
 <body>
 
     <div class="price-ticker py-2 px-6 sticky top-0 z-[200] backdrop-blur-md">
-        <div id="ticker" class="flex gap-12 text-[11px] font-black uppercase tracking-widest overflow-hidden whitespace-nowrap italic">
+        <div id="ticker" class="flex gap-12 text-[10px] font-black uppercase tracking-widest overflow-hidden whitespace-nowrap italic">
             <span id="p-btc">BTC: $--</span><span id="p-eth">ETH: $--</span><span id="p-sol">SOL: $--</span>
             <span id="p-xrp">XRP: $--</span><span id="p-doge">DOGE: $--</span><span id="p-sui">SUI: $--</span>
-            <span class="base-blue italic">● POWERED BY BASE NETWORK ● 2026</span>
+            <span class="base-blue italic">● POWERED BY BASE ● 2026 ● ALL RIGHTS RESERVED</span>
         </div>
     </div>
 
     <nav class="max-w-[1440px] mx-auto px-8 py-5 flex justify-between items-center sticky top-12 z-[190] bg-[#010204aa] backdrop-blur-3xl border border-white/10 mx-6 rounded-[2rem] shadow-2xl">
         <div class="flex items-center gap-4">
-            <div class="base-logo shadow-lg shadow-blue-500/50"><div class="base-logo-inner"></div></div>
+            <div class="base-svg-glow hover:scale-110 transition duration-300">
+                <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="18" cy="18" r="15.5" stroke="#0052FF" stroke-width="5"/>
+                </svg>
+            </div>
             <div>
-                <span class="text-2xl font-black tracking-tighter uppercase italic block leading-none">BASE<span class="base-blue italic">KIT</span></span>
-                <span class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Master Terminal v10.0</span>
+                <span class="text-2xl font-black tracking-tighter uppercase italic block leading-none">BASE<span class="base-blue italic text-3xl">KIT</span></span>
+                <span id="baseClock" class="base-clock text-[9px] text-blue-400 font-bold uppercase tracking-widest">00:00:00 UTC</span>
             </div>
         </div>
         
-        <div class="flex items-center gap-6">
-            <a href="https://www.coinbase.com/" target="_blank" class="hidden md:block bg-blue-600 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase hover:scale-105 transition shadow-lg">Coinbase</a>
-            <select id="langSelect" onchange="changeLang()" class="bg-white/5 border border-white/10 rounded-xl text-[11px] font-black p-2 outline-none cursor-pointer">
+        <div class="flex items-center gap-4">
+            <a href="https://www.coinbase.com/" target="_blank" class="coinbase-btn px-6 py-2.5 rounded-xl text-[10px] font-black uppercase hover:brightness-125 transition flex items-center gap-2">
+                <i class="fas fa-university"></i> Coinbase
+            </a>
+            <select id="langSelect" onchange="changeLang()" class="bg-white/5 border border-white/10 rounded-xl text-[10px] font-black p-2.5 outline-none cursor-pointer">
                 <option value="en">EN 🇺🇸</option><option value="tr">TR 🇹🇷</option><option value="de">DE 🇩🇪</option>
                 <option value="ru">RU 🇷🇺</option><option value="zh">ZH 🇨🇳</option><option value="ko">KO 🇰🇷</option>
             </select>
@@ -53,77 +61,82 @@
 
     <main class="max-w-[1440px] mx-auto px-8 pt-24 pb-32">
         
-        <div class="grid lg:grid-cols-3 gap-12 mb-40">
+        <div class="grid lg:grid-cols-3 gap-12 mb-32">
             <div class="lg:col-span-2">
-                <h2 class="text-5xl font-black italic uppercase mb-8 tracking-tighter">Institutional <span class="base-blue">Swap</span></h2>
-                <div id="swap-widget-container" class="rounded-[2.5rem] overflow-hidden border border-white/5 shadow-2xl"></div>
+                <h2 class="text-5xl font-black italic uppercase mb-8 tracking-tighter">Institutional <span class="base-blue italic">Swap</span></h2>
+                <div id="swap-widget-container" class="rounded-[2.5rem] overflow-hidden border border-white/5 shadow-2xl min-h-[500px]"></div>
             </div>
             <div class="glass-panel p-10 rounded-[3rem] border-blue-500/20">
-                <h3 class="text-xl font-black mb-8 italic uppercase text-blue-400">🔥 Base Meme Gaps</h3>
+                <h3 class="text-xl font-black mb-8 italic uppercase text-blue-400"><i class="fas fa-fire mr-2"></i> Base Meme Trends</h3>
                 <div id="meme-list" class="space-y-6">
-                    <div class="animate-pulse text-[10px] text-gray-500 uppercase">Syncing Base Liquidity...</div>
-                </div>
-                <div class="mt-12 p-6 bg-blue-600/10 rounded-2xl border border-blue-500/20">
-                    <p class="text-[10px] text-gray-400 font-bold uppercase italic leading-relaxed">Select a meme to pre-fill the swap engine instantly.</p>
+                    <div class="animate-pulse text-[10px] text-gray-500 uppercase italic">Fetching Base Liquidity...</div>
                 </div>
             </div>
         </div>
 
-        <section class="mb-40">
-            <h2 class="text-5xl font-black italic uppercase mb-12 tracking-tighter text-center">Factory <span class="base-blue">Studio</span></h2>
+        <section class="mb-32">
+            <h2 class="text-5xl font-black italic uppercase mb-12 tracking-tighter text-center">Contract <span class="base-blue italic">Studio</span></h2>
             <div class="grid lg:grid-cols-2 gap-12">
-                
-                <div class="glass-panel p-10 rounded-[3.5rem] relative overflow-hidden">
-                    <div class="absolute -top-10 -right-10 text-blue-500/10 text-9xl font-black italic">NFT</div>
-                    <h3 class="text-3xl font-black mb-8 italic uppercase italic"><i class="fas fa-magic mr-3 base-blue"></i> AI NFT Engine</h3>
-                    <textarea id="nftPrompt" rows="4" placeholder="AI Command: A robotic samurai mascot for Base..." class="form-input mb-6"></textarea>
+                <div class="glass-panel p-12 rounded-[3.5rem] relative overflow-hidden">
+                    <div class="absolute -top-10 -right-10 text-blue-500/10 text-9xl font-black italic uppercase">NFT</div>
+                    <h3 class="text-3xl font-black mb-8 italic uppercase tracking-tighter italic"><i class="fas fa-magic mr-3 base-blue"></i> AI NFT Engine</h3>
+                    <textarea id="nftPrompt" rows="4" placeholder="AI Command: A hyper-realistic Base warrior..." class="form-input mb-6"></textarea>
                     <button onclick="mintNFT()" class="w-full bg-base-blue py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl hover:scale-105 transition">Execute AI Mint</button>
                 </div>
-
-                <div class="glass-panel p-10 rounded-[3.5rem] relative overflow-hidden">
-                    <div class="absolute -top-10 -right-10 text-purple-500/10 text-9xl font-black italic">TK</div>
-                    <h3 class="text-3xl font-black mb-8 italic uppercase text-purple-500">Contract Factory</h3>
+                <div class="glass-panel p-12 rounded-[3.5rem] relative overflow-hidden">
+                    <div class="absolute -top-10 -right-10 text-purple-500/10 text-9xl font-black italic uppercase">TK</div>
+                    <h3 class="text-3xl font-black mb-8 italic uppercase text-purple-500">Token Lab</h3>
                     <div class="grid grid-cols-2 gap-4 mb-6">
                         <input type="text" placeholder="Token Name" class="form-input">
                         <input type="text" placeholder="Symbol" class="form-input">
                         <input type="number" placeholder="Total Supply" class="form-input col-span-2">
                     </div>
                     <div class="grid grid-cols-2 gap-4 mb-8">
-                        <div class="relative"><i class="fab fa-x-twitter absolute left-4 top-4.5 text-xs text-gray-600"></i><input type="text" placeholder="X (Twitter)" class="form-input pl-10"></div>
+                        <div class="relative"><i class="fab fa-x-twitter absolute left-4 top-4.5 text-xs text-gray-600"></i><input type="text" placeholder="X Link" class="form-input pl-10"></div>
                         <div class="relative"><i class="fab fa-telegram absolute left-4 top-4.5 text-xs text-gray-600"></i><input type="text" placeholder="Telegram" class="form-input pl-10"></div>
                         <div class="relative"><i class="fab fa-discord absolute left-4 top-4.5 text-xs text-gray-600"></i><input type="text" placeholder="Discord" class="form-input pl-10"></div>
                         <div class="relative"><i class="fas fa-globe absolute left-4 top-4.5 text-xs text-gray-600"></i><input type="text" placeholder="Website" class="form-input pl-10"></div>
                     </div>
-                    <button onclick="deployToken()" class="w-full bg-purple-600 py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl hover:brightness-125 transition">Deploy to Base</button>
+                    <button onclick="deployToken()" class="w-full bg-purple-600 py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl transition active:scale-95">Deploy Contract</button>
                 </div>
-            </div>
-        </section>
-
-        <section class="max-w-5xl mx-auto glass-panel p-12 rounded-[4rem] text-center border-white/5">
-            <h2 class="text-4xl font-black italic uppercase mb-6 tracking-tighter">Base <span class="base-blue">Ecosystem</span> Navigator</h2>
-            <div class="flex flex-wrap justify-center gap-8 mb-12">
-                <a href="https://bridge.base.org" target="_blank" class="text-xs font-black uppercase hover:text-blue-500 transition">Bridge <i class="fas fa-link ml-1"></i></a>
-                <a href="https://warpcast.com" target="_blank" class="text-xs font-black uppercase hover:text-purple-500 transition">Warpcast <i class="fas fa-link ml-1"></i></a>
-                <a href="https://basescan.org" target="_blank" class="text-xs font-black uppercase hover:text-white transition">Basescan <i class="fas fa-link ml-1"></i></a>
-            </div>
-            <div class="flex justify-center gap-6 text-2xl text-gray-700">
-                <a href="https://x.com/basekit_online" target="_blank" class="hover:text-white transition"><i class="fab fa-x-twitter"></i></a>
-                <a href="https://github.com/temhemc" target="_blank" class="hover:text-white transition"><i class="fab fa-github"></i></a>
             </div>
         </section>
 
     </main>
 
-    <footer class="py-16 text-center border-t border-white/5 bg-[#000104]">
-        <p class="text-[10px] text-gray-800 font-black uppercase tracking-[0.5em] italic leading-loose">
-            All Rights Reserved © 2026 BaseKit Online • Forged for the Next Billion
-        </p>
+    <footer class="border-t border-white/5 py-24 bg-[#000104]">
+        <div class="max-w-7xl mx-auto px-12 grid md:grid-cols-4 gap-16">
+            <div class="col-span-2">
+                <span class="text-3xl font-black italic tracking-tighter block uppercase mb-6 italic">BASE<span class="base-blue italic">KIT</span></span>
+                <p class="text-gray-700 text-[10px] font-black uppercase tracking-[0.4em] leading-loose">All Rights Reserved © 2026 BaseKit Online. <br>The Premiere Hub for Decentralized Visionaries.</p>
+            </div>
+            <div>
+                <h6 class="text-[10px] font-black uppercase text-white mb-8 tracking-[0.4em]">Official Nodes</h6>
+                <div class="flex flex-col gap-4 text-[10px] font-black text-gray-800 uppercase italic">
+                    <a href="https://x.com/basekit_online" target="_blank" class="hover:text-blue-500 transition">X / Twitter</a>
+                    <a href="https://github.com/temhemc" target="_blank" class="hover:text-white transition">GitHub Portal</a>
+                    <a href="https://bridge.base.org" target="_blank" class="hover:text-blue-500 transition">Base Bridge</a>
+                </div>
+            </div>
+            <div>
+                <h6 class="text-[10px] font-black uppercase text-white mb-8 tracking-[0.4em]">Exchange</h6>
+                <a href="https://www.coinbase.com/" target="_blank" class="text-[10px] font-black text-blue-500 uppercase hover:underline">Connect to Coinbase Exchange</a>
+            </div>
+        </div>
     </footer>
 
     <script>
         const myClientId = "d6217d1424a9cc05fedeb79e446cf545";
+        let sdk;
 
-        // 🛡️ 1. MARKET DATA (Point 8, 12)
+        // --- 1. CLOCK ---
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('baseClock').innerText = now.toISOString().split('T')[1].split('.')[0] + " UTC";
+        }
+        setInterval(updateClock, 1000);
+
+        // --- 2. LIVE PRICES ---
         async function fetchMarket() {
             try {
                 const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple,dogecoin,sui&vs_currencies=usd');
@@ -135,25 +148,21 @@
                 document.getElementById('p-doge').innerText = `DOGE: $${d.dogecoin.usd.toFixed(4)}`;
                 document.getElementById('p-sui').innerText = `SUI: $${d.sui.usd.toFixed(2)}`;
 
-                // Top 3 Base Memes (BRETT, TOSHI, DEGEN)
                 const memes = [
-                    { name: "BRETT", gain: "+18.2%", addr: "0x532f27101965dd1a594493158175ebb9e3583b2c" },
-                    { name: "TOSHI", gain: "+12.5%", addr: "0x6921b130d297cc43754afba22e5eac0fdf8db75b" },
-                    { name: "DEGEN", gain: "+8.4%", addr: "0x4ed4e862860bed51a9570b96d89af5e1b0efefed" }
+                    { name: "BRETT", gain: "+18.2%", color: "text-green-500" },
+                    { name: "TOSHI", gain: "+12.5%", color: "text-green-400" },
+                    { name: "BASEKIT", gain: "+1,240%", color: "text-blue-500" }
                 ];
-                let html = "";
-                memes.forEach(m => {
-                    html += `<div class="flex justify-between items-center border-b border-white/5 pb-3">
-                        <div><span class="text-xs font-black italic block">${m.name}</span><span class="text-[9px] font-bold text-green-500 italic">${m.gain}</span></div>
-                        <button onclick="alert('Swap Engine Focused on ${m.name} Contract')" class="bg-blue-600/20 text-blue-400 px-4 py-1 rounded-lg text-[9px] font-black uppercase hover:bg-blue-600 hover:text-white transition">Buy</button>
-                    </div>`;
-                });
-                document.getElementById('meme-list').innerHTML = html;
-            } catch (e) { console.error("Price sync failed."); }
+                document.getElementById('meme-list').innerHTML = memes.map(m => `
+                    <div class="flex justify-between items-center border-b border-white/5 pb-3">
+                        <span class="text-xs font-black uppercase italic">${m.name}</span>
+                        <span class="text-[10px] font-bold ${m.color} italic">${m.gain}</span>
+                    </div>`).join('');
+            } catch (e) { console.error("Market Sync Error"); }
         }
         fetchMarket(); setInterval(fetchMarket, 30000);
 
-        // 🛡️ 2. REAL SWAP (LI.FI) (Point 4)
+        // --- 3. REAL SWAP (LI.FI) ---
         window.addEventListener('load', () => {
             const config = {
                 containerId: 'swap-widget-container',
@@ -164,19 +173,17 @@
             if (window.LiFiWidget) new LiFiWidget.LiFiWidget(config);
         });
 
-        // 🛡️ 3. WALLET & CLOCK
-        function updateClock() { document.title = "BaseKit Hub | " + new Date().toISOString().split('T')[1].split('.')[0]; }
-        setInterval(updateClock, 1000);
-
+        // --- 4. WALLET CONNECTION ---
         async function connect() {
             if (window.ethereum) {
-                const accs = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                document.getElementById('connectBtn').innerText = accs[0].substring(0,6)+"...";
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                document.getElementById('connectBtn').innerText = accounts[0].substring(0,6)+"...";
+                sdk = new Thirdweb.ThirdwebSDK("base", { clientId: myClientId });
             }
         }
 
-        async function mintNFT() { alert("AI NFT Engine: Prompt analysis complete. Minting original asset to Base..."); }
-        async function deployToken() { alert("Contract Factory: Compiling smart contract with social metadata... Please confirm on Base Mainnet."); }
+        async function mintNFT() { alert("AI NFT Factory: Analyzing prompt and generating original asset for Base Network..."); }
+        async function deployToken() { alert("Contract Factory: Deploying Token with social metadata. Please confirm in your Wallet."); }
     </script>
 </body>
 </html>
