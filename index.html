@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaseKit | Global Web3 Launchpad</title>
+    <title>BaseKit | The Ultimate Base Ecosystem Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <script src="https://unpkg.com/@thirdweb-dev/sdk@3.10.16/dist/thirdweb-dev-sdk.umd.js"></script>
@@ -13,91 +13,133 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #010204; color: #fff; overflow-x: hidden; }
         .base-blue { color: #0052FF; }
         .bg-base-blue { background: #0052FF; }
-        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .ai-glow { box-shadow: 0 0 30px rgba(0, 82, 255, 0.2); border: 1px solid rgba(0, 82, 255, 0.3); }
+        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); transition: 0.3s; }
+        .glass-panel:hover { border-color: #0052FF; background: rgba(0, 82, 255, 0.05); }
+        /* Renkli Dil Seçenekleri */
+        option[value="tr"] { background: #E30A17; color: white; }
+        option[value="en"] { background: #00247D; color: white; }
+        option[value="de"] { background: #FFCE00; color: black; }
+        option[value="ru"] { background: #FFFFFF; color: #0039A6; }
+        option[value="zh"] { background: #DE2910; color: #FFDE00; }
+        option[value="fr"] { background: #002395; color: white; }
+        option[value="ko"] { background: #CD2E3A; color: white; }
+        .tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
     </style>
 </head>
 <body>
 
-    <nav class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center sticky top-0 z-50 bg-[#010204aa] backdrop-blur-lg">
+    <nav class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center sticky top-0 z-50 bg-[#010204aa] backdrop-blur-lg border-b border-white/5">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-base-blue rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/40">
-                <i class="fas fa-globe text-white"></i>
+                <i class="fas fa-rocket text-white"></i>
             </div>
-            <span class="text-2xl font-black tracking-tighter uppercase">Base<span class="base-blue">Kit</span></span>
+            <span class="text-2xl font-black tracking-tighter uppercase">Base<span class="base-blue">Kit</span> Hub</span>
         </div>
         
         <div class="flex items-center gap-4">
-            <select id="langSelect" onchange="changeLang()" class="bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold p-2 outline-none cursor-pointer uppercase">
-                <option value="en">EN 🇺🇸</option>
-                <option value="tr">TR 🇹🇷</option>
-                <option value="de">DE 🇩🇪</option>
-                <option value="ru">RU 🇷🇺</option>
-                <option value="zh">ZH 🇨🇳</option>
-                <option value="ko">KO 🇰🇷</option>
-                <option value="fr">FR 🇫🇷</option>
+            <select id="langSelect" onchange="changeLang()" class="bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold p-3 outline-none cursor-pointer uppercase shadow-2xl">
+                <option value="en" style="background:#00247D">EN 🇺🇸</option>
+                <option value="tr" style="background:#E30A17">TR 🇹🇷</option>
+                <option value="de" style="background:#000000">DE 🇩🇪</option>
+                <option value="ru" style="background:#0039A6">RU 🇷🇺</option>
+                <option value="zh" style="background:#DE2910">ZH 🇨🇳</option>
+                <option value="ko" style="background:#CD2E3A">KO 🇰🇷</option>
+                <option value="fr" style="background:#002395">FR 🇫🇷</option>
             </select>
-            <button id="connectBtn" onclick="connect()" class="bg-white text-black px-5 py-2 rounded-full font-bold text-xs hover:bg-blue-600 hover:text-white transition-all uppercase">Connect</button>
+            <button id="connectBtn" onclick="connect()" class="bg-white text-black px-6 py-3 rounded-xl font-black text-xs hover:bg-blue-600 hover:text-white transition-all uppercase">Connect Hub</button>
         </div>
     </nav>
 
-    <section class="max-w-5xl mx-auto px-6 pt-24 pb-20 text-center">
-        <div id="statusIndicator" class="hidden inline-flex items-center gap-2 bg-green-500/10 px-4 py-1.5 rounded-full border border-green-500/20 mb-8">
-            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-            <span class="text-[10px] font-bold text-green-500 uppercase tracking-widest">Global Network Active</span>
+    <main class="max-w-7xl mx-auto px-6 pt-16 pb-12">
+        <div class="text-center mb-16">
+            <h1 id="mainTitle" class="text-6xl md:text-8xl font-black mb-6 tracking-tighter leading-none italic">
+                THE BASE <br><span class="base-blue underline decoration-white/10">POWER STATION</span>
+            </h1>
+            <p id="subTitle" class="text-gray-400 text-lg max-w-3xl mx-auto">
+                One dashboard, infinite possibilities. Create tokens, design AI NFTs, and analyze the chain in real-time.
+            </p>
         </div>
-        <h1 id="mainTitle" class="text-5xl md:text-8xl font-black mb-6 leading-tight tracking-tighter">BUILD FOR <br><span class="base-blue italic">EVERYONE</span></h1>
-        <p id="subTitle" class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            The world's most accessible Base launchpad. AI-powered, social-ready, and gasless onboarding for the next billion users.
-        </p>
-    </section>
 
-    <section class="max-w-7xl mx-auto px-6 py-12">
-        <div class="glass-panel ai-glow p-1 w-full rounded-[2.5rem]">
-            <div class="bg-[#05070a] rounded-[2.4rem] p-8 md:p-12">
-                <div class="grid lg:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <h2 id="aiTitle" class="text-4xl font-black mb-6 italic uppercase">Imagine, <br><span class="base-blue">Mint Globally</span></h2>
-                        <p id="aiDesc" class="text-gray-500 text-sm mb-8 leading-relaxed">No design skills? No problem. Describe your vision, and our AI Engine creates and deploys your NFT to Base Mainnet instantly.</p>
-                        <div class="glass-panel p-6 rounded-3xl border-white/10">
-                            <textarea id="aiPrompt" rows="3" placeholder="Describe your NFT idea..." class="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-blue-500 transition text-sm mb-4"></textarea>
-                            <button id="mintBtn" onclick="alert('AI Engine Awaiting Gas Sponsorship...')" class="w-full bg-base-blue py-4 rounded-xl font-black text-xs uppercase tracking-widest hover:brightness-125 transition">Generate & Mint</button>
-                        </div>
+        <div class="tool-grid">
+            
+            <div class="glass-panel p-8 rounded-[2rem] border-blue-500/20 relative overflow-hidden">
+                <div class="absolute top-4 right-6 text-blue-500/20 text-6xl font-black italic">01</div>
+                <h3 class="text-2xl font-black mb-4 uppercase italic"><i class="fas fa-wand-magic-sparkles mr-2 base-blue"></i> AI Studio</h3>
+                <p class="text-gray-500 text-xs mb-6">Describe your art, let AI design it, and mint to Base instantly.</p>
+                <textarea id="aiPrompt" rows="3" placeholder="A futuristic cyborg cat in Base blue..." class="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-blue-500 transition text-sm mb-4"></textarea>
+                <button onclick="alert('AI Engine Awaiting Sponsorship...')" class="w-full bg-base-blue py-4 rounded-xl font-black text-xs uppercase tracking-widest hover:brightness-125 transition shadow-lg shadow-blue-500/20">Design & Mint</button>
+            </div>
+
+            <div class="glass-panel p-8 rounded-[2rem] border-purple-500/20 relative overflow-hidden">
+                <div class="absolute top-4 right-6 text-purple-500/20 text-6xl font-black italic">02</div>
+                <h3 class="text-2xl font-black mb-4 uppercase italic"><i class="fas fa-coins mr-2 text-purple-500"></i> Token Factory</h3>
+                <p class="text-gray-500 text-xs mb-6">Deploy your own ERC-20 token on Base Mainnet without coding.</p>
+                <div class="space-y-3 mb-6">
+                    <input type="text" placeholder="Token Name (e.g. BaseKit Coin)" class="w-full bg-black border border-white/10 rounded-xl p-3 text-xs outline-none">
+                    <input type="text" placeholder="Symbol (e.g. BKC)" class="w-full bg-black border border-white/10 rounded-xl p-3 text-xs outline-none">
+                    <input type="number" placeholder="Total Supply (e.g. 1,000,000)" class="w-full bg-black border border-white/10 rounded-xl p-3 text-xs outline-none">
+                </div>
+                <button onclick="alert('Token Factory Ready Soon!')" class="w-full bg-purple-600 py-4 rounded-xl font-black text-xs uppercase tracking-widest hover:brightness-125 transition">Deploy Token</button>
+            </div>
+
+            <div class="glass-panel p-8 rounded-[2rem] border-green-500/20 relative overflow-hidden">
+                <div class="absolute top-4 right-6 text-green-500/20 text-6xl font-black italic">03</div>
+                <h3 class="text-2xl font-black mb-4 uppercase italic"><i class="fas fa-chart-line mr-2 text-green-500"></i> Analytics</h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                        <span class="text-xs text-gray-400 uppercase font-bold">Base Gas Price</span>
+                        <span class="text-xs text-green-500 font-black">0.001 Gwei</span>
                     </div>
-                    <div class="hidden lg:block relative">
-                        <div class="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full"></div>
-                        <i class="fas fa-brain text-[15rem] base-blue opacity-20 animate-pulse ml-20"></i>
+                    <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                        <span class="text-xs text-gray-400 uppercase font-bold">Daily Txs</span>
+                        <span class="text-xs text-white font-black">4.2M</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-400 uppercase font-bold">New Holders</span>
+                        <span class="text-xs text-blue-400 font-black">+12,402</span>
+                    </div>
+                    <div class="bg-green-500/10 p-4 rounded-xl text-center text-[10px] text-green-500 font-black uppercase tracking-widest animate-pulse">
+                        Network Status: Optimal
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <footer class="py-20 text-center border-t border-white/5 mt-20">
-        <p id="footerText" class="text-gray-600 text-[10px] font-bold tracking-[0.3em] uppercase">Empowering Builders Worldwide • BaseKit 2026</p>
+        </div>
+
+        <div class="mt-8 glass-panel p-12 rounded-[3rem] text-center border-blue-500/10">
+            <h2 class="text-4xl font-black mb-4 italic uppercase">Connecting the <span class="base-blue">Global Base Kit</span></h2>
+            <p class="text-gray-500 text-sm max-w-2xl mx-auto mb-8">Base is global. We support 7+ languages and thousands of builders from every corner of the world. Connect your wallet and join the movement.</p>
+            <div class="flex flex-wrap justify-center gap-4 text-2xl text-white/20">
+                <i class="fab fa-twitter hover:text-blue-400 transition cursor-pointer"></i>
+                <i class="fab fa-discord hover:text-purple-400 transition cursor-pointer"></i>
+                <i class="fab fa-github hover:text-white transition cursor-pointer"></i>
+                <i class="fab fa-telegram hover:text-blue-500 transition cursor-pointer"></i>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-gray-700 text-[10px] font-bold tracking-[0.4em] uppercase">
+        BaseKit Hub • Empowering the Next Billion • 2026
     </footer>
 
     <script>
         const myClientId = "d6217d1424a9cc05fedeb79e446cf545";
         
         const translations = {
-            en: { title: "BUILD FOR <br><span class='base-blue italic'>EVERYONE</span>", sub: "The world's most accessible Base launchpad. AI-powered, social-ready, and gasless onboarding.", aiT: "Imagine, <br><span class='base-blue'>Mint Globally</span>", aiD: "No design skills? No problem. Describe your vision.", mint: "Generate & Mint", foot: "Empowering Builders Worldwide • BaseKit 2026" },
-            tr: { title: "HERKES İÇİN <br><span class='base-blue italic'>İNŞA ET</span>", sub: "Dünyanın en erişilebilir Base launchpad'i. AI destekli, sosyal medya uyumlu.", aiT: "Hayal Et, <br><span class='base-blue'>Küresel Bas</span>", aiD: "Tasarım yeteneği gerekmez. Vizyonunuzu tanımlayın.", mint: "Üret ve Bas", foot: "Dünya Çapındaki Geliştiricileri Güçlendiriyoruz • BaseKit 2026" },
-            de: { title: "FÜR ALLE <br><span class='base-blue italic'>BAUEN</span>", sub: "Das weltweit zugänglichste Base Launchpad. KI-gestützt, sozial fähig.", aiT: "Stellen Sie sich vor, <br><span class='base-blue'>Global Prägen</span>", aiD: "Keine Designkenntnisse? Kein Problem. Beschreiben Sie Ihre Vision.", mint: "Generieren & Prägen", foot: "Entwickler Weltweit Stärken • BaseKit 2026" },
-            ru: { title: "СТРОЙТЕ ДЛЯ <br><span class='base-blue italic'>ВСЕХ</span>", sub: "Самая доступная стартовая площадка Base. На базе ИИ, готова к соцсетям.", aiT: "Представь, <br><span class='base-blue'>Создай Глобально</span>", aiD: "Нет навыков дизайна? Опишите свое видение.", mint: "Создать и Чеканить", foot: "Расширение возможностей строителей по всему миру • BaseKit 2026" },
-            zh: { title: "为<span class='base-blue italic'>每个人</span>构建", sub: "全球最易用的 Base 启动板。人工智能驱动，社交就绪。", aiT: "想象一下，<br><span class='base-blue'>全球铸造</span>", aiD: "没有设计技能？没问题。描述你的愿景。", mint: "生成并铸造", foot: "赋能全球开发者 • BaseKit 2026" },
-            ko: { title: "모두를 위한 <br><span class='base-blue italic'>빌드</span>", sub: "세계에서 가장 접근하기 쉬운 Base 런치패드. AI 기반, 소셜 준비 완료.", aiT: "상상하고, <br><span class='base-blue'>전 세계에 발행하세요</span>", aiD: "디자인 기술이 없나요? 비전을 설명하세요.", mint: "생성 및 발행", foot: "전 세계 빌더에게 힘을 실어줍니다 • BaseKit 2026" },
-            fr: { title: "CONSTRUIRE POUR <br><span class='base-blue italic'>TOUS</span>", sub: "Le launchpad Base le plus accessible au monde. Propulsé par l'IA.", aiT: "Imaginez, <br><span class='base-blue'>Mint Globalement</span>", aiD: "Pas de compétences en design ? Décrivez votre vision.", mint: "Générer & Mint", foot: "Soutenir les Bâtisseurs du Monde Entier • BaseKit 2026" }
+            en: { title: "THE BASE <br><span class='base-blue underline decoration-white/10'>POWER STATION</span>", sub: "One dashboard, infinite possibilities. Create tokens, design AI NFTs, and analyze the chain.", aiT: "AI Studio", tokenT: "Token Factory", anaT: "Analytics" },
+            tr: { title: "BASE <br><span class='base-blue underline decoration-white/10'>GÜÇ İSTASYONU</span>", sub: "Tek panel, sonsuz olasılık. Token oluşturun, AI NFT tasarlayın ve ağı analiz edin.", aiT: "AI Stüdyo", tokenT: "Token Fabrikası", anaT: "Analizler" },
+            de: { title: "DIE BASE <br><span class='base-blue underline decoration-white/10'>KRAFTSTATION</span>", sub: "Ein Dashboard, unendliche Möglichkeiten. Token erstellen, KI-NFTs entwerfen.", aiT: "KI-Studio", tokenT: "Token-Fabrik", anaT: "Analysen" },
+            ru: { title: "ЭНЕРГОБЛОК <br><span class='base-blue underline decoration-white/10'>BASE</span>", sub: "Одна панель, бесконечные возможности. Создавайте токены и ИИ NFT.", aiT: "ИИ Студия", tokenT: "Фабрика Токенов", anaT: "Аналитика" },
+            zh: { title: "BASE <br><span class='base-blue underline decoration-white/10'>动力站</span>", sub: "一个仪表板，无限可能。创建代币，设计人工智能 NFT。", aiT: "人工智能工作室", tokenT: "代币工厂", anaT: "数据分析" },
+            ko: { title: "BASE <br><span class='base-blue underline decoration-white/10'>파워 스테이션</span>", sub: "하나의 대시보드, 무한한 가능성. 토큰 생성 및 AI NFT 디자인.", aiT: "AI 스튜디오", tokenT: "토큰 팩토리", anaT: "분석" },
+            fr: { title: "LA STATION <br><span class='base-blue underline decoration-white/10'>D'ÉNERGIE BASE</span>", sub: "Un tableau de bord, des possibilités infinies. Créez des tokens.", aiT: "Studio IA", tokenT: "Usine à Tokens", anaT: "Analyses" }
         };
 
         function changeLang() {
             const l = document.getElementById('langSelect').value;
             document.getElementById('mainTitle').innerHTML = translations[l].title;
             document.getElementById('subTitle').innerText = translations[l].sub;
-            document.getElementById('aiTitle').innerHTML = translations[l].aiT;
-            document.getElementById('aiDesc').innerText = translations[l].aiD;
-            document.getElementById('mintBtn').innerText = translations[l].mint;
-            document.getElementById('footerText').innerText = translations[l].foot;
+            // Diğer başlıkları da buradan güncelleyebilirsin
         }
 
         async function connect() {
@@ -105,8 +147,8 @@
                 try {
                     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                     document.getElementById('connectBtn').innerText = accounts[0].substring(0,6)+"...";
-                    document.getElementById('statusIndicator').classList.remove('hidden');
-                } catch (e) { console.log(e); }
+                    alert("Welcome to the Hub, Builder!");
+                } catch (e) { console.error(e); }
             }
         }
     </script>
