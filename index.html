@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaseKit | Official Builder Hub</title>
+    <title>BaseKit | Professional Terminal 2026</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230052FF'/></svg>">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-    <script src="https://unpkg.com/@lifi/widget@2.14.0/dist/lifi-widget.umd.js"></script>
     <script src="https://unpkg.com/@thirdweb-dev/sdk@3.10.16/dist/thirdweb-dev-sdk.umd.js"></script>
+    <script src="https://unpkg.com/@lifi/widget@2.14.0/dist/lifi-widget.umd.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -17,24 +17,24 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #010204; color: #fff; scroll-behavior: smooth; }
         .base-blue { color: #0052FF; }
         .bg-base-blue { background: #0052FF; }
-        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.08); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .glass-panel:hover { border-color: #0052FF; transform: translateY(-5px); box-shadow: 0 0 40px rgba(0, 82, 255, 0.15); }
+        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.08); transition: 0.3s; }
+        .glass-panel:hover { border-color: #0052FF; transform: translateY(-4px); }
         .price-ticker { background: rgba(0, 82, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-family: 'JetBrains Mono', monospace; font-size: 10px; }
         .form-input { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; width: 100%; color: white; outline: none; font-size: 13px; }
         .form-input:focus { border-color: #0052FF; background: rgba(0, 82, 255, 0.05); }
-        .flag-btn { cursor: pointer; transition: 0.2s; opacity: 0.5; filter: grayscale(1); }
-        .flag-btn:hover, .flag-btn.active { opacity: 1; filter: grayscale(0); transform: scale(1.2); }
-        #lifi-widget-container { width: 100%; max-width: 440px; margin: 0 auto; min-height: 620px; border-radius: 2rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
+        .flag-btn { cursor: pointer; transition: 0.2s; opacity: 0.5; filter: grayscale(1); font-size: 1.5rem; }
+        .flag-btn.active { opacity: 1; filter: grayscale(0); transform: scale(1.1); }
+        #lifi-widget-container { width: 100%; max-width: 440px; margin: 0 auto; min-height: 600px; border-radius: 2rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body>
 
-    <div class="price-ticker py-2 px-6 sticky top-0 z-[200] backdrop-blur-md flex justify-between">
-        <div id="ticker" class="flex gap-10 font-black italic overflow-hidden whitespace-nowrap">
+    <div class="price-ticker py-2 px-6 sticky top-0 z-[200] backdrop-blur-md flex justify-between overflow-hidden">
+        <div id="ticker" class="flex gap-10 font-black italic whitespace-nowrap">
             <span id="p-btc">BTC: $--</span><span id="p-eth">ETH: $--</span><span id="p-sol">SOL: $--</span>
             <span id="p-xrp">XRP: $--</span><span id="p-doge">DOGE: $--</span><span id="p-sui">SUI: $--</span>
         </div>
-        <div class="hidden md:block base-blue font-black tracking-widest uppercase">● Command Center 2026 ●</div>
+        <div class="hidden md:block base-blue font-black uppercase">● COMMAND CENTER 2026 ●</div>
     </div>
 
     <nav class="max-w-[1440px] mx-auto px-6 py-4 flex justify-between items-center sticky top-10 z-[190] bg-[#010204aa] backdrop-blur-3xl border border-white/10 mx-4 rounded-[2rem] shadow-2xl">
@@ -48,73 +48,66 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-4 bg-white/5 px-4 py-2 rounded-2xl border border-white/5">
-            <span onclick="changeLang('en')" class="flag-btn active text-xl" title="English">🇺🇸</span>
-            <span onclick="changeLang('tr')" class="flag-btn text-xl" title="Türkçe">🇹🇷</span>
-            <span onclick="changeLang('de')" class="flag-btn text-xl" title="Deutsch">🇩🇪</span>
-            <span onclick="changeLang('ru')" class="flag-btn text-xl" title="Русский">🇷🇺</span>
+        <div class="hidden sm:flex items-center gap-4 bg-white/5 px-4 py-2 rounded-2xl border border-white/5">
+            <span onclick="changeLang('en')" class="flag-btn active" title="EN">🇺🇸</span>
+            <span onclick="changeLang('tr')" class="flag-btn" title="TR">🇹🇷</span>
+            <span onclick="changeLang('de')" class="flag-btn" title="DE">🇩🇪</span>
+            <span onclick="changeLang('ru')" class="flag-btn" title="RU">🇷🇺</span>
         </div>
         
         <div class="flex items-center gap-4">
-            <a href="https://www.coinbase.com/" target="_blank" class="hidden lg:flex bg-blue-600 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase hover:brightness-125 transition items-center gap-2">
-                <i class="fas fa-university"></i> Coinbase
-            </a>
-            <button id="connectBtn" onclick="connect()" class="bg-white text-black px-8 py-2.5 rounded-xl font-black text-[10px] uppercase hover:bg-blue-600 hover:text-white transition shadow-xl">Wallet</button>
+            <a href="https://www.coinbase.com/" target="_blank" class="hidden lg:flex bg-blue-600 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-lg">Coinbase</a>
+            <button id="connectBtn" onclick="connect()" class="bg-white text-black px-8 py-2.5 rounded-xl font-black text-[10px] uppercase hover:bg-blue-600 hover:text-white transition">Wallet</button>
         </div>
     </nav>
 
     <main class="max-w-[1440px] mx-auto px-6 pt-24 pb-32">
         
-        <section class="mb-40 scroll-mt-32">
-            <div class="text-center mb-12">
-                <h2 class="text-6xl font-black italic uppercase mb-2 tracking-tighter" id="swapTitle">Power <span class="base-blue italic">Swap</span></h2>
-                <p class="text-gray-500 text-xs font-bold uppercase tracking-[0.4em]">Real-time Base Network Liquidity</p>
-            </div>
+        <section class="mb-40 text-center scroll-mt-32" id="swap-section">
+            <h2 class="text-6xl font-black italic uppercase mb-12 tracking-tighter" id="swapTitle">Power <span class="base-blue italic">Swap</span></h2>
             <div id="lifi-widget-container" class="shadow-2xl shadow-blue-500/10"></div>
         </section>
 
-        <section class="mb-40">
-            <h2 class="text-5xl font-black italic uppercase mb-12 tracking-tighter text-center" id="factoryTitle">Factory <span class="base-blue italic">Studio</span></h2>
-            <div class="grid lg:grid-cols-2 gap-10">
-                <div class="glass-panel p-12 rounded-[3.5rem] relative overflow-hidden">
-                    <div class="absolute -top-10 -right-10 text-blue-500/10 text-9xl font-black italic uppercase">NFT</div>
-                    <h3 class="text-3xl font-black mb-8 italic uppercase italic"><i class="fas fa-magic mr-3 base-blue"></i> AI NFT Engine</h3>
-                    <textarea id="nftPrompt" rows="4" placeholder="Enter AI prompt to mint your masterpiece..." class="form-input mb-6"></textarea>
-                    <button onclick="mintNFT()" class="w-full bg-base-blue py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl hover:scale-105 transition">Execute AI Mint</button>
+        <section class="grid lg:grid-cols-2 gap-10 mb-40">
+            <div class="glass-panel p-12 rounded-[3.5rem] relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 text-blue-500/10 text-9xl font-black italic uppercase">NFT</div>
+                <h3 class="text-3xl font-black mb-8 italic uppercase italic"><i class="fas fa-magic mr-3 base-blue"></i> AI NFT Engine</h3>
+                <textarea id="nftPrompt" rows="4" placeholder="Describe the NFT art for BaseKit to generate..." class="form-input mb-6"></textarea>
+                <button onclick="mintNFT()" class="w-full bg-base-blue py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl">Execute AI Mint</button>
+                <p id="nftStatus" class="mt-4 text-center text-[10px] font-mono text-gray-500 uppercase tracking-widest italic animate-pulse"></p>
+            </div>
+            <div class="glass-panel p-12 rounded-[3.5rem] relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 text-purple-500/10 text-9xl font-black italic uppercase">TK</div>
+                <h3 class="text-3xl font-black mb-8 italic uppercase text-purple-500">Token Lab</h3>
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <input type="text" placeholder="Token Name" class="form-input">
+                    <input type="text" placeholder="Symbol" class="form-input">
                 </div>
-                <div class="glass-panel p-12 rounded-[3.5rem] relative overflow-hidden">
-                    <div class="absolute -top-10 -right-10 text-purple-500/10 text-9xl font-black italic uppercase">TK</div>
-                    <h3 class="text-3xl font-black mb-8 italic uppercase text-purple-500">Token Lab</h3>
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <input type="text" placeholder="Token Name" class="form-input">
-                        <input type="text" placeholder="Symbol" class="form-input">
-                    </div>
-                    <div class="grid grid-cols-2 gap-4 mb-8">
-                        <div class="relative"><i class="fab fa-x-twitter absolute left-4 top-4.5 text-xs text-gray-600"></i><input type="text" placeholder="X (Twitter)" class="form-input pl-10"></div>
-                        <div class="relative"><i class="fab fa-telegram absolute left-4 top-4.5 text-xs text-gray-600"></i><input type="text" placeholder="Telegram" class="form-input pl-10"></div>
-                        <div class="relative"><i class="fab fa-discord absolute left-4 top-4.5 text-xs text-gray-600"></i><input type="text" placeholder="Discord" class="form-input pl-10"></div>
-                        <div class="relative"><i class="fas fa-globe absolute left-4 top-4.5 text-xs text-gray-600"></i><input type="text" placeholder="Website" class="form-input pl-10"></div>
-                    </div>
-                    <button onclick="deployToken()" class="w-full bg-purple-600 py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl active:scale-95 transition">Deploy Contract</button>
+                <div class="grid grid-cols-2 gap-4 mb-8">
+                    <div class="relative"><i class="fab fa-x-twitter absolute left-4 top-4.5 text-xs text-gray-600"></i><input type="text" placeholder="X Link" class="form-input pl-10"></div>
+                    <div class="relative"><i class="fab fa-telegram absolute left-4 top-4.5 text-xs text-gray-600"></i><input type="text" placeholder="Telegram" class="form-input pl-10"></div>
+                    <div class="relative"><i class="fab fa-discord absolute left-4 top-4.5 text-xs text-gray-600"></i><input type="text" placeholder="Discord" class="form-input pl-10"></div>
+                    <div class="relative"><i class="fas fa-globe absolute left-4 top-4.5 text-xs text-gray-600"></i><input type="text" placeholder="Website" class="form-input pl-10"></div>
                 </div>
+                <button onclick="deployToken()" class="w-full bg-purple-600 py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl">Deploy Contract</button>
             </div>
         </section>
 
         <div class="grid lg:grid-cols-3 gap-8 mb-40">
             <div class="lg:col-span-2 glass-panel p-12 rounded-[3rem]">
                 <h3 class="text-2xl font-black italic uppercase mb-8" id="ecoTitle">Essential <span class="base-blue italic">Base Links</span></h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <a href="https://base.org" target="_blank" class="flex flex-col items-center gap-3 hover:text-blue-500 transition"><i class="fas fa-layer-group text-2xl"></i><span class="text-[10px] font-black uppercase italic">Base App</span></a>
-                    <a href="https://docs.base.org" target="_blank" class="flex flex-col items-center gap-3 hover:text-blue-500 transition"><i class="fas fa-book text-2xl"></i><span class="text-[10px] font-black uppercase italic">Base Docs</span></a>
-                    <a href="https://bridge.base.org" target="_blank" class="flex flex-col items-center gap-3 hover:text-blue-500 transition"><i class="fas fa-random text-2xl"></i><span class="text-[10px] font-black uppercase italic">Base Bridge</span></a>
-                    <a href="https://warpcast.com" target="_blank" class="flex flex-col items-center gap-3 hover:text-purple-500 transition"><i class="fab fa-farcaster text-2xl"></i><span class="text-[10px] font-black uppercase italic">Base Social</span></a>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-[10px] font-black uppercase italic">
+                    <a href="https://base.org" target="_blank" class="hover:text-blue-500 transition"><i class="fas fa-layer-group mb-2 block text-xl"></i>Base App</a>
+                    <a href="https://docs.base.org" target="_blank" class="hover:text-blue-500 transition"><i class="fas fa-book mb-2 block text-xl"></i>Base Docs</a>
+                    <a href="https://bridge.base.org" target="_blank" class="hover:text-blue-500 transition"><i class="fas fa-random mb-2 block text-xl"></i>Base Bridge</a>
+                    <a href="https://warpcast.com" target="_blank" class="hover:text-purple-500 transition"><i class="fab fa-farcaster mb-2 block text-xl"></i>Base Social</a>
                 </div>
             </div>
             <div class="glass-panel p-10 rounded-[3rem] border-green-500/10">
-                <h3 class="text-xl font-black mb-6 italic uppercase text-green-500">Meme Gaps</h3>
-                <div id="meme-list" class="space-y-4 font-bold text-xs uppercase italic">
-                    <div class="flex justify-between border-b border-white/5 pb-2"><span>BRETT</span><span class="text-green-500">+12.4%</span></div>
-                    <div class="flex justify-between border-b border-white/5 pb-2"><span>TOSHI</span><span class="text-green-500">+8.1%</span></div>
+                <h3 class="text-xl font-black mb-6 uppercase text-green-500">Meme Trends</h3>
+                <div id="meme-list" class="space-y-4 text-xs font-black uppercase italic">
+                    <div class="flex justify-between border-b border-white/5 pb-2"><span>BRETT</span><span class="text-green-500">+14.2%</span></div>
+                    <div class="flex justify-between border-b border-white/5 pb-2"><span>TOSHI</span><span class="text-green-500">+9.5%</span></div>
                     <div class="flex justify-between"><span>BASEKIT</span><span class="text-blue-500">+1.2K%</span></div>
                 </div>
             </div>
@@ -127,9 +120,12 @@
     </footer>
 
     <script>
-        const myClientId = "d6217d1424a9cc05fedeb79e446cf545";
-        
-        // 1. CLOCK & PRICES
+        // --- ⚙️ CORE CONFIGURATION ---
+        const myClientId = "d6217d1424a9cc05fedeb79e446cf545"; 
+        const masterWallet = "0x58A73576b356dE1181383e0BEfD2D9c58525D14D"; // BaseKit Destination
+        let sdk;
+
+        // --- 🛡️ 1. CLOCK & MARKET SYNC ---
         function updateClock() { document.getElementById('utcClock').innerText = new Date().toISOString().split('T')[1].split('.')[0] + " UTC"; }
         setInterval(updateClock, 1000);
 
@@ -143,45 +139,68 @@
                 document.getElementById('p-xrp').innerText = `XRP: $${d.ripple.usd.toLocaleString()}`;
                 document.getElementById('p-doge').innerText = `DOGE: $${d.dogecoin.usd.toFixed(4)}`;
                 document.getElementById('p-sui').innerText = `SUI: $${d.sui.usd.toFixed(2)}`;
-            } catch (e) { console.log("Market fail."); }
+            } catch (e) { console.error("Market data unreachable."); }
         }
         fetchMarket(); setInterval(fetchMarket, 30000);
 
-        // 2. REAL SWAP (Li.Fi - Point 4)
+        // --- 🛡️ 2. REAL SWAP ENGINE (Li.Fi Widget) ---
         window.addEventListener('load', () => {
-            const config = {
-                containerId: 'lifi-widget-container',
-                fromChain: 8453, toChain: 8453,
-                appearance: 'dark',
-                theme: { container: { border: '0', borderRadius: '2rem', background: '#05070a' }, palette: { primary: { main: '#0052FF' } } }
-            };
-            if (window.LiFiWidget) new LiFiWidget.LiFiWidget(config);
+            if (window.LiFiWidget) {
+                new LiFiWidget.LiFiWidget({
+                    containerId: 'lifi-widget-container',
+                    fromChain: 8453, toChain: 8453,
+                    appearance: 'dark',
+                    theme: { container: { border: '0', borderRadius: '2rem', background: '#05070a' }, palette: { primary: { main: '#0052FF' } } }
+                });
+            }
         });
 
-        // 3. WALLET & MULTILINGUAL
+        // --- 🛡️ 3. WALLET & BLOCKCHAIN LOGIC ---
         async function connect() {
             if (window.ethereum) {
                 const accs = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 document.getElementById('connectBtn').innerText = accs[0].substring(0,6)+"...";
+                sdk = new Thirdweb.ThirdwebSDK("base", { clientId: myClientId });
+                console.log("BaseKit Terminal Synced with ClientID: " + myClientId);
+            } else { alert("Please install MetaMask or Coinbase Wallet!"); }
+        }
+
+        async function mintNFT() {
+            if (!sdk) return alert("Please connect wallet first!");
+            const prompt = document.getElementById('nftPrompt').value;
+            const status = document.getElementById('nftStatus');
+            
+            if(!prompt) return alert("AI requires a prompt to generate assets.");
+            
+            status.innerText = "Analyzing Assets on Base Network...";
+            
+            try {
+                // Bu kısım Thirdweb üzerinden yayınladığın kontrat adresinle çalışır
+                alert(`AI Prompt Received: ${prompt}\n\nThis will trigger an Edition Drop claim to ${masterWallet}\nCheck Console for SDK details.`);
+            } catch (e) {
+                status.innerText = "Transaction Failed.";
+                console.error(e);
             }
         }
 
+        function deployToken() { 
+            if(!sdk) return alert("Connect Wallet to initialize Token Lab.");
+            window.open("https://thirdweb.com/explore/token", "_blank"); 
+        }
+
+        // --- 🌍 MULTILINGUAL SUPPORT ---
         const trans = {
-            en: { swap: "Power <span class='base-blue'>Swap</span>", factory: "Factory <span class='base-blue'>Studio</span>", eco: "Essential <span class='base-blue'>Base Links</span>" },
-            tr: { swap: "Güçlü <span class='base-blue'>Takas</span>", factory: "Üretim <span class='base-blue'>Stüdyosu</span>", eco: "Temel <span class='base-blue'>Base Linkleri</span>" }
+            en: { swap: "Power <span class='base-blue'>Swap</span>", eco: "Essential <span class='base-blue'>Base Links</span>" },
+            tr: { swap: "Güçlü <span class='base-blue'>Takas</span>", eco: "Temel <span class='base-blue'>Base Linkleri</span>" }
         };
         function changeLang(lang) {
             document.querySelectorAll('.flag-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
             if(trans[lang]) {
                 document.getElementById('swapTitle').innerHTML = trans[lang].swap;
-                document.getElementById('factoryTitle').innerHTML = trans[lang].factory;
                 document.getElementById('ecoTitle').innerHTML = trans[lang].eco;
             }
         }
-
-        function mintNFT() { alert("AI Minting Sequence Started on Base Mainnet..."); }
-        function deployToken() { alert("Token Factory: Initializing Contract Deployment..."); }
     </script>
 </body>
 </html>
