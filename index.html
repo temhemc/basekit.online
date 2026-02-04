@@ -7,91 +7,96 @@
   <style>
     body { 
       margin: 0; font-family: 'Inter', sans-serif; 
-      background: white; color: #111; 
-      overflow-x: hidden;
+      background: #0a0a0a; color: #fff; 
+    }
+    .topbar { 
+      padding: 12px 24px; background: #111; 
+      display: flex; justify-content: space-between; 
+      font-size: 14px; align-items: center; 
+      border-bottom: 1px solid #222;
     }
     .ticker { 
-      padding: 8px 16px; background: #f2f2f2; 
-      font-size: 14px; white-space: nowrap; 
-      overflow: hidden; text-overflow: ellipsis;
+      display: flex; gap: 20px; white-space: nowrap; 
+      overflow-x: auto; padding-bottom: 4px;
     }
-    .price { margin-right: 16px; }
+    .price { color: #fff; margin-right: 16px; }
     .up { color: #4CAF50; }
     .down { color: #f44336; }
-    .header { 
-      text-align: center; padding: 40px 20px; 
-      position: relative; animation: fadeIn 1s;
-    }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    .header h1 { font-size: 42px; margin: 0; color: #000; }
-    .header p { color: #555; font-size: 18px; margin: 8px 0 24px; }
-    .start-btn { 
-      background: #0052FF; color: white; 
-      border: none; padding: 16px 32px; 
-      border-radius: 8px; font-size: 20px; 
-      cursor: pointer; box-shadow: 0 4px 12px rgba(0,82,255,0.3);
+    .header { text-align: center; padding: 60px 20px; }
+    .header h1 { font-size: 48px; margin: 0; color: #00bfff; }
+    .header p { color: #aaa; font-size: 18px; margin: 8px 0 32px; }
+    .connect-btn { 
+      background: #00bfff; color: #000; 
+      border: none; padding: 16px 40px; 
+      border-radius: 50px; font-size: 20px; 
+      font-weight: bold; cursor: pointer; 
+      box-shadow: 0 6px 16px rgba(0,191,255,0.3);
     }
     .actions { 
       display: flex; justify-content: center; 
-      gap: 16px; flex-wrap: wrap; margin: 32px 16px; 
-      max-width: 1000px; margin-left: auto; margin-right: auto;
+      gap: 20px; flex-wrap: wrap; margin: 0 32px 60px; 
+      max-width: 1100px; margin-left: auto; margin-right: auto;
     }
     .action { 
-      background: #f8f8f8; border: 1px solid #ddd; 
-      padding: 16px 24px; border-radius: 8px; 
+      background: #1a1a1a; border: 1px solid #333; 
+      padding: 24px 32px; border-radius: 12px; 
       cursor: pointer; font-weight: 600; 
-      width: 220px; text-align: center; 
-      transition: 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      width: 240px; text-align: center; 
+      transition: 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
     .action:hover { 
-      transform: translateY(-4px); 
-      box-shadow: 0 6px 16px rgba(0,0,0,0.1); 
-      background: #f0f0f0;
+      transform: scale(1.05); 
+      background: #222; border-color: #00bfff;
+      box-shadow: 0 8px 20px rgba(0,191,255,0.2);
     }
-    .icon { font-size: 28px; margin-bottom: 8px; }
+    .icon { font-size: 32px; margin-bottom: 12px; }
     .sidebar { 
-      position: fixed; right: 16px; top: 80px; 
-      width: 240px; background: #f9f9f9; 
-      border: 1px solid #eee; border-radius: 8px; 
-      padding: 12px; font-size: 14px; 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      position: fixed; right: 24px; top: 100px; 
+      width: 260px; background: #111; 
+      border: 1px solid #333; border-radius: 12px; 
+      padding: 16px; font-size: 14px; 
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
     }
     .meme { 
-      margin: 10px 0; padding: 10px; 
-      background: white; border: 1px solid #ddd; 
-      border-radius: 6px; font-size: 13px;
+      margin: 12px 0; padding: 12px; 
+      background: #222; border: 1px solid #333; 
+      border-radius: 8px; font-size: 14px;
     }
     .langs { 
-      position: fixed; top: 8px; right: 16px; 
-      font-size: 13px; color: #555;
+      position: fixed; top: 12px; right: 24px; 
+      font-size: 14px; color: #aaa;
+      display: flex; gap: 6px;
     }
   </style>
 </head>
 <body>
-  <div class="langs">🇺🇸🇹🇷🇩🇪🇫🇷🇮🇹🇷🇺🇨🇳</div>
+  <div class="langs">🇺🇸 🇹🇷 🇩🇪 🇫🇷 🇮🇹 🇷🇺 🇨🇳</div>
 
-  <div class="ticker" id="ticker"></div>
+  <div class="topbar">
+    <div class="ticker" id="ticker"></div>
+    <div>UTC 20:39</div>
+  </div>
 
   <div class="header">
     <h1>BaseKit.online</h1>
-    <p>Start your Base airdrop hunt – Swap, Mint, Bounty</p>
-    <button class="start-btn">Start Airdrop Hunt</button>
+    <p>Airdrop farm on Base – Mint, Swap, Launch</p>
+    <button class="connect-btn">Connect Wallet</button>
   </div>
 
   <div class="actions">
-    <div class="action"><div class="icon">🖼️</div>NFT Mint</div>
-    <div class="action"><div class="icon">⚡</div>Token Launch</div>
+    <div class="action"><div class="icon">🎨</div>NFT Mint</div>
+    <div class="action"><div class="icon">🚀</div>Token Launch</div>
     <div class="action"><div class="icon">📄</div>ERC-20 Create</div>
-    <div class="action"><div class="icon">🌉</div>Bridge</div>
-    <div class="action"><div class="icon">🔁</div>Swap</div>
-    <div class="action"><div class="icon">📡</div>Airdrop Radar</div>
+    <div class="action"><div class="icon">🔗</div>Bridge</div>
+    <div class="action"><div class="icon">🔄</div>Swap</div>
+    <div class="action"><div class="icon">🛰️</div>Airdrop Radar</div>
   </div>
 
   <div class="sidebar" id="memes">
     <h3>Hot Base Memes</h3>
-    <div class="meme">Brett: $0.009 <span class="up">+2.6%</span></div>
-    <div class="meme">Toshi: $0.0002 <span class="up">+1.2%</span></div>
-    <div class="meme">Degen: $0.0008 <span class="down">-1.1%</span></div>
+    <div class="meme">Brett <span class="up">↑ 2.6%</span> $0.009</div>
+    <div class="meme">Toshi <span class="up">↑ 1.2%</span> $0.0002</div>
+    <div class="meme">Degen <span class="down">↓ 1.1%</span> $0.0008</div>
   </div>
 
   <script>
