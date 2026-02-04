@@ -1,118 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>BaseKit.online</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    body { 
-      margin: 0; font-family: 'Inter', sans-serif; 
-      background: #0a0a0a; color: #fff; 
-    }
-    .topbar { 
-      padding: 12px 24px; background: #111; 
-      display: flex; justify-content: space-between; 
-      font-size: 14px; border-bottom: 1px solid #222;
-    }
-    .ticker { display: flex; gap: 24px; }
-    .price { color: #fff; }
-    .up { color: #4CAF50; }
-    .down { color: #f44336; }
-    .live { color: #00bfff; font-size: 12px; }
-    .header { 
-      text-align: center; padding: 60px 20px; 
-    }
-    .header h1 { font-size: 44px; margin: 0; color: #00bfff; }
-    .header p { color: #aaa; font-size: 18px; margin: 12px 0 40px; }
-    .connect-btn { 
-      background: #00bfff; color: #000; 
-      border: none; padding: 16px 40px; 
-      border-radius: 50px; font-size: 20px; 
-      font-weight: bold; cursor: pointer; 
-      box-shadow: 0 6px 16px rgba(0,191,255,0.3);
-    }
-    .cards { 
-      display: flex; justify-content: center; 
-      gap: 20px; flex-wrap: wrap; margin: 0 32px 60px; 
-      max-width: 1100px; margin-left: auto; margin-right: auto;
-    }
-    .card { 
-      background: #1a1a1a; border: 1px solid #333; 
-      padding: 24px 28px; border-radius: 12px; 
-      width: 300px; text-align: center; 
-      transition: 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    }
-    .card:hover { 
-      transform: translateY(-6px); 
-      box-shadow: 0 12px 24px rgba(0,191,255,0.2);
-      border-color: #00bfff;
-    }
-    .card h3 { color: #00bfff; margin: 8px 0 12px; }
-    .card .stat { font-size: 13px; color: #aaa; }
-    .activity { 
-      position: fixed; right: 24px; top: 80px; 
-      width: 240px; background: #111; 
-      border: 1px solid #333; border-radius: 12px; 
-      padding: 12px; font-size: 13px; 
-      max-height: 300px; overflow-y: auto;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-    }
-    .act { margin: 6px 0; color: #aaa; }
-    .langs { position: fixed; top: 12px; right: 24px; font-size: 14px; color: #aaa; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BaseKit | The Universal Base Hub</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230052FF'/></svg>">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <script src="https://unpkg.com/@lifi/widget@2.14.0/dist/lifi-widget.umd.js"></script>
+    <script src="https://unpkg.com/@thirdweb-dev/sdk@3.10.16/dist/thirdweb-dev-sdk.umd.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #010204; color: #fff; overflow-x: hidden; scroll-behavior: smooth; }
+        .base-blue { color: #0052FF; }
+        .bg-base-blue { background: #0052FF; }
+        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.08); transition: 0.3s; }
+        .price-ticker { background: rgba(0, 82, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+        .form-input { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; width: 100%; color: white; outline: none; font-size: 13px; }
+        .form-input:focus { border-color: #0052FF; }
+        .coinbase-btn { background: #0052FF; box-shadow: 0 0 15px rgba(0, 82, 255, 0.4); }
+        .base-svg-glow { filter: drop-shadow(0 0 10px rgba(0, 82, 255, 0.6)); }
+        .flag-btn { cursor: pointer; transition: 0.2s; opacity: 0.5; filter: grayscale(1); }
+        .flag-btn:hover, .flag-btn.active { opacity: 1; filter: grayscale(0); transform: scale(1.2); }
+        #lifi-widget-container { width: 100%; max-width: 440px; margin: 0 auto; min-height: 620px; border-radius: 2rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
+        .mic-btn { background: #0052FF; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; }
+    </style>
 </head>
 <body>
-  <div class="langs">🇺🇸 🇹🇷 🇩🇪 🇫🇷 🇮🇹 🇷🇺 🇨🇳</div>
 
-  <div class="topbar">
-    <div class="ticker" id="ticker"></div>
-    <div class="live">3.2K users farming now</div>
-  </div>
-
-  <div class="header">
-    <h1>Farm Base Airdrop</h1>
-    <p>Deploy, Mint, Swap – All on Base. Scan-proof.</p>
-    <button class="connect-btn">Connect Wallet</button>
-  </div>
-
-  <div class="cards">
-    <div class="card">
-      <h3>Contract Lab</h3>
-      <p>Deploy NFT or token contract in 1 click. Appears on BaseScan instantly.</p>
-      <div class="stat">Today: 1,842 deploys • 8.7K TX</div>
+    <div class="price-ticker py-2 px-6 sticky top-0 z-[200] backdrop-blur-md flex justify-between">
+        <div id="ticker" class="flex gap-10 font-black italic overflow-hidden whitespace-nowrap text- uppercase tracking-widest">
+            <span id="p-btc">BTC: $--</span><span id="p-eth">ETH: $--</span><span id="p-sol">SOL: $--</span>
+            <span id="p-xrp">XRP: $--</span><span id="p-sui">SUI: $--</span>
+            <span class="base-blue italic">● POWERED BY BASE ● 2026 ● ALL RIGHTS RESERVED</span>
+        </div>
+        <div class="hidden md:block base-blue font-black tracking-widest uppercase">● Command Center 2026 ●</div>
     </div>
-    <div class="card">
-      <h3>AI Mint Hub</h3>
-      <p>Voice your idea, AI mints NFT. Every mint = +1 contract count.</p>
-      <div class="stat">Today: 2,100 mints</div>
-    </div>
-    <div class="card">
-      <h3>TX Booster</h3>
-      <p>Auto-bridge, swap, burn. 24h activity report for airdrop proof.</p>
-      <div class="stat">Today: 5.3K swaps • 1.2K bridges</div>
-    </div>
-  </div>
 
-  <div class="activity">
-    <h4>Live Activity</h4>
-    <div class="act">Mehmet: NFT deployed • 3 min ago</div>
-    <div class="act">Ali: 2 ETH bridged to Base • 5 min ago</div>
-    <div class="act">Zeynep: Swapped 0.5 ETH → USDC • 8 min ago</div>
-    <div class="act">Emre: Token launched (ERC-20) • 12 min ago</div>
-  </div>
+    <nav class="max-w- mx-auto px-6 py-4 flex justify-between items-center sticky top-10 z-[190] bg- backdrop-blur-3xl border border-white/10 mx-4 rounded- shadow-2xl">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 bg- rounded-lg shadow-lg shadow-blue-500/40 flex items-center justify-center hover:rotate-90 transition duration-500 cursor-pointer">
+                <div class="w-5 h-5 border-4 border-white rounded-full"></div>
+            </div>
+            <div>
+                <span class="text-2xl font-black italic tracking-tighter uppercase leading-none">BASE<span class="base-blue italic">KIT</span></span>
+                <span id="utcClock" class="text- font-bold text-blue-400 uppercase block tracking-widest">00:00:00 UTC</span>
+            </div>
+        </div>
 
-  <script>
-    const coins = ['bitcoin', 'ethereum', 'ripple', 'solana', 'sui'];
-    const ticker = document.getElementById('ticker');
-    fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coins.join(',')}&vs_currencies=usd&include_24hr_change=true`)
-      .then(r => r.json())
-      .then(data => {
-        ticker.innerHTML = Object.keys(data).map(c => {
-          const coin = data ;
-          const cls = coin.usd_24h_change > 0 ? 'up' : 'down';
-          return `<span class="price">${c.toUpperCase()}: $${coin.usd} <span class="${cls}">${coin.usd_24h_change > 0 ? '+' : ''}${coin.usd_24h_change.toFixed(2)}%</span></span>`;
-        }).join(' | ');
-      });
-  </script>
-</body>
-</html>
+        <div class="flex items-center gap-4 bg-white/5 px-4 py-2 rounded-2xl border border-white/5">
+            <span onclick="changeLang('en')" class="flag-btn active text-xl" title="English">🇺🇸</span>
+            <span onclick="changeLang('tr')" class="flag-btn text-xl" title="Türkçe">🇹🇷</span>
+            <span onclick="changeLang('de')" class="flag-btn text-xl" title="Deutsch">🇩🇪</span>
+            <span onclick="changeLang('ru')" class="flag-btn text-xl" title="Русский">🇷🇺</span
