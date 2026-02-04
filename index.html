@@ -17,16 +17,17 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #010204; color: #fff; overflow-x: hidden; scroll-behavior: smooth; }
         .base-blue { color: #0052FF; }
         .bg-base-blue { background: #0052FF; }
-        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.08); transition: 0.3s; }
+        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.08); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .price-ticker { background: rgba(0, 82, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-family: 'JetBrains Mono', monospace; font-size: 10px; }
         .form-input { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; width: 100%; color: white; outline: none; font-size: 13px; }
-        .form-input:focus { border-color: #0052FF; }
+        .form-input:focus { border-color: #0052FF; background: rgba(0, 82, 255, 0.05); }
         .coinbase-btn { background: #0052FF; box-shadow: 0 0 15px rgba(0, 82, 255, 0.4); }
         .base-svg-glow { filter: drop-shadow(0 0 10px rgba(0, 82, 255, 0.6)); }
         .flag-btn { cursor: pointer; transition: 0.2s; opacity: 0.5; filter: grayscale(1); }
         .flag-btn:hover, .flag-btn.active { opacity: 1; filter: grayscale(0); transform: scale(1.2); }
         #lifi-widget-container { width: 100%; max-width: 440px; margin: 0 auto; min-height: 620px; border-radius: 2rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
-        .mic-btn { background: #0052FF; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; }
+        .mic-btn { background: #0052FF; color: white; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; margin-top: 4px; }
+        .live-act { color: #aaa; font-size: 13px; margin: 6px 0; }
     </style>
 </head>
 <body>
@@ -55,4 +56,27 @@
             <span onclick="changeLang('en')" class="flag-btn active text-xl" title="English">🇺🇸</span>
             <span onclick="changeLang('tr')" class="flag-btn text-xl" title="Türkçe">🇹🇷</span>
             <span onclick="changeLang('de')" class="flag-btn text-xl" title="Deutsch">🇩🇪</span>
-            <span onclick="changeLang('ru')" class="flag-btn text-xl" title="Русский">🇷🇺</span
+            <span onclick="changeLang('ru')" class="flag-btn text-xl" title="Русский">🇷🇺</span>
+            <span onclick="changeLang('zh')" class="flag-btn text-xl" title="中文">🇨🇳</span>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <button id="connectBtn" onclick="connect()" class="bg-white text-black px-8 py-2.5 rounded-xl font-black text- uppercase hover:bg-blue-600 hover:text-white transition shadow-xl">Wallet</button>
+        </div>
+    </nav>
+
+    <main class="max-w- mx-auto px-6 pt-24 pb-32">
+
+        <section class="mb-40 scroll-mt-32">
+            <div class="text-center mb-12">
+                <h2 class="text-6xl font-black italic uppercase mb-2 tracking-tighter" id="swapTitle">Power <span class="base-blue italic">Swap</span></h2>
+                <p class="text-gray-500 text-xs font-bold uppercase tracking- ">Real-time Base Network Liquidity</p>
+            </div>
+            <div id="lifi-widget-container" class="shadow-2xl shadow-blue-500/10"></div>
+        </section>
+
+        <section class="mb-32">
+            <h2 class="text-5xl font-black italic uppercase mb-12 tracking-tighter text-center" id="factoryTitle">Factory <span class="base-blue italic">Studio</span></h2>
+            <div class="grid lg:grid-cols-2 gap-10">
+                <div class="glass-panel p-12 rounded- relative overflow-hidden">
+                    <div class="absolute -top-10 -right-10 text-blue-500/10
