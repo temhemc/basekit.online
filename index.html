@@ -1,166 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaseKit | The Professional Terminal</title>
-    
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230052FF'/></svg>">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-    <script src="https://unpkg.com/@thirdweb-dev/sdk@3.10.16/dist/thirdweb-dev-sdk.umd.js"></script>
-    <script src="https://unpkg.com/@lifi/widget@2.14.0/dist/lifi-widget.umd.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #010204; color: #fff; scroll-behavior: smooth; }
-        .base-blue { color: #0052FF; }
-        .bg-base-blue { background: #0052FF; }
-        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.08); transition: 0.3s ease; }
-        .price-ticker { background: rgba(0, 82, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-family: 'JetBrains Mono', monospace; font-size: 10px; }
-        /* Swap Widget Fixed Height & Visibility */
-        #lifi-widget-container { width: 100%; max-width: 440px; margin: 0 auto; min-height: 640px; border-radius: 2rem; overflow: hidden; display: block !important; border: 1px solid rgba(0, 82, 255, 0.2); }
-        .form-input { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; width: 100%; color: white; outline: none; font-size: 13px; }
-        .flag-btn { cursor: pointer; opacity: 0.5; filter: grayscale(1); transition: 0.2s; font-size: 1.5rem; }
-        .flag-btn.active { opacity: 1; filter: grayscale(0); }
-    </style>
+  <meta charset="UTF-8" />
+  <title>BaseKit.online</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body { 
+      margin: 0; font-family: 'Inter', sans-serif; 
+      background: white; color: #111; 
+    }
+    .topbar { 
+      padding: 8px 16px; background: #f8f8f8; 
+      display: flex; justify-content: space-between; 
+      font-size: 13px; align-items: center; 
+    }
+    .ticker { 
+      display: flex; gap: 20px; white-space: nowrap; 
+    }
+    .price { color: #000; }
+    .up { color: #4CAF50; }
+    .down { color: #f44336; }
+    .header { text-align: center; padding: 40px 20px; }
+    .header h1 { font-size: 36px; margin: 0; color: #000; }
+    .header p { color: #555; font-size: 16px; }
+    .connect-btn { 
+      background: #0052FF; color: white; 
+      border: none; padding: 12px 24px; 
+      border-radius: 6px; font-size: 18px; 
+      cursor: pointer; margin: 20px 0; 
+    }
+    .actions { 
+      display: flex; justify-content: center; 
+      gap: 12px; flex-wrap: wrap; margin: 0 16px; 
+    }
+    .action { 
+      background: #f0f0f0; border: 1px solid #ddd; 
+      padding: 14px 20px; border-radius: 6px; 
+      cursor: pointer; font-weight: 600; 
+      transition: 0.2s; width: 180px; text-align: center; 
+    }
+    .action:hover { background: #e0e0e0; }
+    .sidebar { 
+      position: fixed; right: 16px; top: 80px; 
+      width: 220px; background: #f9f9f9; 
+      border: 1px solid #eee; border-radius: 6px; 
+      padding: 12px; font-size: 14px; 
+    }
+    .meme { margin: 8px 0; padding: 8px; 
+      background: white; border: 1px solid #ddd; 
+      border-radius: 4px; }
+  </style>
 </head>
 <body>
+  <div class="topbar">
+    <div class="ticker" id="ticker"></div>
+    <div>🇹🇷 🇺🇸</div>
+  </div>
 
-    <div class="price-ticker py-2 px-6 sticky top-0 z-[200] backdrop-blur-md flex justify-between">
-        <div id="ticker" class="flex gap-10 font-black italic">
-            <span id="p-btc">BTC: $--</span><span id="p-eth">ETH: $--</span><span id="p-sol">SOL: $--</span>
-            <span id="p-xrp">XRP: $--</span><span id="p-doge">DOGE: $--</span><span id="p-sui">SUI: $--</span>
-        </div>
-        <div class="hidden md:block base-blue font-black uppercase tracking-widest">● BASEKIT Hub v16.1 ●</div>
-    </div>
+  <div class="header">
+    <h1>BaseKit.online</h1>
+    <p>Base'te airdrop kasma merkezi – Swap, Mint, Bounty</p>
+    <button class="connect-btn">Connect Wallet</button>
+  </div>
 
-    <nav class="max-w-[1440px] mx-auto px-6 py-4 flex justify-between items-center sticky top-10 z-[190] bg-[#010204aa] backdrop-blur-3xl border border-white/10 mx-4 rounded-[2rem] shadow-2xl">
-        <div class="flex items-center gap-4">
-            <div class="w-10 h-10 bg-[#0052FF] rounded-lg shadow-lg flex items-center justify-center">
-                <div class="w-5 h-5 border-4 border-white rounded-full"></div>
-            </div>
-            <div>
-                <span class="text-2xl font-black italic uppercase leading-none tracking-tighter">BASE<span class="base-blue">KIT</span></span>
-                <span class="text-[9px] font-bold text-blue-400 uppercase block tracking-widest italic" id="utcClock">00:00:00 UTC</span>
-            </div>
-        </div>
+  <div class="actions">
+    <div class="action">NFT Mint</div>
+    <div class="action">Token Launch</div>
+    <div class="action">ERC-20 Oluştur</div>
+    <div class="action">Bridge</div>
+    <div class="action">Swap</div>
+    <div class="action">Airdrop Radar</div>
+  </div>
 
-        <div class="hidden md:flex gap-4">
-            <span onclick="changeLang('en')" class="flag-btn active">🇺🇸</span>
-            <span onclick="changeLang('tr')" class="flag-btn">🇹🇷</span>
-        </div>
-        
-        <div class="flex items-center gap-3">
-            <a href="https://www.coinbase.com/" target="_blank" class="hidden lg:flex bg-blue-600 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-lg">Coinbase</a>
-            <div id="walletActions" class="flex gap-2">
-                <button id="connectBtn" onclick="connect()" class="bg-white text-black px-6 py-2.5 rounded-xl font-black text-[10px] uppercase hover:bg-blue-600 hover:text-white transition">Connect Wallet</button>
-                <button id="signOutBtn" onclick="signOut()" class="hidden bg-red-600/20 text-red-500 border border-red-500/20 px-3 py-2.5 rounded-xl hover:bg-red-600 hover:text-white transition">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
-            </div>
-        </div>
-    </nav>
+  <div class="sidebar" id="memes">
+    <h3>Hot Base Memes</h3>
+    <div class="meme">Brett: $0.009 ↑2.6%</div>
+    <div class="meme">Toshi: $0.0002 ↑1.2%</div>
+    <div class="meme">Clawstr: $0.001 ↓3%</div>
+  </div>
 
-    <main class="max-w-[1440px] mx-auto px-6 pt-24">
-        
-        <section class="mb-40 text-center" id="swap-container">
-            <h2 class="text-6xl font-black italic uppercase mb-12 tracking-tighter">Command <span class="base-blue italic">Swap</span></h2>
-            <div id="lifi-widget-container" class="shadow-2xl shadow-blue-500/10 bg-[#05070a]">
-                </div>
-        </section>
-
-        <section class="grid lg:grid-cols-2 gap-10 mb-40">
-            <div class="glass-panel p-12 rounded-[3.5rem] relative">
-                <h3 class="text-3xl font-black mb-8 italic uppercase italic tracking-tighter">AI NFT Factory</h3>
-                <textarea id="nftPrompt" rows="4" placeholder="Enter prompt for Base NFT..." class="form-input mb-6"></textarea>
-                <button onclick="mintNFT()" class="w-full bg-base-blue py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl">Mint with AI</button>
-            </div>
-            <div class="glass-panel p-12 rounded-[3.5rem] relative">
-                <h3 class="text-3xl font-black mb-8 italic uppercase text-purple-500 tracking-tighter">Contract Lab</h3>
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <input type="text" id="tkName" placeholder="Token Name" class="form-input">
-                    <input type="text" id="tkSymbol" placeholder="Symbol" class="form-input">
-                </div>
-                <button onclick="deployToken()" class="w-full bg-purple-600 py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl">Deploy to Base</button>
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="border-t border-white/5 py-12 text-center opacity-50">
-        <p class="text-[10px] font-black uppercase tracking-[0.4em]">All Rights Reserved © 2026 BaseKit Online</p>
-    </footer>
-
-    <script>
-        const myClientId = "d6217d1424a9cc05fedeb79e446cf545";
-        let sdk;
-
-        // --- 1. WALLET LOGIC (Sign In / Sign Out) ---
-        async function connect() {
-            if (window.ethereum) {
-                try {
-                    const accs = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    handleLogin(accs[0]);
-                } catch (e) { console.error(e); }
-            } else { alert("Install MetaMask or Coinbase Wallet!"); }
-        }
-
-        function handleLogin(address) {
-            document.getElementById('connectBtn').innerText = address.substring(0,6)+"..."+address.substring(38);
-            document.getElementById('signOutBtn').classList.remove('hidden');
-            sdk = new Thirdweb.ThirdwebSDK("base", { clientId: myClientId });
-            localStorage.setItem('walletConnected', address);
-        }
-
-        function signOut() {
-            localStorage.removeItem('walletConnected');
-            document.getElementById('connectBtn').innerText = "Connect Wallet";
-            document.getElementById('signOutBtn').classList.add('hidden');
-            sdk = null;
-            console.log("Wallet Disconnected.");
-            // MetaMask'tan teknik olarak "bağlantıyı koparma" izni web sitesinde yoktur, 
-            // ancak uygulama bazında çıkış yapmış olduk.
-        }
-
-        window.onload = () => {
-            const saved = localStorage.getItem('walletConnected');
-            if (saved) handleLogin(saved);
-            initSwap();
-        }
-
-        // --- 2. SWAP WIDGET (Hata Giderilmiş) ---
-        function initSwap() {
-            if (window.LiFiWidget) {
-                new LiFiWidget.LiFiWidget({
-                    containerId: 'lifi-widget-container',
-                    fromChain: 8453, toChain: 8453,
-                    appearance: 'dark',
-                    theme: { container: { border: '0', borderRadius: '2rem', background: '#05070a' }, palette: { primary: { main: '#0052FF' } } }
-                });
-            } else {
-                // Eğer kütüphane henüz yüklenmediyse tekrar dene
-                setTimeout(initSwap, 1000);
-            }
-        }
-
-        // --- 3. MARKET DATA ---
-        async function fetchPrices() {
-            try {
-                const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple,dogecoin,sui&vs_currencies=usd');
-                const d = await res.json();
-                document.getElementById('p-btc').innerText = `BTC: $${d.bitcoin.usd.toLocaleString()}`;
-                document.getElementById('p-eth').innerText = `ETH: $${d.ethereum.usd.toLocaleString()}`;
-                document.getElementById('p-sol').innerText = `SOL: $${d.solana.usd.toLocaleString()}`;
-            } catch (e) {}
-        }
-        fetchPrices(); setInterval(fetchPrices, 30000);
-        setInterval(() => { document.getElementById('utcClock').innerText = new Date().toISOString().split('T')[1].split('.')[0] + " UTC"; }, 1000);
-
-        function mintNFT() { alert("AI Minting Sequence Started. Check your wallet."); }
-        function deployToken() { window.open("https://thirdweb.com/explore/token", "_blank"); }
-    </script>
+  <script>
+    // Canlı fiyat çek (CoinGecko)
+    const coins = ['bitcoin', 'ethereum', 'ripple', 'solana'];
+    const ticker = document.getElementById('ticker');
+    fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coins.join(',')}&vs_currencies=usd&include_24hr_change=true`)
+      .then(r => r.json())
+      .then(data => {
+        ticker.innerHTML = Object.keys(data).map(c => {
+          const coin = data ;
+          const cls = coin.usd_24h_change > 0 ? 'up' : 'down';
+          return `<span class="price">${c.toUpperCase()}: $${coin.usd} <span class="${cls}">${coin.usd_24h_change > 0 ? '+' : ''}${coin.usd_24h_change.toFixed(2)}%</span></span>`;
+        }).join(' | ');
+      });
+  </script>
 </body>
 </html>
