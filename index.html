@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@lifi/widget@latest/dist/index.umd.js"></script>
     
     <style>
         body { background-color: #00050a; color: #fff; font-family: 'Space Grotesk', sans-serif; }
@@ -16,55 +15,66 @@
         .glass { background: rgba(0, 82, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(0, 82, 255, 0.15); }
         .animate-scroll { animation: scroll 40s linear infinite; }
         @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-        #lifi-widget-container { min-height: 650px; width: 100%; border-radius: 2rem; overflow: hidden; background: #000; }
-        .deploy-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(0, 82, 255, 0.1); transition: all 0.3s; }
-        .deploy-card:hover { border-color: #0052FF; }
+        #swap-container { min-height: 650px; border-radius: 2rem; overflow: hidden; background: #000; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+        .modal.active { display: flex; }
     </style>
 </head>
 <body>
 
+    <div id="deploy-modal" class="modal">
+        <div class="glass p-8 rounded-[2rem] w-full max-w-md border-t-4 border-blue-600">
+            <h3 id="modal-title" class="text-2xl font-bold mb-4 italic base-blue uppercase">Contract Studio</h3>
+            <div class="space-y-4">
+                <p id="modal-desc" class="text-xs text-gray-400">Enter details to initiate deployment on Base Mainnet.</p>
+                <input id="m-name" type="text" placeholder="Project Name" class="w-full bg-black border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500">
+                <input id="m-symbol" type="text" placeholder="Symbol (e.g. TRE)" class="w-full bg-black border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500">
+                <button onclick="executeOnSiteAction()" class="w-full bg-base-blue py-4 rounded-xl font-bold uppercase tracking-widest hover:opacity-90 active:scale-95 transition">
+                    Sign & Deploy (0.00001 ETH)
+                </button>
+                <button onclick="closeModal()" class="w-full text-[10px] text-gray-500 uppercase mt-2">Close Window</button>
+            </div>
+        </div>
+    </div>
+
     <nav class="glass sticky top-0 z-[100] p-4 border-b border-blue-900/30">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-base-blue rounded-full flex items-center justify-center font-bold text-xl shadow-lg">B</div>
-                <h1 class="text-2xl font-bold tracking-tighter">BASEKIT<span class="base-blue text-sm ml-1">.ONLINE</span></h1>
+                <div class="w-10 h-10 bg-base-blue rounded-full flex items-center justify-center font-bold text-xl">B</div>
+                <h1 class="text-2xl font-bold tracking-tighter uppercase">BASEKIT<span class="base-blue text-sm ml-1">.ONLINE</span></h1>
             </div>
             <div class="overflow-hidden w-full md:w-1/3 py-1 bg-black/40 rounded-full border border-blue-900/20">
-                <div id="price-ticker" class="animate-scroll whitespace-nowrap flex gap-8 text-xs font-mono text-blue-300 uppercase">
+                <div id="price-ticker" class="animate-scroll whitespace-nowrap flex gap-8 text-[10px] font-mono text-blue-300 uppercase">
                     BTC: Loading... | ETH: Loading... | SOL: Loading... | XRP: Loading... | SUI: Loading...
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <select id="lang-select" onchange="changeLang()" class="bg-black border border-blue-900/50 rounded-lg px-2 py-1 text-xs outline-none">
-                    <option value="en">English</option>
-                    <option value="tr">Türkçe</option>
-                </select>
-                <button onclick="connectWallet()" id="wallet-btn" class="bg-base-blue px-6 py-2 rounded-full font-bold text-sm shadow-lg hover:opacity-80 transition">Connect</button>
+                <button onclick="connectWallet()" id="wallet-btn" class="bg-base-blue px-6 py-2 rounded-full font-bold text-sm shadow-lg hover:opacity-80 transition">Connect Wallet</button>
             </div>
         </div>
     </nav>
 
     <main class="container mx-auto px-4 py-8 space-y-12">
         <section>
-            <h2 class="text-xs font-bold mb-4 flex items-center gap-2 text-gray-400 uppercase tracking-widest">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span> Live Base Gainers
+            <h2 class="text-[10px] font-bold mb-4 flex items-center gap-2 text-gray-400 uppercase tracking-widest">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span> Live Base Ecosystem Trends
             </h2>
             <div id="meme-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                <div class="h-24 glass rounded-2xl flex items-center justify-center text-xs text-gray-500 italic">Finding Memes...</div>
-                <div class="h-24 glass rounded-2xl flex items-center justify-center text-xs text-gray-500 italic">Finding Memes...</div>
-                <div class="h-24 glass rounded-2xl flex items-center justify-center text-xs text-gray-500 italic">Finding Memes...</div>
-                <div class="h-24 glass rounded-2xl flex items-center justify-center text-xs text-gray-500 italic">Finding Memes...</div>
-                <div class="h-24 glass rounded-2xl flex items-center justify-center text-xs text-gray-500 italic">Finding Memes...</div>
+                <div class="h-24 glass rounded-2xl flex items-center justify-center text-[10px] text-gray-500 italic">Syncing Base...</div>
+                <div class="h-24 glass rounded-2xl flex items-center justify-center text-[10px] text-gray-500 italic">Syncing Base...</div>
+                <div class="h-24 glass rounded-2xl flex items-center justify-center text-[10px] text-gray-500 italic">Syncing Base...</div>
+                <div class="h-24 glass rounded-2xl flex items-center justify-center text-[10px] text-gray-500 italic">Syncing Base...</div>
+                <div class="h-24 glass rounded-2xl flex items-center justify-center text-[10px] text-gray-500 italic">Syncing Base...</div>
             </div>
         </section>
 
         <div class="grid lg:grid-cols-12 gap-8 items-start">
             <div class="lg:col-span-7">
-                <div id="lifi-widget-container" class="glass">
-                    <div id="lifi-placeholder" class="h-full w-full flex items-center justify-center min-h-[600px]">
+                <div id="swap-container" class="glass relative">
+                    <div id="lifi-loader" class="absolute inset-0 flex items-center justify-center">
                         <div class="text-center">
-                            <i class="fas fa-circle-notch fa-spin text-3xl mb-3 text-blue-500"></i>
-                            <p class="text-blue-500 font-bold animate-pulse">Initializing Swap Hub...</p>
+                            <i class="fas fa-circle-notch fa-spin text-4xl mb-4 base-blue"></i>
+                            <p class="font-bold base-blue animate-pulse uppercase text-xs tracking-widest">Activating Swap Hub...</p>
                         </div>
                     </div>
                 </div>
@@ -72,44 +82,35 @@
 
             <div class="lg:col-span-5 space-y-8">
                 <div class="glass p-8 rounded-[2.5rem] border-l-4 border-blue-600">
-                    <h3 id="txt-studio" class="text-2xl font-bold mb-6 italic base-blue">Contract Studio</h3>
-                    <div class="space-y-4" id="studio-content">
-                        <div class="p-4 deploy-card rounded-2xl cursor-pointer group" onclick="showDeployForm('token')">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-bold">Token Lab</h4>
-                                    <p class="text-xs text-gray-400">Deploy ERC-20 instantly</p>
-                                </div>
-                                <i class="fas fa-plus-circle text-blue-600 group-hover:scale-110 transition"></i>
+                    <h3 class="text-2xl font-bold mb-6 italic base-blue uppercase">Studio</h3>
+                    <div class="space-y-4">
+                        <div onclick="openModal('Token Lab')" class="p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500 cursor-pointer transition flex justify-between items-center group">
+                            <div>
+                                <h4 class="font-bold">Token Lab</h4>
+                                <p class="text-[10px] text-gray-500">Deploy ERC-20 instantly</p>
                             </div>
+                            <i class="fas fa-rocket text-blue-600 group-hover:scale-125 transition"></i>
                         </div>
-                        <div class="p-4 deploy-card rounded-2xl cursor-pointer group" onclick="showDeployForm('nft')">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-bold text-purple-400">NFT Engine</h4>
-                                    <p class="text-xs text-gray-400">Launch Art Collection</p>
-                                </div>
-                                <i class="fas fa-layer-group text-purple-600 group-hover:scale-110 transition"></i>
+                        <div onclick="openModal('NFT Engine')" class="p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-purple-500 cursor-pointer transition flex justify-between items-center group">
+                            <div>
+                                <h4 class="font-bold text-purple-400">NFT Engine</h4>
+                                <p class="text-[10px] text-gray-500">Launch Art Collection</p>
                             </div>
+                            <i class="fas fa-images text-purple-600 group-hover:scale-125 transition"></i>
                         </div>
-                    </div>
-                    <div id="deploy-form" class="hidden mt-6 space-y-4 p-4 bg-white/5 rounded-2xl animate-fade-in">
-                        <input id="deploy-name" type="text" placeholder="Name" class="w-full bg-black border border-white/10 p-2 rounded text-sm">
-                        <input id="deploy-symbol" type="text" placeholder="Symbol" class="w-full bg-black border border-white/10 p-2 rounded text-sm">
-                        <button onclick="executeOnSiteDeploy()" class="w-full bg-blue-600 py-2 rounded font-bold text-xs uppercase italic">Sign & Deploy (0.00001 ETH)</button>
                     </div>
                 </div>
 
                 <div class="glass p-8 rounded-[2.5rem] border-b-4 border-blue-600">
-                    <h3 id="txt-arcade" class="text-2xl font-bold mb-6 italic text-center underline">Base Arcade 🕹️</h3>
+                    <h3 class="text-2xl font-bold mb-6 italic text-center underline uppercase">Arcade</h3>
                     <div class="space-y-3">
-                        <button onclick="playAndTx('Coin Flip')" class="w-full bg-blue-900/10 hover:bg-blue-600/30 p-4 rounded-xl flex justify-between items-center transition border border-blue-900/30">
+                        <button onclick="playAndTx('CoinFlip')" class="w-full bg-blue-900/10 hover:bg-blue-600/30 p-4 rounded-xl flex justify-between items-center transition border border-blue-900/30">
                             <span class="font-bold italic text-sm">🪙 Coin Flip</span>
-                            <span class="text-[10px] bg-blue-600 px-2 py-1 rounded-md shadow-lg shadow-blue-500/50 uppercase">Verify Tx</span>
+                            <span class="text-[10px] bg-blue-600 px-3 py-1 rounded-lg uppercase font-bold shadow-lg shadow-blue-500/50">Verify Tx</span>
                         </button>
-                        <button onclick="playAndTx('Lucky Roller')" class="w-full bg-blue-900/10 hover:bg-blue-600/30 p-4 rounded-xl flex justify-between items-center transition border border-blue-900/30">
+                        <button onclick="playAndTx('LuckyRoller')" class="w-full bg-blue-900/10 hover:bg-blue-600/30 p-4 rounded-xl flex justify-between items-center transition border border-blue-900/30">
                             <span class="font-bold italic text-sm">🎰 Lucky Roller</span>
-                            <span class="text-[10px] bg-blue-600 px-2 py-1 rounded-md shadow-lg shadow-blue-500/50 uppercase">Verify Tx</span>
+                            <span class="text-[10px] bg-blue-600 px-3 py-1 rounded-lg uppercase font-bold shadow-lg shadow-blue-500/50">Verify Tx</span>
                         </button>
                     </div>
                 </div>
@@ -117,12 +118,14 @@
         </div>
     </main>
 
-    <footer class="p-10 text-center text-gray-600 text-[10px] border-t border-white/5">
-        <p>Admin: 0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12 | On-Site Build Hub</p>
+    <footer class="p-10 text-center text-gray-700 text-[10px]">
+        <p>Admin: 0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12 | On-Site Build Node</p>
     </footer>
 
+    <script src="https://unpkg.com/@lifi/widget@latest/dist/index.umd.js" onload="initSwapHub()"></script>
+
     <script>
-        const OWNER_WALLET = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
+        const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
         const TX_VAL = "0x9184E72A000"; // 0.00001 ETH
 
         // 1. PRICES
@@ -134,52 +137,51 @@
                     BTC: $${d.bitcoin.usd.toLocaleString()} | ETH: $${d.ethereum.usd.toLocaleString()} | 
                     SOL: $${d.solana.usd.toLocaleString()} | XRP: $${d.ripple.usd.toFixed(4)} | SUI: $${d.sui.usd.toFixed(2)}
                 `;
-            } catch(e) { console.error("Price fetch error"); }
+            } catch(e) {}
         }
         setInterval(fetchPrices, 30000); fetchPrices();
 
-        // 2. MEME NAMES FIX (Actual Names vs Chain Name)
+        // 2. MEMES (Fix: "BASE" yerine gerçek isimler)
         async function fetchMemes() {
-            const grid = document.getElementById('meme-grid');
             try {
-                // Base ağındaki en yüksek hacimli 5 çifti çeker
                 const r = await fetch('https://api.dexscreener.com/latest/dex/search?q=base');
                 const d = await r.json();
+                // "BASE" veya "WETH" olmayan, gerçek projeleri filtrele
                 const pairs = (d.pairs || [])
-                    .filter(p => p.chainId === 'base' && p.baseToken.symbol !== 'BASE' && p.baseToken.symbol !== 'WETH')
+                    .filter(p => p.chainId === 'base' && !['BASE', 'WETH'].includes(p.baseToken.symbol))
                     .slice(0, 5);
                 
                 if (pairs.length > 0) {
-                    grid.innerHTML = pairs.map(p => `
+                    document.getElementById('meme-grid').innerHTML = pairs.map(p => `
                         <div class="p-4 glass rounded-2xl hover:border-blue-500 transition cursor-default">
                             <div class="flex justify-between items-center mb-1">
-                                <span class="font-bold text-sm italic base-blue truncate w-24">${p.baseToken.name}</span>
-                                <span class="${p.priceChange.h24 > 0 ? 'text-green-500' : 'text-red-500'} text-xs font-mono">
+                                <span class="font-bold text-xs italic base-blue truncate w-24">${p.baseToken.name}</span>
+                                <span class="${p.priceChange.h24 > 0 ? 'text-green-500' : 'text-red-500'} text-[10px] font-mono font-bold">
                                     ${p.priceChange.h24 > 0 ? '+' : ''}${p.priceChange.h24}%
                                 </span>
                             </div>
                             <div class="flex justify-between items-center mt-2 opacity-60">
                                 <span class="text-[10px] uppercase font-bold">${p.baseToken.symbol}</span>
-                                <p class="text-[10px] font-mono italic">$${parseFloat(p.priceUsd).toFixed(8)}</p>
+                                <p class="text-[10px] font-mono italic font-bold">$${parseFloat(p.priceUsd).toFixed(8)}</p>
                             </div>
                         </div>
                     `).join('');
                 }
-            } catch(e) { console.error("Meme error"); }
+            } catch(e) {}
         }
         setInterval(fetchMemes, 60000); fetchMemes();
 
-        // 3. SWAP FIX (Li.Fi Widget Integration)
+        // 3. SWAP (Hatasız Başlatıcı)
         function initSwapHub() {
-            const container = document.getElementById('lifi-widget-container');
-            const placeholder = document.getElementById('lifi-placeholder');
+            const container = document.getElementById('swap-container');
+            const loader = document.getElementById('lifi-loader');
             
             if (typeof LiFiWidget !== 'undefined') {
-                placeholder.style.display = 'none';
+                loader.style.display = 'none';
                 const config = {
                     integrator: 'BaseKit',
                     fee: 0.0001,
-                    referrer: OWNER_WALLET,
+                    referrer: OWNER,
                     containerStyle: { border: 'none', borderRadius: '2rem' },
                     fromChain: 8453,
                     toChain: 8453,
@@ -187,55 +189,39 @@
                     theme: { palette: { primary: { main: '#0052FF' } } }
                 };
                 try {
-                    // Try different initialization methods for robustness
-                    const widgetInstance = new LiFiWidget.LiFiWidget(config, container);
-                } catch(e) {
-                    new LiFiWidget.default(config, container);
-                }
-            } else {
-                setTimeout(initSwapHub, 1000);
+                    // Try different initialization methods
+                    if (LiFiWidget.LiFiWidget) new LiFiWidget.LiFiWidget(config, container);
+                    else if (LiFiWidget.default) new LiFiWidget.default(config, container);
+                } catch(e) { console.error("Swap error", e); }
             }
         }
-        window.addEventListener('load', initSwapHub);
 
-        // 4. STUDIO ON-SITE LOGIC
-        function showDeployForm(type) {
-            const form = document.getElementById('deploy-form');
-            form.classList.toggle('hidden');
-            form.querySelector('button').innerText = `Deploy ${type.toUpperCase()} (Sign 0.00001 ETH)`;
+        // 4. STUDIO & ARCADE TX (On-Site Only)
+        function openModal(title) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('deploy-modal').classList.add('active');
+        }
+        function closeModal() {
+            document.getElementById('deploy-modal').classList.remove('active');
+        }
+        async function executeOnSiteAction() {
+            await playAndTx("STUDIO_DEPLOY");
+            closeModal();
         }
 
-        async function executeOnSiteDeploy() {
+        async function playAndTx(tag) {
             if (!window.ethereum) return alert("Install MetaMask");
             try {
                 const acc = await ethereum.request({ method: 'eth_requestAccounts' });
                 const params = [{
                     from: acc[0],
-                    to: OWNER_WALLET,
-                    value: TX_VAL,
-                    chainId: '0x2105', // Base
-                    data: '0x' + btoa("BK_STUDIO_DEPLOY").split('').map(c => c.charCodeAt(0).toString(16)).join('')
-                }];
-                const tx = await ethereum.request({ method: 'eth_sendTransaction', params });
-                alert("Contract Successfully Initiated! Check BaseScan for Tx: " + tx.slice(0,10));
-                document.getElementById('deploy-form').classList.add('hidden');
-            } catch(e) { console.error("Deploy failed"); }
-        }
-
-        // 5. ARCADE TX
-        async function playAndTx(game) {
-            if (!window.ethereum) return alert("Install Wallet");
-            try {
-                const acc = await ethereum.request({ method: 'eth_requestAccounts' });
-                const params = [{
-                    from: acc[0],
-                    to: OWNER_WALLET,
+                    to: OWNER,
                     value: TX_VAL,
                     chainId: '0x2105',
-                    data: '0x' + btoa("BK_ARCADE:" + game).split('').map(c => c.charCodeAt(0).toString(16)).join('')
+                    data: '0x' + btoa("BK:" + tag).split('').map(c => c.charCodeAt(0).toString(16)).join('')
                 }];
                 await ethereum.request({ method: 'eth_sendTransaction', params });
-            } catch(e) { console.error("Tx failed"); }
+            } catch(e) {}
         }
 
         async function connectWallet() {
@@ -243,12 +229,6 @@
                 const acc = await ethereum.request({ method: 'eth_requestAccounts' });
                 document.getElementById('wallet-btn').innerText = acc[0].slice(0,6) + "...";
             }
-        }
-
-        function changeLang() {
-            const l = document.getElementById('lang-select').value;
-            document.getElementById('txt-studio').innerText = l === 'tr' ? "Kontrat Stüdyosu" : "Contract Studio";
-            document.getElementById('txt-arcade').innerText = l === 'tr' ? "Base Oyunları 🕹️" : "Base Arcade 🕹️";
         }
     </script>
 </body>
