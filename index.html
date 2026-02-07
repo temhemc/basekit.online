@@ -1,82 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaseKit | The Universal Base Hub</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230052FF'/></svg>">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-    <script src="https://unpkg.com/@lifi/widget@2.14.0/dist/lifi-widget.umd.js"></script>
-    <script src="https://unpkg.com/@thirdweb-dev/sdk@3.10.16/dist/thirdweb-dev-sdk.umd.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #010204; color: #fff; overflow-x: hidden; scroll-behavior: smooth; }
-        .base-blue { color: #0052FF; }
-        .bg-base-blue { background: #0052FF; }
-        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.08); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .price-ticker { background: rgba(0, 82, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-family: 'JetBrains Mono', monospace; font-size: 10px; }
-        .form-input { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; width: 100%; color: white; outline: none; font-size: 13px; }
-        .form-input:focus { border-color: #0052FF; background: rgba(0, 82, 255, 0.05); }
-        .coinbase-btn { background: #0052FF; box-shadow: 0 0 15px rgba(0, 82, 255, 0.4); }
-        .base-svg-glow { filter: drop-shadow(0 0 10px rgba(0, 82, 255, 0.6)); }
-        .flag-btn { cursor: pointer; transition: 0.2s; opacity: 0.5; filter: grayscale(1); }
-        .flag-btn:hover, .flag-btn.active { opacity: 1; filter: grayscale(0); transform: scale(1.2); }
-        #lifi-widget-container { width: 100%; max-width: 440px; margin: 0 auto; min-height: 620px; border-radius: 2rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
-        .mic-btn { background: #0052FF; color: white; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; margin-top: 4px; }
-        .live-act { color: #aaa; font-size: 13px; margin: 6px 0; }
-    </style>
+<meta charset="UTF-8">
+<title>NeoHub</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/wagmi@1.4.7/dist/umd/index.js"></script>
+<script src="https://unpkg.com/viem@1.3.93/dist/umd/index.js"></script>
+<script src="https://unpkg.com/@rainbow-me/rainbowkit@1.0.12/dist/umd/index.js"></script>
+<style>
+  .neon{box-shadow:0 0 15px #0ff6}.lang{cursor:pointer;font-size:.8rem;color:#0ff}
+</style>
 </head>
-<body>
+<body class="bg-gray-900 text-white p-6">
+<header class="flex justify-between items-center mb-8">
+  <h1 class="text-3xl font-black text-cyan-400">NeoHub</h1>
+  <div id="lang-select" class="flex gap-3">
+    <span class="lang" data-lang="en">🇬🇧</span>
+    <span class="lang" data-lang="tr">🇹🇷</span>
+    <span class="lang" data-lang="de">🇩🇪</span>
+    <span class="lang" data-lang="fr">🇫🇷</span>
+    <span class="lang" data-lang="zh">🇨🇳</span>
+  </div>
+  <button id="connect" class="px-5 py-2 bg-cyan-600 rounded neon hover:bg-cyan-500">Connect Wallet</button>
+</header>
 
-    <div class="price-ticker py-2 px-6 sticky top-0 z-[200] backdrop-blur-md flex justify-between">
-        <div id="ticker" class="flex gap-10 font-black italic overflow-hidden whitespace-nowrap text- uppercase tracking-widest">
-            <span id="p-btc">BTC: $--</span><span id="p-eth">ETH: $--</span><span id="p-sol">SOL: $--</span>
-            <span id="p-xrp">XRP: $--</span><span id="p-sui">SUI: $--</span>
-            <span class="base-blue italic">● POWERED BY BASE ● 2026 ● ALL RIGHTS RESERVED</span>
-        </div>
-        <div class="hidden md:block base-blue font-black tracking-widest uppercase">● Command Center 2026 ●</div>
-    </div>
+<main class="grid md:grid-cols-3 gap-6">
+  <div class="bg-gray-800 p-5 rounded neon">
+    <h2 id="launch-title" class="text-xl mb-3">Launch Token</h2>
+    <input id="name" placeholder="Name" class="w-full p-2 mb-2 bg-gray-700 rounded">
+    <input id="symbol" placeholder="Symbol" class="w-full p-2 mb-2 bg-gray-700 rounded">
+    <input id="amount" placeholder="ETH Amount (e.g. 3.05)" class="w-full p-2 mb-4 bg-gray-700 rounded">
+    <button id="deploy" class="w-full py-2 bg-purple-600 rounded hover:bg-purple-500">Deploy on Base</button>
+    <p id="contract-link" class="mt-2 hidden text-sm text-cyan-300"></p>
+  </div>
 
-    <nav class="max-w- mx-auto px-6 py-4 flex justify-between items-center sticky top-10 z-[190] bg- backdrop-blur-3xl border border-white/10 mx-4 rounded- shadow-2xl">
-        <div class="flex items-center gap-4">
-            <div class="w-10 h-10 bg- rounded-lg shadow-lg shadow-blue-500/40 flex items-center justify-center hover:rotate-90 transition duration-500 cursor-pointer">
-                <div class="w-5 h-5 border-4 border-white rounded-full"></div>
-            </div>
-            <div>
-                <span class="text-2xl font-black italic tracking-tighter uppercase leading-none">BASE<span class="base-blue italic">KIT</span></span>
-                <span id="utcClock" class="text- font-bold text-blue-400 uppercase block tracking-widest">00:00:00 UTC</span>
-            </div>
-        </div>
+  <div class="bg-gray-800 p-5 rounded neon">
+    <h2 id="swap-title" class="text-xl mb-3">Swap</h2>
+    <select id="from" class="w-full p-2 mb-2 bg-gray-700 rounded"><option>BTC</option><option>ETH</option><option>SOL</option><option>XRP</option><option>SUI</option></select>
+    <select id="to" class="w-full p-2 mb-4 bg-gray-700 rounded"><option>ETH</option><option>BTC</option></select>
+    <button id="swap-btn" class="w-full py-2 bg-green-600 rounded hover:bg-green-500">Swap</button>
+  </div>
 
-        <div class="flex items-center gap-4 bg-white/5 px-4 py-2 rounded-2xl border border-white/5">
-            <span onclick="changeLang('en')" class="flag-btn active text-xl" title="English">🇺🇸</span>
-            <span onclick="changeLang('tr')" class="flag-btn text-xl" title="Türkçe">🇹🇷</span>
-            <span onclick="changeLang('de')" class="flag-btn text-xl" title="Deutsch">🇩🇪</span>
-            <span onclick="changeLang('ru')" class="flag-btn text-xl" title="Русский">🇷🇺</span>
-            <span onclick="changeLang('zh')" class="flag-btn text-xl" title="中文">🇨🇳</span>
-        </div>
+  <div class="bg-gray-800 p-5 rounded neon">
+    <h2 id="bounty-title" class="text-xl mb-3">Claim Bounty</h2>
+    <p id="bounty-text" class="mb-4">Play → Claim 50 Bounty</p>
+    <button id="play" class="px-4 py-2 bg-blue-600 rounded hover:bg-blue-500">Play</button>
+    <button id="claim" class="ml-2 px-4 py-2 bg-yellow-600 rounded hover:bg-yellow-500">Claim</button>
+    <p id="claim-link" class="mt-2 hidden text-sm text-cyan-300"></p>
+  </div>
+</main>
 
-        <div class="flex items-center gap-4">
-            <button id="connectBtn" onclick="connect()" class="bg-white text-black px-8 py-2.5 rounded-xl font-black text- uppercase hover:bg-blue-600 hover:text-white transition shadow-xl">Wallet</button>
-        </div>
-    </nav>
+<script>
+const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
+const lang = {en:{launch:"Launch Token",swap:"Swap",bounty:"Claim Bounty",connect:"Connect Wallet"},tr:{launch:"Token Çıkar",swap:"Değiş",bounty:"Bounty Al",connect:"Cüzdan Bağla"},de:{launch:"Token Starten",swap:"Tauschen",bounty:"Bounty Einlösen",connect:"Wallet Verbinden"},fr:{launch:"Lancer Token",swap:"Échanger",bounty:"Réclamer Bounty",connect:"Connecter Wallet"},zh:{launch:"发行代币",swap:"交换",bounty:"领取赏金",connect:"连接钱包"}};
 
-    <main class="max-w- mx-auto px-6 pt-24 pb-32">
+document.querySelectorAll('.lang').forEach(el=>el.onclick=()=>{const l=el.dataset.lang;document.documentElement.lang=l;document.getElementById('launch-title').textContent=lang .launch;document.getElementById('swap-title').textContent=lang .swap;document.getElementById('bounty-title').textContent=lang .bounty;document.getElementById('connect').textContent=lang .connect;});
 
-        <section class="mb-40 scroll-mt-32">
-            <div class="text-center mb-12">
-                <h2 class="text-6xl font-black italic uppercase mb-2 tracking-tighter" id="swapTitle">Power <span class="base-blue italic">Swap</span></h2>
-                <p class="text-gray-500 text-xs font-bold uppercase tracking- ">Real-time Base Network Liquidity</p>
-            </div>
-            <div id="lifi-widget-container" class="shadow-2xl shadow-blue-500/10"></div>
-        </section>
+wagmi.connect().then(()=>{document.getElementById('connect').textContent="Connected";document.getElementById('connect').disabled=true;});
 
-        <section class="mb-32">
-            <h2 class="text-5xl font-black italic uppercase mb-12 tracking-tighter text-center" id="factoryTitle">Factory <span class="base-blue italic">Studio</span></h2>
-            <div class="grid lg:grid-cols-2 gap-10">
-                <div class="glass-panel p-12 rounded- relative overflow-hidden">
-                    <div class="absolute -top-10 -right-10 text-blue-500/10
+document.getElementById('deploy').onclick=()=>{const amt=document.getElementById('amount').value;wagmi.deployContract({name:document.getElementById('name').value,symbol:document.getElementById('symbol').value,amount:amt,feeTo:OWNER}).then(addr=>{const link=`https://basescan.org/address/${addr}`;document.getElementById('contract-link').innerHTML=`<a href="${link}" target="_blank">BaseScan →</a>`;document.getElementById('contract-link').classList.remove('hidden');});};
+
+document.getElementById('swap-btn').onclick=()=>{wagmi.swap({from:document.getElementById('from').value,to:document.getElementById('to').value}).then(hash=>alert('Swapped! Tx: '+hash));};
+
+document.getElementById('play').onclick=()=>{document.getElementById('bounty-text').textContent="Ready! Click claim.";};
+
+document.getElementById('claim').onclick=()=>{wagmi.claimBounty().then(hash=>{const link=`https://basescan.org/tx/${hash}`;document.getElementById('claim-link').innerHTML=`<a href="${link}" target="_blank">View on BaseScan</a>`;document.getElementById('claim-link').classList.remove('hidden');});};
+
+// TradingView BTC
+document.getElementById('chart-container')?document.getElementById('chart-container').innerHTML=`<div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget"></div><script src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"autosize":true,"symbol":"CRYPTO:BTCUSD","interval":"D","theme":"dark","style":"1","locale":"en","hide_side_toolbar":true}</script></div>`:null;
+</script>
+</body>
+</html>
