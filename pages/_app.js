@@ -4,24 +4,17 @@ import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import { base } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 
-const { chains, publicClient } = configureChains(
-  [base],
-  [publicProvider()]
-);
+const { chains, publicClient } = configureChains([base], [publicProvider()]);
 
 const { connectors } = getDefaultWallets({
   appName: 'BaseKit Online',
-  projectId: '965f7000e478553259972c8366965671', // RainbowKit/MetaMask bağlantısı için şart
+  projectId: '965f7000e478553259972c8366965671', // Bu ID olmadan MetaMask açılmaz
   chains
 });
 
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors,
-  publicClient
-});
+const wagmiConfig = createConfig({ autoConnect: true, connectors, publicClient });
 
-function MyApp({ Component, pageProps }) {
+export default function App({ Component, pageProps }) {
   return (
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider chains={chains} theme={darkTheme()}>
@@ -30,5 +23,3 @@ function MyApp({ Component, pageProps }) {
     </WagmiConfig>
   );
 }
-
-export default MyApp;
