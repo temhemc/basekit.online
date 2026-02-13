@@ -27,8 +27,8 @@
             <h3 id="modal-title" class="text-2xl font-bold mb-4 italic base-blue uppercase">Contract Studio</h3>
             <div class="space-y-4">
                 <p class="text-[10px] text-gray-400">Enter details to initiate deployment on Base Mainnet.</p>
-                <input id="m-name" type="text" placeholder="Project Name" class="w-full bg-black border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500 text-sm">
-                <input id="m-symbol" type="text" placeholder="Symbol (e.g. BKT)" class="w-full bg-black border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500 text-sm">
+                <input id="m-name" type="text" placeholder="Project Name" class="w-full bg-black border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500 text-sm p-3 text-white">
+                <input id="m-symbol" type="text" placeholder="Symbol (e.g. BKT)" class="w-full bg-black border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500 text-sm p-3 text-white">
                 <button onclick="executeOnSiteAction()" class="w-full bg-base-blue py-4 rounded-xl font-bold uppercase tracking-widest hover:opacity-90 active:scale-95 transition">
                     Sign & Deploy (0.00001 ETH)
                 </button>
@@ -48,7 +48,9 @@
                     BTC: Loading... | ETH: Loading... | SOL: Loading... | BASE: Loading...
                 </div>
             </div>
-            <button onclick="connectWallet()" id="wallet-btn" class="bg-base-blue px-6 py-2 rounded-full font-bold text-sm shadow-lg hover:brightness-110 transition">Connect Wallet</button>
+            <button onclick="connectWallet()" id="wallet-btn" class="bg-base-blue px-6 py-2 rounded-full font-bold text-sm shadow-lg hover:brightness-110 transition">
+                Connect Wallet
+            </button>
         </div>
     </nav>
 
@@ -105,97 +107,4 @@
                         <button onclick="playAndTx('CoinFlip')" class="w-full bg-blue-900/10 hover:bg-blue-600/20 p-4 rounded-xl flex justify-between items-center transition border border-blue-900/30">
                             <span class="font-bold italic text-sm">🪙 Coin Flip</span>
                             <span class="text-[10px] bg-blue-600 px-3 py-1 rounded-lg uppercase font-bold">Verify Tx</span>
-                        </button>
-                        <button onclick="playAndTx('LuckyRoller')" class="w-full bg-blue-900/10 hover:bg-blue-600/20 p-4 rounded-xl flex justify-between items-center transition border border-blue-900/30">
-                            <span class="font-bold italic text-sm">🎰 Lucky Roller</span>
-                            <span class="text-[10px] bg-blue-600 px-3 py-1 rounded-lg uppercase font-bold">Verify Tx</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer class="p-10 text-center text-gray-600 text-[10px]">
-        <p>Admin: 0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12 | Built on Base Mainnet</p>
-    </footer>
-
-    <script src="https://unpkg.com/@lifi/widget@latest/dist/index.umd.js" onload="initSwapHub()"></script>
-    <script>
-        const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
-        const TX_VAL = "0x9184E72A000"; // 0.00001 ETH
-
-        async function fetchPrices() {
-            try {
-                const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple,sui&vs_currencies=usd');
-                const d = await r.json();
-                document.getElementById('price-ticker').innerHTML = `
-                    BTC: $${d.bitcoin.usd.toLocaleString()} | ETH: $${d.ethereum.usd.toLocaleString()} | 
-                    SOL: $${d.solana.usd.toLocaleString()} | XRP: $${d.ripple.usd.toFixed(4)} | SUI: $${d.sui.usd.toFixed(2)}
-                `;
-            } catch(e) {}
-        }
-        setInterval(fetchPrices, 30000); fetchPrices();
-
-        async function fetchMemes() {
-            try {
-                const r = await fetch('https://api.dexscreener.com/latest/dex/search?q=base');
-                const d = await r.json();
-                const pairs = (d.pairs || []).filter(p => p.chainId === 'base').slice(0, 5);
-                if (pairs.length > 0) {
-                    document.getElementById('meme-grid').innerHTML = pairs.map(p => `
-                        <div class="p-4 glass rounded-2xl hover:border-blue-500 transition">
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="font-bold text-[10px] italic base-blue truncate">${p.baseToken.symbol}</span>
-                                <span class="${p.priceChange.h24 > 0 ? 'text-green-500' : 'text-red-500'} text-[10px] font-mono">
-                                    ${p.priceChange.h24 > 0 ? '+' : ''}${p.priceChange.h24}%
-                                </span>
-                            </div>
-                            <div class="text-[10px] opacity-60 font-mono">$${parseFloat(p.priceUsd).toFixed(8)}</div>
-                        </div>
-                    `).join('');
-                }
-            } catch(e) {}
-        }
-        setInterval(fetchMemes, 60000); fetchMemes();
-
-        function initSwapHub() {
-            const container = document.getElementById('swap-container');
-            const loader = document.getElementById('lifi-loader');
-            if (typeof LiFiWidget !== 'undefined') {
-                loader.style.display = 'none';
-                const config = {
-                    integrator: 'BaseKit',
-                    fee: 0.0001,
-                    containerStyle: { border: 'none', borderRadius: '2rem' },
-                    fromChain: 8453,
-                    toChain: 8453,
-                    appearance: 'dark',
-                    theme: { palette: { primary: { main: '#0052FF' } } }
-                };
-                new LiFiWidget.default(config, container);
-            }
-        }
-
-        function openModal(title) { document.getElementById('modal-title').innerText = title; document.getElementById('deploy-modal').classList.add('active'); }
-        function closeModal() { document.getElementById('deploy-modal').classList.remove('active'); }
-        async function executeOnSiteAction() { await playAndTx("STUDIO"); closeModal(); }
-
-        async function playAndTx(tag) {
-            if (!window.ethereum) return alert("Install MetaMask");
-            try {
-                const acc = await ethereum.request({ method: 'eth_requestAccounts' });
-                const params = [{ from: acc[0], to: OWNER, value: TX_VAL }];
-                await ethereum.request({ method: 'eth_sendTransaction', params });
-            } catch(e) {}
-        }
-
-        async function connectWallet() {
-            if (window.ethereum) {
-                const acc = await ethereum.request({ method: 'eth_requestAccounts' });
-                document.getElementById('wallet-btn').innerText = acc[0].slice(0,6) + "...";
-            }
-        }
-    </script>
-</body>
-</html>
+                        </button
