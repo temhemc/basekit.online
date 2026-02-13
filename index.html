@@ -15,40 +15,35 @@
         .glass { background: rgba(0, 82, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(0, 82, 255, 0.15); }
         .animate-scroll { animation: scroll 40s linear infinite; }
         @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-        #swap-container { min-height: 650px; border-radius: 2rem; overflow: hidden; background: #000; }
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .modal.active { display: flex; }
-        /* Gravity Game Canvas */
-        #gravity-canvas { background: rgba(0, 5, 10, 0.8); cursor: grab; }
-        #gravity-canvas:active { cursor: grabbing; }
+        #gravity-canvas { background: #000; border: 1px solid rgba(160, 32, 240, 0.2); border-radius: 1rem; cursor: grab; }
     </style>
 </head>
 <body>
 
-    <div id="deploy-modal" class="modal">
-        <div class="glass p-8 rounded-[2rem] w-full max-w-md border-t-4 border-blue-600">
-            <h3 id="modal-title" class="text-2xl font-bold mb-4 italic base-blue uppercase">Contract Studio</h3>
-            <div class="space-y-4">
-                <p id="modal-desc" class="text-xs text-gray-400">Enter details to initiate deployment on Base Mainnet.</p>
-                <input id="m-name" type="text" placeholder="Project Name" class="w-full bg-black border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500">
-                <input id="m-symbol" type="text" placeholder="Symbol (e.g. TRE)" class="w-full bg-black border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500">
-                <button onclick="executeOnSiteAction()" class="w-full bg-base-blue py-4 rounded-xl font-bold uppercase tracking-widest hover:opacity-90 active:scale-95 transition">
-                    Sign & Deploy (0.00001 ETH)
-                </button>
-                <button onclick="closeModal('deploy-modal')" class="w-full text-[10px] text-gray-500 uppercase mt-2">Close Window</button>
-            </div>
-        </div>
-    </div>
-
     <div id="gravity-modal" class="modal p-4">
-        <div class="glass rounded-[2rem] w-full h-full max-w-4xl max-h-[80vh] flex flex-col border-t-4 border-purple-600 relative overflow-hidden">
-            <div class="p-4 flex justify-between items-center border-b border-white/10">
-                <h3 class="text-xl font-bold italic text-purple-400 uppercase">Gravity Chamber</h3>
-                <button onclick="closeModal('gravity-modal'); stopGravityGame();" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+        <div class="glass rounded-[2rem] w-full h-full max-w-4xl max-h-[85vh] flex flex-col border-t-4 border-purple-600 relative overflow-hidden">
+            <div class="p-4 flex justify-between items-center bg-black/50">
+                <h3 class="font-bold italic text-purple-400 uppercase tracking-widest">Gravity Chamber</h3>
+                <div class="flex gap-4 items-center">
+                    <span id="score-display" class="text-xs font-mono text-white bg-purple-900/40 px-3 py-1 rounded-full border border-purple-500/30">Moves: 0</span>
+                    <button onclick="closeModal('gravity-modal'); stopGravityGame();" class="text-gray-500 hover:text-white transition"><i class="fas fa-times"></i></button>
+                </div>
             </div>
-            <canvas id="gravity-canvas" class="flex-1 w-full h-full"></canvas>
-            <div class="p-4 border-t border-white/10 text-center text-xs text-gray-400">
-                Drag and throw elements! | Tx verified on launch.
+            
+            <div class="flex-1 relative p-4 bg-black/20">
+                <canvas id="gravity-canvas" class="w-full h-full"></canvas>
+            </div>
+
+            <div class="p-6 border-t border-white/5 bg-black/40 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-[10px] text-gray-500 italic max-w-xs text-center md:text-left uppercase">
+                    Build your activity: Recording your score triggers a 0.00001 ETH tx to the builder node.
+                </div>
+                <div class="flex gap-2 w-full md:w-auto">
+                    <button onclick="initGravityGame()" class="flex-1 md:flex-none border border-white/10 px-6 py-3 rounded-xl text-xs font-bold hover:bg-white/5 transition">Reset Items</button>
+                    <button onclick="playAndTx('GravityScore')" class="flex-1 md:flex-none bg-purple-600 hover:bg-purple-500 px-8 py-3 rounded-xl text-xs font-bold uppercase shadow-lg shadow-purple-500/20 transition active:scale-95">Record Score & Restart</button>
+                </div>
             </div>
         </div>
     </div>
@@ -65,7 +60,9 @@
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <button onclick="connectWallet()" id="wallet-btn" class="bg-base-blue px-6 py-2 rounded-full font-bold text-sm shadow-lg hover:opacity-80 transition">Connect Wallet</button>
+                <button onclick="connectWallet()" id="wallet-btn" class="bg-base-blue px-6 py-2 rounded-full font-bold text-sm shadow-lg hover:opacity-80 transition flex items-center gap-2">
+                    <i class="fas fa-wallet"></i> <span>Connect Wallet</span>
+                </button>
             </div>
         </div>
     </nav>
@@ -73,64 +70,56 @@
     <main class="container mx-auto px-4 py-8 space-y-12">
         <section>
             <h2 class="text-[10px] font-bold mb-4 flex items-center gap-2 text-gray-400 uppercase tracking-widest">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span> Live Base Ecosystem Trends
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span> Live Base Ecosystem
             </h2>
             <div id="meme-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                <div class="h-24 glass rounded-2xl flex items-center justify-center text-[10px] text-gray-500 italic">Syncing Base...</div>
-                <div class="h-24 glass rounded-2xl flex items-center justify-center text-[10px] text-gray-500 italic">Syncing Base...</div>
-                <div class="h-24 glass rounded-2xl flex items-center justify-center text-[10px] text-gray-500 italic">Syncing Base...</div>
-                <div class="h-24 glass rounded-2xl flex items-center justify-center text-[10px] text-gray-500 italic">Syncing Base...</div>
-                <div class="h-24 glass rounded-2xl flex items-center justify-center text-[10px] text-gray-500 italic">Syncing Base...</div>
+                <div class="h-24 glass rounded-2xl animate-pulse"></div>
+                <div class="h-24 glass rounded-2xl animate-pulse"></div>
+                <div class="h-24 glass rounded-2xl animate-pulse"></div>
+                <div class="h-24 glass rounded-2xl animate-pulse"></div>
+                <div class="h-24 glass rounded-2xl animate-pulse"></div>
             </div>
         </section>
 
         <div class="grid lg:grid-cols-12 gap-8 items-start">
             <div class="lg:col-span-7">
-                <div id="swap-container" class="glass relative">
+                <div id="swap-container" class="glass min-h-[650px] relative rounded-[2rem]">
                     <div id="lifi-loader" class="absolute inset-0 flex items-center justify-center">
                         <div class="text-center">
                             <i class="fas fa-circle-notch fa-spin text-4xl mb-4 base-blue"></i>
-                            <p class="font-bold base-blue animate-pulse uppercase text-xs tracking-widest">Activating Swap Hub...</p>
+                            <p class="font-bold base-blue animate-pulse uppercase text-[10px] tracking-widest">Syncing Swap Node...</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="lg:col-span-5 space-y-8">
-                <div class="glass p-8 rounded-[2.5rem] border-l-4 border-blue-600">
-                    <h3 class="text-2xl font-bold mb-6 italic base-blue uppercase">Studio</h3>
+                <div class="glass p-8 rounded-[2.5rem] border-b-4 border-purple-600">
+                    <h3 class="text-2xl font-bold mb-6 italic base-blue uppercase tracking-tighter text-center">Base Arcade</h3>
                     <div class="space-y-4">
-                        <div onclick="openModal('deploy-modal', 'Token Lab')" class="p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500 cursor-pointer transition flex justify-between items-center group">
-                            <div>
-                                <h4 class="font-bold">Token Lab</h4>
-                                <p class="text-[10px] text-gray-500">Deploy ERC-20 instantly</p>
+                        <button onclick="openGravityGame()" class="w-full bg-purple-900/10 hover:bg-purple-600/20 p-5 rounded-2xl flex justify-between items-center transition border border-purple-900/30 group">
+                            <div class="text-left">
+                                <h4 class="font-bold text-purple-400">Gravity Chamber</h4>
+                                <p class="text-[10px] text-gray-500">Play with physics, record onchain</p>
                             </div>
-                            <i class="fas fa-rocket text-blue-600 group-hover:scale-125 transition"></i>
-                        </div>
-                        <div onclick="openModal('deploy-modal', 'NFT Engine')" class="p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-purple-500 cursor-pointer transition flex justify-between items-center group">
-                            <div>
-                                <h4 class="font-bold text-purple-400">NFT Engine</h4>
-                                <p class="text-[10px] text-gray-500">Launch Art Collection</p>
-                            </div>
-                            <i class="fas fa-images text-purple-600 group-hover:scale-125 transition"></i>
-                        </div>
+                            <i class="fas fa-play-circle text-2xl text-purple-500 group-hover:scale-110 transition"></i>
+                        </button>
+                        <button onclick="playAndTx('LuckyRoller')" class="w-full bg-white/5 hover:bg-white/10 p-4 rounded-xl flex justify-between items-center transition text-sm">
+                            <span>🎰 Lucky Roller</span>
+                            <span class="text-[9px] bg-blue-600 px-2 py-1 rounded">0.00001 ETH</span>
+                        </button>
                     </div>
                 </div>
 
-                <div class="glass p-8 rounded-[2.5rem] border-b-4 border-blue-600">
-                    <h3 class="text-2xl font-bold mb-6 italic text-center underline uppercase">Arcade</h3>
-                    <div class="space-y-3">
-                        <button onclick="openGravityGame()" class="w-full bg-purple-900/10 hover:bg-purple-600/30 p-4 rounded-xl flex justify-between items-center transition border border-purple-900/30 group">
-                            <span class="font-bold italic text-sm text-purple-400">🪐 Gravity Chamber</span>
-                            <span class="text-[10px] bg-purple-600 px-3 py-1 rounded-lg uppercase font-bold shadow-lg shadow-purple-500/50 group-hover:animate-pulse">Play & Tx</span>
-                        </button>
-                        <button onclick="playAndTx('CoinFlip')" class="w-full bg-blue-900/10 hover:bg-blue-600/30 p-4 rounded-xl flex justify-between items-center transition border border-blue-900/30">
-                            <span class="font-bold italic text-sm">🪙 Coin Flip</span>
-                            <span class="text-[10px] bg-blue-600 px-3 py-1 rounded-lg uppercase font-bold shadow-lg shadow-blue-500/50">Verify Tx</span>
-                        </button>
-                        <button onclick="playAndTx('LuckyRoller')" class="w-full bg-blue-900/10 hover:bg-blue-600/30 p-4 rounded-xl flex justify-between items-center transition border border-blue-900/30">
-                            <span class="font-bold italic text-sm">🎰 Lucky Roller</span>
-                            <span class="text-[10px] bg-blue-600 px-3 py-1 rounded-lg uppercase font-bold shadow-lg shadow-blue-500/50">Verify Tx</span>
+                <div class="glass p-8 rounded-[2.5rem] border-l-4 border-blue-600">
+                    <h3 class="text-2xl font-bold mb-6 italic base-blue uppercase tracking-tighter">Studio</h3>
+                    <div class="space-y-4">
+                        <button onclick="playAndTx('TokenDeploy')" class="w-full bg-white/5 hover:bg-white/10 p-5 rounded-2xl flex justify-between items-center transition border border-white/5 text-left">
+                            <div>
+                                <h4 class="font-bold">Token Lab</h4>
+                                <p class="text-[10px] text-gray-400 uppercase">On-site Deployment</p>
+                            </div>
+                            <i class="fas fa-plus-circle text-blue-500"></i>
                         </button>
                     </div>
                 </div>
@@ -139,29 +128,27 @@
     </main>
 
     <footer class="p-10 text-center text-gray-700 text-[10px]">
-        <p>Admin: 0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12 | On-Site Build Node</p>
+        <p>BUILDER NODE: 0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12</p>
     </footer>
 
-    <script src="https://unpkg.com/@lifi/widget@latest/dist/index.umd.js" onload="initSwapHub()"></script>
+    <script src="https://unpkg.com/@lifi/widget@latest/dist/index.umd.js" onload="initSwap()"></script>
 
     <script>
         const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
-        const TX_VAL = "0x9184E72A000"; // 0.00001 ETH
+        const TX_VAL = "0x9184E72A000"; 
+        let userAddress = null;
+        let score = 0;
 
-        // --- PRICES ---
+        // 1. PRICES & MEMES
         async function fetchPrices() {
             try {
                 const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple,sui&vs_currencies=usd');
                 const d = await r.json();
-                document.getElementById('price-ticker').innerHTML = `
-                    BTC: $${d.bitcoin.usd.toLocaleString()} | ETH: $${d.ethereum.usd.toLocaleString()} | 
-                    SOL: $${d.solana.usd.toLocaleString()} | XRP: $${d.ripple.usd.toFixed(4)} | SUI: $${d.sui.usd.toFixed(2)}
-                `;
+                document.getElementById('price-ticker').innerHTML = `BTC: $${d.bitcoin.usd.toLocaleString()} | ETH: $${d.ethereum.usd.toLocaleString()} | SOL: $${d.solana.usd.toLocaleString()} | XRP: $${d.ripple.usd.toFixed(4)} | SUI: $${d.sui.usd.toFixed(2)}`;
             } catch(e) {}
         }
         setInterval(fetchPrices, 30000); fetchPrices();
 
-        // --- MEMES ---
         async function fetchMemes() {
             try {
                 const r = await fetch('https://api.dexscreener.com/latest/dex/search?q=base');
@@ -169,17 +156,12 @@
                 const pairs = (d.pairs || []).filter(p => p.chainId === 'base' && !['BASE', 'WETH'].includes(p.baseToken.symbol)).slice(0, 5);
                 if (pairs.length > 0) {
                     document.getElementById('meme-grid').innerHTML = pairs.map(p => `
-                        <div class="p-4 glass rounded-2xl hover:border-blue-500 transition cursor-default">
+                        <div class="p-4 glass rounded-2xl">
                             <div class="flex justify-between items-center mb-1">
-                                <span class="font-bold text-xs italic base-blue truncate w-24">${p.baseToken.name}</span>
-                                <span class="${p.priceChange.h24 > 0 ? 'text-green-500' : 'text-red-500'} text-[10px] font-mono font-bold">
-                                    ${p.priceChange.h24 > 0 ? '+' : ''}${p.priceChange.h24}%
-                                </span>
+                                <span class="font-bold text-xs italic base-blue truncate w-24 uppercase">${p.baseToken.name}</span>
+                                <span class="${p.priceChange.h24 > 0 ? 'text-green-500' : 'text-red-500'} text-[10px] font-bold font-mono">${p.priceChange.h24 > 0 ? '+' : ''}${p.priceChange.h24}%</span>
                             </div>
-                            <div class="flex justify-between items-center mt-2 opacity-60">
-                                <span class="text-[10px] uppercase font-bold">${p.baseToken.symbol}</span>
-                                <p class="text-[10px] font-mono italic font-bold">$${parseFloat(p.priceUsd).toFixed(8)}</p>
-                            </div>
+                            <p class="text-[10px] font-mono italic text-gray-500">$${parseFloat(p.priceUsd).toFixed(8)}</p>
                         </div>
                     `).join('');
                 }
@@ -187,144 +169,70 @@
         }
         setInterval(fetchMemes, 60000); fetchMemes();
 
-        // --- SWAP ---
-        function initSwapHub() {
+        // 2. SWAP
+        function initSwap() {
             const container = document.getElementById('swap-container');
-            const loader = document.getElementById('lifi-loader');
             if (typeof LiFiWidget !== 'undefined') {
-                loader.style.display = 'none';
+                document.getElementById('lifi-loader').style.display = 'none';
                 const config = { integrator: 'BaseKit', fee: 0.0001, referrer: OWNER, containerStyle: { border: 'none', borderRadius: '2rem' }, fromChain: 8453, toChain: 8453, appearance: 'dark', theme: { palette: { primary: { main: '#0052FF' } } } };
                 try { if (LiFiWidget.LiFiWidget) new LiFiWidget.LiFiWidget(config, container); else if (LiFiWidget.default) new LiFiWidget.default(config, container); } catch(e) {}
             }
         }
 
-        // --- MODALS & TX ---
-        function openModal(id, title) {
-            if(title) document.getElementById('modal-title').innerText = title;
-            document.getElementById(id).classList.add('active');
-        }
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-        }
-        async function executeOnSiteAction() { await playAndTx("STUDIO_DEPLOY"); closeModal('deploy-modal'); }
-        async function playAndTx(tag) {
-            if (!window.ethereum) return alert("Install MetaMask");
-            try {
-                const acc = await ethereum.request({ method: 'eth_requestAccounts' });
-                const params = [{ from: acc[0], to: OWNER, value: TX_VAL, chainId: '0x2105', data: '0x' + btoa("BK:" + tag).split('').map(c => c.charCodeAt(0).toString(16)).join('') }];
-                await ethereum.request({ method: 'eth_sendTransaction', params });
-            } catch(e) {}
-        }
+        // 3. WALLET
         async function connectWallet() {
             if (window.ethereum) {
                 const acc = await ethereum.request({ method: 'eth_requestAccounts' });
-                document.getElementById('wallet-btn').innerText = acc[0].slice(0,6) + "...";
-            }
+                userAddress = acc[0];
+                document.getElementById('wallet-btn').innerHTML = `<i class="fas fa-check-circle text-green-500"></i> ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
+            } else { alert("Please install MetaMask!"); }
+        }
+
+        // 4. ONCHAIN TX (The Builder Action)
+        async function playAndTx(tag) {
+            if (!userAddress) { alert("Please connect wallet first!"); return; }
+            try {
+                const params = [{ from: userAddress, to: OWNER, value: TX_VAL, chainId: '0x2105', data: '0x' + btoa("BK:" + tag + ":" + score).split('').map(c => c.charCodeAt(0).toString(16)).join('') }];
+                const tx = await ethereum.request({ method: 'eth_sendTransaction', params });
+                alert("Success! Your activity recorded: " + tx.slice(0,10));
+                if(tag === 'GravityScore') { score = 0; document.getElementById('score-display').innerText = "Moves: 0"; initGravityGame(); }
+            } catch(e) { console.log("Tx rejected"); }
+        }
+
+        // 5. MODAL LOGIC
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        async function openGravityGame() {
+            if (!userAddress) { alert("Connect wallet to play!"); return; }
+            openModal('gravity-modal');
+            setTimeout(initGravityGame, 300);
         }
 
         // --- GRAVITY GAME ENGINE ---
         let gravityLoop;
-        const canvas = document.getElementById('gravity-canvas');
-        const ctx = canvas.getContext('2d');
-        let objects = [];
-        let isDragging = false;
-        let dragTarget = null;
-        let lastMouseX, lastMouseY;
+        const gCanvas = document.getElementById('gravity-canvas');
+        const gCtx = gCanvas.getContext('2d');
+        let gObjects = [];
+        let isDrag = false, dragTarget = null, lastX, lastY;
 
         function initGravityGame() {
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-            objects = [];
-            // Base Temalı Objeler
-            createObject(canvas.width/2, 100, 'text', 'BASE', '#0052FF', 40);
-            createObject(canvas.width/3, 200, 'text', 'BUILD', '#fff', 30);
-            createObject(canvas.width/1.5, 150, 'text', 'ONCHAIN', '#A020F0', 30);
-            for(let i=0; i<5; i++) createObject(Math.random()*canvas.width, Math.random()*200, 'box', '', '#0052FF', 40 + Math.random()*20);
+            const container = gCanvas.parentElement;
+            gCanvas.width = container.clientWidth;
+            gCanvas.height = container.clientHeight;
+            gObjects = [];
+            // Elements
+            createObj(gCanvas.width/2, 50, 'BASE', '#0052FF', 45);
+            createObj(gCanvas.width/3, 150, 'BUILD', '#fff', 35);
+            createObj(gCanvas.width/1.5, 200, 'ONCHAIN', '#8b5cf6', 30);
+            for(let i=0; i<4; i++) createObj(Math.random()*gCanvas.width, 100, 'TOKEN', '#22c55e', 25);
             
             if(gravityLoop) clearInterval(gravityLoop);
-            gravityLoop = setInterval(updateGravity, 1000/60); // 60 FPS
+            gravityLoop = setInterval(updateG, 1000/60);
         }
 
-        function createObject(x, y, type, text, color, size) {
-            objects.push({
-                x, y, vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10,
-                width: size, height: type==='text' ? size/2 : size,
-                type, text, color, isDragging: false
-            });
+        function createObj(x, y, text, color, size) {
+            gObjects.push({ x, y, vx: (Math.random()-0.5)*15, vy: (Math.random()-0.5)*15, w: text.length*size*0.6, h: size, text, color, isDrag: false });
         }
 
-        function updateGravity() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            objects.forEach(obj => {
-                if (!obj.isDragging) {
-                    obj.vy += 0.5; // Yerçekimi
-                    obj.x += obj.vx;
-                    obj.y += obj.vy;
-                    // Sürtünme
-                    obj.vx *= 0.99;
-                    obj.vy *= 0.99;
-                    // Duvar Çarpışması
-                    if (obj.y + obj.height > canvas.height) { obj.y = canvas.height - obj.height; obj.vy *= -0.6; }
-                    if (obj.y < 0) { obj.y = 0; obj.vy *= -0.6; }
-                    if (obj.x + obj.width > canvas.width) { obj.x = canvas.width - obj.width; obj.vx *= -0.6; }
-                    if (obj.x < 0) { obj.x = 0; obj.vx *= -0.6; }
-                }
-                drawObject(obj);
-            });
-        }
-
-        function drawObject(obj) {
-            ctx.fillStyle = obj.color;
-            if (obj.type === 'text') {
-                ctx.font = `bold ${obj.width}px Space Grotesk`;
-                ctx.fillText(obj.text, obj.x, obj.y + obj.height);
-            } else {
-                ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
-            }
-        }
-
-        // Mouse Etkileşimi
-        canvas.addEventListener('mousedown', e => {
-            const rect = canvas.getBoundingClientRect();
-            const mx = e.clientX - rect.left;
-            const my = e.clientY - rect.top;
-            objects.forEach(obj => {
-                if (mx > obj.x && mx < obj.x + obj.width && my > obj.y && my < obj.y + obj.height) {
-                    obj.isDragging = true;
-                    isDragging = true;
-                    dragTarget = obj;
-                    lastMouseX = mx;
-                    lastMouseY = my;
-                }
-            });
-        });
-        canvas.addEventListener('mousemove', e => {
-            if (isDragging && dragTarget) {
-                const rect = canvas.getBoundingClientRect();
-                const mx = e.clientX - rect.left;
-                const my = e.clientY - rect.top;
-                dragTarget.x = mx - dragTarget.width/2;
-                dragTarget.y = my - dragTarget.height/2;
-                dragTarget.vx = (mx - lastMouseX) * 0.5; // Fırlatma hızı
-                dragTarget.vy = (my - lastMouseY) * 0.5;
-                lastMouseX = mx;
-                lastMouseY = my;
-            }
-        });
-        canvas.addEventListener('mouseup', () => {
-            if (dragTarget) dragTarget.isDragging = false;
-            isDragging = false;
-            dragTarget = null;
-        });
-
-        async function openGravityGame() {
-            await playAndTx("GRAVITY_CHAMBER"); // Oyunu açarken TX gönder
-            openModal('gravity-modal');
-            initGravityGame();
-        }
-        function stopGravityGame() {
-            if(gravityLoop) clearInterval(gravityLoop);
-        }
-    </script>
-</body>
-</html>
+        function updateG
