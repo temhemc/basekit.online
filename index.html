@@ -7,31 +7,38 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
-    
     <style>
-        body { background-color: #00050a; color: #fff; font-family: 'Space Grotesk', sans-serif; }
+        body { background-color: #00050a; color: #fff; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
         .base-blue { color: #0052FF; }
         .bg-base-blue { background-color: #0052FF; }
-        .glass { background: rgba(0, 82, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(0, 82, 255, 0.2); }
+        .glass { background: rgba(0, 82, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(0, 82, 255, 0.15); }
         .animate-scroll { animation: scroll 40s linear infinite; }
         @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-        #swap-frame { width: 100%; height: 650px; border-radius: 2rem; border: 1px solid rgba(0, 82, 255, 0.2); }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        #swap-container { min-height: 600px; border-radius: 2rem; overflow: hidden; background: #000; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .modal.active { display: flex; }
+        pre { background: #000; padding: 1rem; border-radius: 1rem; border: 1px solid #1a2a4a; font-size: 10px; overflow-x: auto; color: #00ff00; }
     </style>
 </head>
 <body>
 
     <div id="deploy-modal" class="modal">
-        <div class="glass p-8 rounded-[2.5rem] w-full max-w-md border-t-4 border-blue-600">
-            <h3 id="modal-title" class="text-2xl font-bold mb-4 italic base-blue uppercase">Studio Hub</h3>
-            <div class="space-y-4">
-                <input id="m-name" type="text" placeholder="Project Name" class="w-full bg-black border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500">
-                <input id="m-symbol" type="text" placeholder="Symbol" class="w-full bg-black border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500">
-                <button onclick="executeOnSiteAction()" class="w-full bg-base-blue py-4 rounded-xl font-bold uppercase tracking-widest hover:opacity-90 active:scale-95 transition">
-                    Sign & Deploy (0.00001 ETH)
+        <div class="glass p-8 rounded-[2rem] w-full max-w-md border-t-4 border-blue-600">
+            <h3 id="modal-title" class="text-2xl font-bold mb-4 italic base-blue uppercase">Contract Studio</h3>
+            <div id="modal-content" class="space-y-4">
+                <input id="m-name" type="text" placeholder="Token Name (e.g. Base Moon)" class="w-full bg-black border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500 text-sm text-white">
+                <input id="m-symbol" type="text" placeholder="Symbol (e.g. MOON)" class="w-full bg-black border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500 text-sm text-white">
+                <button onclick="generateContract()" class="w-full bg-base-blue py-4 rounded-xl font-bold uppercase tracking-widest hover:opacity-90 transition">
+                    Generate Smart Contract
                 </button>
-                <button onclick="closeModal('deploy-modal')" class="w-full text-[10px] text-gray-500 uppercase mt-4">Cancel</button>
+                <div id="contract-result" class="hidden space-y-2">
+                    <p class="text-[10px] text-blue-400">Copy this code to Remix IDE:</p>
+                    <pre id="code-block"></pre>
+                    <button onclick="executeOnSiteAction()" class="w-full border border-blue-600 py-2 rounded-xl font-bold text-xs uppercase hover:bg-blue-600/20 transition">
+                        Verify & Pay Fee (0.00001 ETH)
+                    </button>
+                </div>
+                <button onclick="closeModal()" class="w-full text-[10px] text-gray-500 uppercase mt-2">Close Window</button>
             </div>
         </div>
     </div>
@@ -39,150 +46,56 @@
     <nav class="glass sticky top-0 z-[100] p-4 border-b border-blue-900/30">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-base-blue rounded-full flex items-center justify-center font-bold text-xl shadow-lg shadow-blue-500/30">B</div>
+                <div class="w-10 h-10 bg-base-blue rounded-full flex items-center justify-center font-bold text-xl shadow-[0_0_15px_rgba(0,82,255,0.5)]">B</div>
                 <h1 class="text-2xl font-bold tracking-tighter uppercase">BASEKIT<span class="base-blue text-sm ml-1">.ONLINE</span></h1>
             </div>
             <div class="overflow-hidden w-full md:w-1/3 py-1 bg-black/40 rounded-full border border-blue-900/20">
                 <div id="price-ticker" class="animate-scroll whitespace-nowrap flex gap-8 text-[10px] font-mono text-blue-300 uppercase">
-                    BTC: -- | ETH: -- | SOL: -- | XRP: -- | SUI: --
+                    BTC: Loading... | ETH: Loading... | BASE: Loading...
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                <button onclick="connectWallet()" id="wallet-btn" class="bg-base-blue px-6 py-2 rounded-full font-bold text-sm shadow-lg hover:opacity-80 transition flex items-center gap-2">
-                    <i class="fas fa-wallet"></i> <span>Connect Wallet</span>
-                </button>
-            </div>
+            <button onclick="connectWallet()" id="wallet-btn" class="bg-base-blue px-6 py-2 rounded-full font-bold text-sm shadow-lg hover:brightness-110 transition">Connect Wallet</button>
         </div>
     </nav>
 
     <main class="container mx-auto px-4 py-8 space-y-12">
         <section>
             <h2 class="text-[10px] font-bold mb-4 flex items-center gap-2 text-gray-400 uppercase tracking-widest">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span> Live Base Ecosystem
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span> Live Base Ecosystem Trends
             </h2>
             <div id="meme-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                <div class="h-24 glass rounded-2xl animate-pulse flex items-center justify-center text-[10px] text-gray-600 italic uppercase">Syncing...</div>
-                <div class="h-24 glass rounded-2xl animate-pulse flex items-center justify-center text-[10px] text-gray-600 italic uppercase">Syncing...</div>
-                <div class="h-24 glass rounded-2xl animate-pulse flex items-center justify-center text-[10px] text-gray-600 italic uppercase">Syncing...</div>
-                <div class="h-24 glass rounded-2xl animate-pulse flex items-center justify-center text-[10px] text-gray-600 italic uppercase">Syncing...</div>
-                <div class="h-24 glass rounded-2xl animate-pulse flex items-center justify-center text-[10px] text-gray-600 italic uppercase">Syncing...</div>
+                <div class="h-24 glass animate-pulse rounded-2xl"></div>
+                <div class="h-24 glass animate-pulse rounded-2xl"></div>
+                <div class="h-24 glass animate-pulse rounded-2xl"></div>
             </div>
         </section>
 
         <div class="grid lg:grid-cols-12 gap-8 items-start">
-            <div class="lg:col-span-7 space-y-4">
-                <div class="flex justify-between items-center px-4">
-                    <span class="text-xs font-bold text-blue-500 uppercase tracking-widest italic">Base Native Swap</span>
-                    <a href="https://www.coinbase.com/swap" target="_blank" class="text-[10px] bg-white/5 hover:bg-white/10 px-3 py-1 rounded-full border border-white/10 transition uppercase">Official Coinbase Swap <i class="fas fa-external-link-alt ml-1"></i></a>
-                </div>
-                <div class="glass overflow-hidden rounded-[2rem] bg-black">
-                    <iframe 
-                        id="swap-frame"
-                        src="https://app.uniswap.org/#/swap?chain=base"
-                        frameborder="0"
-                    ></iframe>
+            <div class="lg:col-span-7">
+                <div id="swap-container" class="glass relative border border-blue-600/20">
+                    <div id="lifi-loader" class="absolute inset-0 flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="fas fa-circle-notch fa-spin text-4xl mb-4 base-blue"></i>
+                            <p class="font-bold base-blue animate-pulse uppercase text-xs tracking-widest">Activating Swap Hub...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="lg:col-span-5 space-y-8">
                 <div class="glass p-8 rounded-[2.5rem] border-l-4 border-blue-600">
-                    <h3 class="text-2xl font-bold mb-6 italic base-blue uppercase tracking-tighter">Contract Studio</h3>
+                    <h3 class="text-2xl font-bold mb-6 italic base-blue uppercase">Contract Studio</h3>
                     <div class="space-y-4">
-                        <div onclick="openModal('deploy-modal', 'Token Lab')" class="p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500 cursor-pointer transition flex justify-between items-center group">
+                        <div onclick="openModal('Token Lab')" class="p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500 cursor-pointer transition flex justify-between items-center group">
                             <div>
                                 <h4 class="font-bold">Token Lab</h4>
-                                <p class="text-[10px] text-gray-500 uppercase font-bold">Deploy ERC-20 On-Site</p>
+                                <p class="text-[10px] text-gray-500">Generate ERC-20 on Base</p>
                             </div>
-                            <i class="fas fa-rocket text-blue-600 group-hover:scale-125 transition"></i>
+                            <i class="fas fa-rocket text-blue-600 group-hover:translate-x-1 transition"></i>
                         </div>
-                        <div onclick="openModal('deploy-modal', 'NFT Engine')" class="p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-purple-500 cursor-pointer transition flex justify-between items-center group">
+                        <div onclick="alert('NFT Engine coming soon!')" class="p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-purple-500 cursor-pointer transition flex justify-between items-center group opacity-50">
                             <div>
                                 <h4 class="font-bold text-purple-400">NFT Engine</h4>
-                                <p class="text-[10px] text-gray-500 uppercase font-bold">Launch Collection</p>
+                                <p class="text-[10px] text-gray-500">Launch Collection (Locked)</p>
                             </div>
-                            <i class="fas fa-images text-purple-600 group-hover:scale-125 transition"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass p-8 rounded-[2.5rem] border-b-4 border-purple-600">
-                    <h3 class="text-2xl font-bold mb-6 italic text-center underline uppercase tracking-tighter text-purple-400">Arcade</h3>
-                    <div class="space-y-3">
-                        <button onclick="playAndTx('LuckyRoller')" class="w-full bg-blue-900/10 hover:bg-blue-600/30 p-4 rounded-xl flex justify-between items-center border border-blue-900/30 transition">
-                            <span class="font-bold italic text-sm uppercase">🎰 Lucky Roller</span>
-                            <span class="text-[10px] bg-blue-600 px-3 py-1 rounded-md uppercase font-bold">Verify Tx</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer class="p-10 text-center text-gray-700 text-[10px] tracking-widest uppercase">
-        <p>Admin Node: 0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12</p>
-    </footer>
-
-    <script>
-        const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
-        const TX_VAL = "0x9184E72A000"; // 0.00001 ETH
-        let userAddress = null;
-
-        // --- CORE LOGIC ---
-        async function connectWallet() {
-            if (typeof window.ethereum !== 'undefined') {
-                try {
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    userAddress = accounts[0];
-                    document.getElementById('wallet-btn').innerHTML = `<i class="fas fa-circle text-green-500 mr-2"></i> ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
-                } catch(e) { console.error("Wallet denied"); }
-            } else { alert("Install MetaMask!"); }
-        }
-
-        async function playAndTx(tag) {
-            if (!userAddress) { await connectWallet(); if(!userAddress) return; }
-            try {
-                const params = [{ from: userAddress, to: OWNER, value: TX_VAL, chainId: '0x2105', data: '0x' + btoa("BK:" + tag).split('').map(c => c.charCodeAt(0).toString(16)).join('') }];
-                await window.ethereum.request({ method: 'eth_sendTransaction', params });
-            } catch(e) { console.error("Tx failed"); }
-        }
-
-        // --- DATA FETCH ---
-        async function fetchPrices() {
-            try {
-                const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple,sui&vs_currencies=usd');
-                const d = await r.json();
-                document.getElementById('price-ticker').innerHTML = `BTC: $${d.bitcoin.usd.toLocaleString()} | ETH: $${d.ethereum.usd.toLocaleString()} | SOL: $${d.solana.usd.toLocaleString()} | XRP: $${d.ripple.usd.toFixed(4)} | SUI: $${d.sui.usd.toFixed(2)}`;
-            } catch(e) {}
-        }
-        setInterval(fetchPrices, 30000); fetchPrices();
-
-        async function fetchMemes() {
-            try {
-                const r = await fetch('https://api.dexscreener.com/latest/dex/search?q=base');
-                const d = await r.json();
-                const pairs = (d.pairs || []).filter(p => p.chainId === 'base' && p.baseToken.symbol !== 'BASE' && p.baseToken.symbol !== 'WETH').slice(0, 5);
-                if (pairs.length > 0) {
-                    document.getElementById('meme-grid').innerHTML = pairs.map(p => `
-                        <div class="p-4 glass rounded-2xl hover:border-blue-500 transition">
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="font-bold text-[11px] italic base-blue uppercase truncate w-24">${p.baseToken.name}</span>
-                                <span class="${p.priceChange.h24 > 0 ? 'text-green-500' : 'text-red-500'} text-[10px] font-bold font-mono">${p.priceChange.h24 > 0 ? '+' : ''}${p.priceChange.h24}%</span>
-                            </div>
-                            <p class="text-[10px] font-mono italic text-gray-500">$${parseFloat(p.priceUsd).toFixed(8)}</p>
-                        </div>
-                    `).join('');
-                }
-            } catch(e) {}
-        }
-        setInterval(fetchMemes, 60000); fetchMemes();
-
-        // --- MODALS ---
-        function openModal(id, title) {
-            if(title) document.getElementById('modal-title').innerText = title;
-            document.getElementById(id).classList.add('active');
-        }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        async function executeOnSiteAction() { await playAndTx("STUDIO_DEPLOY"); closeModal('deploy-modal'); }
-    </script>
-</body>
-</html>
+                            <i class="fas fa-lock text-purple-
