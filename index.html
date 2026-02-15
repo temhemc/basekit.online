@@ -19,71 +19,72 @@
     </style>
 </head>
 <body class="p-4">
-
     <nav class="max-w-7xl mx-auto flex justify-between items-center mb-8 sticky top-0 bg-[#00050a]/90 backdrop-blur-md z-50 py-3">
         <div class="flex items-center gap-6">
             <h1 class="text-2xl font-bold italic tracking-tighter">BASEKIT<span class="base-blue">.ONLINE</span></h1>
-            <div id="lang-menu" class="hidden md:flex gap-2">
+            <div id="lang-menu" class="hidden md:flex gap-2 flex-wrap">
                 <button onclick="changeLang('en', this)" class="lang-btn lang-active">🇺🇸 EN</button>
                 <button onclick="changeLang('tr', this)" class="lang-btn">🇹🇷 TR</button>
+                <button onclick="changeLang('zh', this)" class="lang-btn">🇨🇳 ZH</button>
+                <button onclick="changeLang('ko', this)" class="lang-btn">🇰🇷 KO</button>
+                <button onclick="changeLang('de', this)" class="lang-btn">🇩🇪 DE</button>
+                <button onclick="changeLang('fr', this)" class="lang-btn">🇫🇷 FR</button>
             </div>
         </div>
         <button onclick="connect()" id="wallet-btn" class="bg-[#0052FF] px-8 py-2 rounded-full font-bold text-sm shadow-lg">Connect Wallet</button>
     </nav>
 
     <div class="max-w-7xl mx-auto text-center mb-16 px-4">
-    <div class="relative group">
-        <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-        
-        <div class="relative bg-black rounded-[3rem] ring-1 ring-white/10 shadow-2xl overflow-hidden">
-            <img src="SENIN_GÖRSEL_LINKIN" 
-                 class="w-full h-[450px] object-cover object-top opacity-90 hover:opacity-100 transition duration-500" 
-                 alt="BaseKit Ecosystem">
-            
-            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
-            
-            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 w-full px-6">
-                <div class="bg-black/40 backdrop-blur-xl border border-white/10 inline-block px-10 py-6 rounded-[2.5rem] shadow-2xl">
-                    <h2 class="text-3xl md:text-4xl font-black uppercase italic tracking-widest text-white mb-2">
-                        Welcome to <span class="text-[#0052FF]">BaseKit</span>
-                    </h2>
-                    <p class="text-blue-300 text-sm font-medium italic tracking-tight uppercase">
-                        "Converting Information to Onchain Value"
-                    </p>
+        <div class="relative group">
+            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+           
+            <div class="relative bg-black rounded-[3rem] ring-1 ring-white/10 shadow-2xl overflow-hidden">
+                <img src="https://i.postimg.cc/7YcT3jhc/Gemini_Generated_Image_b6cp2gb6cp2gb6cp.png"
+                     class="w-full h-[380px] sm:h-[450px] md:h-[520px] object-cover object-center opacity-85 hover:opacity-95 transition duration-500"
+                     alt="BaseKit - Online to Onchain Bridge">
+
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none"></div>
+               
+                <div class="absolute bottom-8 sm:bottom-10 left-1/2 -translate-x-1/2 w-full px-4 sm:px-6">
+                    <div class="bg-black/55 backdrop-blur-xl border border-white/10 inline-block px-8 sm:px-10 py-5 sm:py-6 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl">
+                        <h2 id="welcome-title" class="text-2xl sm:text-3xl md:text-4xl font-black uppercase italic tracking-widest text-white mb-2">
+                            Welcome to <span class="text-[#0052FF]">BaseKit</span>
+                        </h2>
+                        <p id="welcome-sub" class="text-blue-300 text-xs sm:text-sm font-medium italic tracking-tight uppercase">
+                            "Converting Information to Onchain Value"
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
     <main class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8">
         <div class="lg:col-span-7 space-y-8">
             <div class="glass h-[500px] overflow-hidden">
                 <iframe src="https://app.uniswap.org/#/swap?theme=dark&chain=base" width="100%" height="100%" style="border: none;"></iframe>
             </div>
-
             <div class="farcaster-card p-8">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-lg font-bold flex items-center gap-2">
                         <i class="fab fa-ethereum text-purple-400"></i> Farcaster Social Hub
                     </h3>
-                    
+                   
                     <div id="farcaster-auth">
-                        <div class="neynar_signin" 
-                             data-client_id="a8b7c178-8d87-4ace-840a-4bc908166c29" 
-                             data-success-callback="onSignInSuccess" 
+                        <div class="neynar_signin"
+                             data-client_id="a8b7c178-8d87-4ace-840a-4bc908166c29"
+                             data-success-callback="onSignInSuccess"
                              data-theme="dark"
                              data-variant="farcaster">
                         </div>
                     </div>
                 </div>
-
                 <div id="neynar-feed" class="space-y-4 text-sm text-gray-400 italic">
                     <div id="user-info" class="hidden flex items-center gap-4 p-4 bg-purple-500/10 rounded-2xl border border-purple-500/20"></div>
                     <p id="feed-placeholder">Connect your Farcaster account to sync with BaseKit.</p>
                 </div>
             </div>
         </div>
-
         <div class="lg:col-span-5 space-y-6">
             <div class="glass p-10 border-l-4 border-blue-600 shadow-2xl">
                 <h3 id="factory-title" class="text-xl font-bold mb-8 italic base-blue uppercase tracking-widest">Builder Factory</h3>
@@ -118,14 +119,53 @@
     </div>
 
     <script src="https://neynarxyz.github.io/siwn/raw/1.2.0/index.js" async></script>
-
     <script>
         const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
         let mode = "";
-
+        
         const dict = {
-            en: { welcome: "Welcome to BaseKit", sub: "I am here for you. Converting Information to Onchain Value.", factory: "Builder Factory", token: "🚀 Deploy New Token (ERC-20)", nft: "🖼️ Launch NFT Collection (ERC-721)" },
-            tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: "Sizin için buradayım. Bilgiyi Onchain Değere Dönüştürüyoruz.", factory: "Geliştirici Fabrikası", token: "🚀 Yeni Token Oluştur (ERC-20)", nft: "🖼️ NFT Koleksiyonu Başlat (ERC-721)" }
+            en: { 
+                welcome: "Welcome to BaseKit", 
+                sub: "\"Converting Information to Onchain Value\"", 
+                factory: "Builder Factory", 
+                token: "🚀 Deploy New Token (ERC-20)", 
+                nft: "🖼️ Launch NFT Collection (ERC-721)" 
+            },
+            tr: { 
+                welcome: "BaseKit'e Hoş Geldiniz", 
+                sub: "\"Bilgiyi Onchain Değere Dönüştürüyoruz\"", 
+                factory: "Geliştirici Fabrikası", 
+                token: "🚀 Yeni Token Oluştur (ERC-20)", 
+                nft: "🖼️ NFT Koleksiyonu Başlat (ERC-721)" 
+            },
+            zh: { 
+                welcome: "欢迎体验 BaseKit", 
+                sub: "\"将信息转化为链上价值\"", 
+                factory: "构建者工厂", 
+                token: "🚀 部署新代币 (ERC-20)", 
+                nft: "🖼️ 启动 NFT 系列 (ERC-721)" 
+            },
+            ko: { 
+                welcome: "BaseKit에 오신 것을 환영합니다", 
+                sub: "\"정보를 온체인 가치로 전환\"", 
+                factory: "빌더 팩토리", 
+                token: "🚀 새 토큰 배포 (ERC-20)", 
+                nft: "🖼️ NFT 컬렉션 출시 (ERC-721)" 
+            },
+            de: { 
+                welcome: "Willkommen bei BaseKit", 
+                sub: "\"Information in Onchain-Wert umwandeln\"", 
+                factory: "Builder Factory", 
+                token: "🚀 Neuen Token deployen (ERC-20)", 
+                nft: "🖼️ NFT-Kollektion starten (ERC-721)" 
+            },
+            fr: { 
+                welcome: "Bienvenue sur BaseKit", 
+                sub: "\"Convertir l'information en valeur onchain\"", 
+                factory: "Usine de Constructeurs", 
+                token: "🚀 Déployer un nouveau token (ERC-20)", 
+                nft: "🖼️ Lancer une collection NFT (ERC-721)" 
+            }
         };
 
         function onSignInSuccess(data) {
@@ -137,7 +177,8 @@
         }
 
         function changeLang(lang, btn) {
-            const t = dict[lang]; if(!t) return;
+            const t = dict[lang];
+            if (!t) return;
             document.getElementById('welcome-title').innerText = t.welcome;
             document.getElementById('welcome-sub').innerText = t.sub;
             document.getElementById('factory-title').innerText = t.factory;
@@ -156,8 +197,17 @@
 
         function openM(t) { mode = t; document.getElementById('m-title').innerText = t; document.getElementById('m').classList.add('active'); }
         function closeM() { document.getElementById('m').classList.remove('active'); }
-        function gen() { const n = document.getElementById('n').value || "Project"; document.getElementById('out').innerText = `// Built via BaseKit\ncontract ${n.replace(/\s/g,'')} { ... }`; document.getElementById('res').classList.remove('hidden'); }
-        async function pay() { const acc = await ethereum.request({ method: 'eth_requestAccounts' }); await ethereum.request({ method: 'eth_sendTransaction', params: [{ from: acc[0], to: OWNER, value: '0x9184E72A000' }] }); alert("Success!"); closeM(); }
+        function gen() { 
+            const n = document.getElementById('n').value || "Project"; 
+            document.getElementById('out').innerText = `// Built via BaseKit\ncontract ${n.replace(/\s/g,'')} { ... }`; 
+            document.getElementById('res').classList.remove('hidden'); 
+        }
+        async function pay() { 
+            const acc = await ethereum.request({ method: 'eth_requestAccounts' }); 
+            await ethereum.request({ method: 'eth_sendTransaction', params: [{ from: acc[0], to: OWNER, value: '0x9184E72A000' }] }); 
+            alert("Success!"); 
+            closeM(); 
+        }
     </script>
 </body>
 </html>
