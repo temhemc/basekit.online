@@ -16,63 +16,91 @@
         .lang-btn { cursor: pointer; padding: 6px 12px; border-radius: 8px; font-size: 11px; border: 1px solid rgba(255,255,255,0.1); }
         .lang-active { background: #0052FF !important; color: white !important; }
         .farcaster-card { background: rgba(133, 93, 205, 0.1); border: 1px solid rgba(133, 93, 205, 0.3); border-radius: 1.5rem; }
-        label { display: block; font-size: 0.875rem; margin-bottom: 4px; color: #94a3b8; }
+
+        /* Aydınlatma için eklenen filtreler */
+        .brightness-125 { filter: brightness(1.25); }
+        .contrast-110   { filter: contrast(1.10); }
     </style>
 </head>
 <body class="p-4">
 
-    <!-- NAV -->
     <nav class="max-w-7xl mx-auto flex justify-between items-center mb-8 sticky top-0 bg-[#00050a]/90 backdrop-blur-md z-50 py-3">
         <div class="flex items-center gap-6">
             <h1 class="text-2xl font-bold italic tracking-tighter">BASEKIT<span class="base-blue">.ONLINE</span></h1>
             <div id="lang-menu" class="hidden md:flex gap-2 flex-wrap">
-                <button onclick="changeLang('en', this)" class="lang-btn lang-active" data-lang="en">🇺🇸 EN</button>
-                <button onclick="changeLang('tr', this)" class="lang-btn" data-lang="tr">🇹🇷 TR</button>
-                <button onclick="changeLang('zh', this)" class="lang-btn" data-lang="zh">🇨🇳 ZH</button>
-                <button onclick="changeLang('ko', this)" class="lang-btn" data-lang="ko">🇰🇷 KO</button>
-                <button onclick="changeLang('de', this)" class="lang-btn" data-lang="de">🇩🇪 DE</button>
-                <button onclick="changeLang('fr', this)" class="lang-btn" data-lang="fr">🇫🇷 FR</button>
+                <button onclick="changeLang('en', this)" class="lang-btn lang-active">🇺🇸 EN</button>
+                <button onclick="changeLang('tr', this)" class="lang-btn">🇹🇷 TR</button>
+                <button onclick="changeLang('zh', this)" class="lang-btn">🇨🇳 ZH</button>
+                <button onclick="changeLang('ko', this)" class="lang-btn">🇰🇷 KO</button>
+                <button onclick="changeLang('de', this)" class="lang-btn">🇩🇪 DE</button>
+                <button onclick="changeLang('fr', this)" class="lang-btn">🇫🇷 FR</button>
             </div>
         </div>
         <button onclick="connect()" id="wallet-btn" class="bg-[#0052FF] px-8 py-2 rounded-full font-bold text-sm shadow-lg">Connect Wallet</button>
     </nav>
 
-    <!-- HERO (senin görselin) -->
     <div class="max-w-7xl mx-auto text-center mb-16 px-4">
         <div class="relative group">
-            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+           
             <div class="relative bg-black rounded-[3rem] ring-1 ring-white/10 shadow-2xl overflow-hidden">
                 <img src="https://i.postimg.cc/7YcT3jhc/Gemini_Generated_Image_b6cp2gb6cp2gb6cp.png"
-                     class="w-full h-[380px] sm:h-[450px] md:h-[520px] object-cover object-center opacity-85 hover:opacity-95 transition duration-500"
-                     alt="BaseKit - Online to Onchain">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
-                <div class="absolute bottom-8 sm:bottom-10 left-1/2 -translate-x-1/2 w-full px-6">
-                    <div class="bg-black/55 backdrop-blur-xl border border-white/10 inline-block px-10 py-6 rounded-[2.5rem] shadow-2xl">
-                        <h2 id="welcome-title" class="text-3xl md:text-4xl font-black uppercase italic tracking-widest text-white mb-2">Welcome to <span class="text-[#0052FF]">BaseKit</span></h2>
-                        <p id="welcome-sub" class="text-blue-300 text-sm font-medium italic tracking-tight uppercase">"Converting Information to Onchain Value"</p>
+                     class="w-full h-[380px] sm:h-[450px] md:h-[520px] object-cover object-center brightness-125 contrast-110 transition duration-500"
+                     alt="BaseKit - Online to Onchain Bridge">
+
+                <!-- Aydınlatma katmanı -->
+                <div class="absolute inset-0 bg-white/10 mix-blend-screen pointer-events-none"></div>
+
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent pointer-events-none"></div>
+               
+                <div class="absolute bottom-8 sm:bottom-10 left-1/2 -translate-x-1/2 w-full px-4 sm:px-6">
+                    <div class="bg-black/65 backdrop-blur-xl border border-white/15 inline-block px-8 sm:px-10 py-5 sm:py-6 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl">
+                        <h2 id="welcome-title" class="text-2xl sm:text-3xl md:text-4xl font-black uppercase italic tracking-widest text-white mb-2">
+                            Welcome to <span class="text-[#0052FF]">BaseKit</span>
+                        </h2>
+                        <p id="welcome-sub" class="text-blue-200 text-xs sm:text-sm font-medium italic tracking-tight uppercase">
+                            "Converting Information to Onchain Value"
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MAIN -->
     <main class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8">
         <div class="lg:col-span-7 space-y-8">
             <div class="glass h-[500px] overflow-hidden">
-                <iframe src="https://app.uniswap.org/#/swap?theme=dark&chain=base" width="100%" height="100%" style="border:none;"></iframe>
+                <iframe src="https://app.uniswap.org/#/swap?theme=dark&chain=base" width="100%" height="100%" style="border: none;"></iframe>
             </div>
-            <div class="farcaster-card p-8"> ... (Farcaster kısmı aynı kaldı) </div>
+            <div class="farcaster-card p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold flex items-center gap-2">
+                        <i class="fab fa-ethereum text-purple-400"></i> Farcaster Social Hub
+                    </h3>
+                   
+                    <div id="farcaster-auth">
+                        <div class="neynar_signin"
+                             data-client_id="a8b7c178-8d87-4ace-840a-4bc908166c29"
+                             data-success-callback="onSignInSuccess"
+                             data-theme="dark"
+                             data-variant="farcaster">
+                        </div>
+                    </div>
+                </div>
+                <div id="neynar-feed" class="space-y-4 text-sm text-gray-400 italic">
+                    <div id="user-info" class="hidden flex items-center gap-4 p-4 bg-purple-500/10 rounded-2xl border border-purple-500/20"></div>
+                    <p id="feed-placeholder">Connect your Farcaster account to sync with BaseKit.</p>
+                </div>
+            </div>
         </div>
-
         <div class="lg:col-span-5 space-y-6">
             <div class="glass p-10 border-l-4 border-blue-600 shadow-2xl">
                 <h3 id="factory-title" class="text-xl font-bold mb-8 italic base-blue uppercase tracking-widest">Builder Factory</h3>
                 <div class="space-y-4">
-                    <button onclick="openM('token')" class="w-full p-6 bg-white/5 border border-white/10 rounded-2xl hover:border-blue-500 flex justify-between items-center transition group">
+                    <button onclick="openM('Token Lab')" class="w-full p-6 bg-white/5 border border-white/10 rounded-2xl hover:border-blue-500 flex justify-between items-center transition group">
                         <span id="btn-token" class="font-bold">🚀 Deploy New Token (ERC-20)</span>
                     </button>
-                    <button onclick="openM('nft')" class="w-full p-6 bg-white/5 border border-white/10 rounded-2xl hover:border-purple-500 flex justify-between items-center transition group text-purple-400">
+                    <button onclick="openM('NFT Engine')" class="w-full p-6 bg-white/5 border border-white/10 rounded-2xl hover:border-purple-500 flex justify-between items-center transition group text-purple-400">
                         <span id="btn-nft" class="font-bold">🖼️ Launch NFT Collection (ERC-721)</span>
                     </button>
                 </div>
@@ -80,235 +108,63 @@
         </div>
     </main>
 
-    <!-- MODAL -->
     <div id="m" class="modal">
-        <div class="bg-[#000814] border border-blue-600 p-8 sm:p-10 rounded-[3rem] w-full max-w-2xl max-h-[92vh] overflow-y-auto">
-            <h3 id="m-title" class="text-2xl font-bold mb-8 base-blue italic uppercase">Token Lab</h3>
-
-            <div class="space-y-6">
-                <div>
-                    <label id="label-name">Project / Collection Name</label>
-                    <input id="name" type="text" class="w-full">
-                </div>
-                <div>
-                    <label id="label-symbol">Symbol</label>
-                    <input id="symbol" type="text" class="w-full">
-                </div>
-
-                <div id="supply-container">
-                    <label id="label-supply">Total Supply</label>
-                    <input id="supply" type="number" placeholder="1000000000">
-                </div>
-
-                <div>
-                    <label id="label-image">Image URL <span id="image-required" class="text-red-400 text-xs hidden">(zorunlu)</span></label>
-                    <input id="image" type="url" placeholder="https://...">
-                </div>
-
-                <div>
-                    <label id="label-website">Website URL</label>
-                    <input id="website" type="url">
-                </div>
-
-                <div>
-                    <label id="label-logo">Logo URL</label>
-                    <input id="logo" type="url">
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label id="label-twitter">X / Twitter</label>
-                        <input id="twitter" type="url" placeholder="https://x.com/...">
-                    </div>
-                    <div>
-                        <label id="label-farcaster">Farcaster</label>
-                        <input id="farcaster" type="url">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label id="label-telegram">Telegram</label>
-                        <input id="telegram" type="url">
-                    </div>
-                    <div>
-                        <label id="label-discord">Discord</label>
-                        <input id="discord" type="url">
-                    </div>
-                </div>
-
-                <!-- Allowlist (AL) desteği - her ikisi için -->
-                <div class="border border-white/10 rounded-2xl p-5 bg-black/30">
-                    <label class="flex items-center gap-3 text-sm">
-                        <input type="checkbox" id="enable-al" class="w-5 h-5 accent-[#0052FF]">
-                        <span id="label-enable-al">Enable Allowlist (AL)</span>
-                    </label>
-                    <div class="mt-4">
-                        <label id="label-al-size">Allowlist Size</label>
-                        <input id="al-size" type="number" placeholder="0 = unlimited" class="w-full">
-                    </div>
-                </div>
+        <div class="bg-[#000814] border border-blue-600 p-10 rounded-[3rem] w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h3 id="m-title" class="text-2xl font-bold mb-8 base-blue italic uppercase"></h3>
+            <div class="grid md:grid-cols-2 gap-4">
+                <input id="n" type="text" placeholder="Project Name *">
+                <input id="s" type="text" placeholder="Symbol *">
+                <input id="sup" type="number" placeholder="Total Supply">
             </div>
-
-            <button onclick="gen()" class="w-full bg-[#0052FF] py-5 mt-8 rounded-2xl font-bold shadow-lg">GENERATE CONTRACT + METADATA</button>
-            
+            <textarea id="desc" placeholder="Project Description..." class="mt-4 h-24"></textarea>
+            <button onclick="gen()" class="w-full bg-[#0052FF] py-5 mt-6 rounded-2xl font-bold shadow-lg">GENERATE CONTRACT</button>
             <div id="res" class="hidden mt-8">
-                <pre id="out" class="text-[10px] text-green-400 bg-black p-5 rounded-2xl border border-green-900 overflow-x-auto"></pre>
+                <pre id="out" class="text-[10px] text-green-400 bg-black p-4 rounded-xl border border-green-900 overflow-x-auto"></pre>
                 <button onclick="pay()" class="w-full border-2 border-blue-600 py-3 mt-4 rounded-xl font-bold">PAY 0.00001 ETH</button>
             </div>
-
-            <button onclick="closeM()" class="w-full text-gray-500 text-xs mt-6">← Back</button>
+            <button onclick="closeM()" class="w-full text-gray-600 text-[10px] mt-8 uppercase font-bold">Back</button>
         </div>
     </div>
 
     <script src="https://neynarxyz.github.io/siwn/raw/1.2.0/index.js" async></script>
     <script>
-        let currentMode = '';
-        let currentLang = 'en';
         const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
-
+        let mode = "";
         const dict = {
-            en: { welcome:"Welcome to BaseKit", sub:"\"Converting Information to Onchain Value\"", factory:"Builder Factory", token:"🚀 Deploy New Token (ERC-20)", nft:"🖼️ Launch NFT Collection (ERC-721)",
-                  mtitle_token:"Token Lab", mtitle_nft:"NFT Engine",
-                  name:"Project / Collection Name", symbol:"Symbol", supply:"Total Supply",
-                  image:"Image URL", website:"Website URL", logo:"Logo URL",
-                  twitter:"X / Twitter", farcaster:"Farcaster", telegram:"Telegram", discord:"Discord",
-                  enable_al:"Enable Allowlist (AL)", al_size:"Allowlist Size" },
-            tr: { welcome:"BaseKit'e Hoş Geldiniz", sub:"\"Bilgiyi Onchain Değere Dönüştürüyoruz\"", factory:"Geliştirici Fabrikası", token:"🚀 Yeni Token Oluştur (ERC-20)", nft:"🖼️ NFT Koleksiyonu Başlat (ERC-721)",
-                  mtitle_token:"Token Laboratuvarı", mtitle_nft:"NFT Motoru",
-                  name:"Proje / Koleksiyon Adı", symbol:"Sembol", supply:"Toplam Arz",
-                  image:"Görsel URL", website:"Web Sitesi URL", logo:"Logo URL",
-                  twitter:"X / Twitter", farcaster:"Farcaster", telegram:"Telegram", discord:"Discord",
-                  enable_al:"Allowlist (AL) Etkinleştir", al_size:"Allowlist Boyutu" },
-            zh: { welcome:"欢迎体验 BaseKit", sub:"\"将信息转化为链上价值\"", factory:"构建者工厂", token:"🚀 部署新代币 (ERC-20)", nft:"🖼️ 启动 NFT 系列 (ERC-721)",
-                  mtitle_token:"代币实验室", mtitle_nft:"NFT 引擎",
-                  name:"项目/收藏名称", symbol:"符号", supply:"总供应量",
-                  image:"图片 URL", website:"网站 URL", logo:"Logo URL",
-                  twitter:"X / Twitter", farcaster:"Farcaster", telegram:"Telegram", discord:"Discord",
-                  enable_al:"启用白名单 (AL)", al_size:"白名单大小" },
-            ko: { welcome:"BaseKit에 오신 것을 환영합니다", sub:"\"정보를 온체인 가치로 전환\"", factory:"빌더 팩토리", token:"🚀 새 토큰 배포 (ERC-20)", nft:"🖼️ NFT 컬렉션 출시 (ERC-721)",
-                  mtitle_token:"토큰 랩", mtitle_nft:"NFT 엔진",
-                  name:"프로젝트/컬렉션 이름", symbol:"심볼", supply:"총 공급량",
-                  image:"이미지 URL", website:"웹사이트 URL", logo:"로고 URL",
-                  twitter:"X / Twitter", farcaster:"Farcaster", telegram:"텔레그램", discord:"디스코드",
-                  enable_al:"허용 목록(AL) 활성화", al_size:"허용 목록 크기" },
-            de: { welcome:"Willkommen bei BaseKit", sub:"\"Information in Onchain-Wert umwandeln\"", factory:"Builder Factory", token:"🚀 Neuen Token deployen (ERC-20)", nft:"🖼️ NFT-Kollektion starten (ERC-721)",
-                  mtitle_token:"Token Lab", mtitle_nft:"NFT Engine",
-                  name:"Projekt / Collection Name", symbol:"Symbol", supply:"Total Supply",
-                  image:"Bild URL", website:"Website URL", logo:"Logo URL",
-                  twitter:"X / Twitter", farcaster:"Farcaster", telegram:"Telegram", discord:"Discord",
-                  enable_al:"Allowlist (AL) aktivieren", al_size:"Allowlist Größe" },
-            fr: { welcome:"Bienvenue sur BaseKit", sub:"\"Convertir l'information en valeur onchain\"", factory:"Usine de Constructeurs", token:"🚀 Déployer un nouveau token (ERC-20)", nft:"🖼️ Lancer une collection NFT (ERC-721)",
-                  mtitle_token:"Laboratoire Token", mtitle_nft:"Moteur NFT",
-                  name:"Nom du projet / collection", symbol:"Symbole", supply:"Supply totale",
-                  image:"URL de l'image", website:"URL du site", logo:"URL du logo",
-                  twitter:"X / Twitter", farcaster:"Farcaster", telegram:"Telegram", discord:"Discord",
-                  enable_al:"Activer Allowlist (AL)", al_size:"Taille de l'Allowlist" }
+            en: { welcome: "Welcome to BaseKit", sub: "I am here for you. Converting Information to Onchain Value.", factory: "Builder Factory", token: "🚀 Deploy New Token (ERC-20)", nft: "🖼️ Launch NFT Collection (ERC-721)" },
+            tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: "Sizin için buradayım. Bilgiyi Onchain Değere Dönüştürüyoruz.", factory: "Geliştirici Fabrikası", token: "🚀 Yeni Token Oluştur (ERC-20)", nft: "🖼️ NFT Koleksiyonu Başlat (ERC-721)" },
+            zh: { welcome: "欢迎体验 BaseKit", sub: "我在这里为您服务。将信息转化为链上价值。", factory: "构建者工厂", token: "🚀 部署新代币 (ERC-20)", nft: "🖼️ 启动 NFT 系列 (ERC-721)" },
+            ko: { welcome: "BaseKit에 오신 것을 환영합니다", sub: "정보를 온체인 가치로 전환합니다.", factory: "빌더 팩토리", token: "🚀 새 토큰 배포 (ERC-20)", nft: "🖼️ NFT 컬렉션 출시 (ERC-721)" },
+            de: { welcome: "Willkommen bei BaseKit", sub: "Information in Onchain-Wert umwandeln.", factory: "Builder Factory", token: "🚀 Neuen Token erstellen (ERC-20)", nft: "🖼️ NFT-Kollektion starten (ERC-721)" },
+            fr: { welcome: "Bienvenue sur BaseKit", sub: "Convertir l'information en valeur onchain.", factory: "Usine de Constructeurs", token: "🚀 Déployer un nouveau token (ERC-20)", nft: "🖼️ Lancer une collection NFT (ERC-721)" }
         };
-
+        function onSignInSuccess(data) {
+            const user = data.user;
+            document.getElementById('user-info').classList.remove('hidden');
+            document.getElementById('feed-placeholder').style.display = 'none';
+            document.querySelector('.neynar_signin').style.display = 'none';
+            document.getElementById('user-info').innerHTML = `<img src="${user.pfp_url}" class="w-12 h-12 rounded-full border-2 border-purple-500 shadow-lg"><div><p class="text-white font-bold text-base">@${user.username}</p><p class="text-purple-400 text-[10px] font-mono italic">FID: ${user.fid} • Connected</p></div>`;
+        }
         function changeLang(lang, btn) {
-            currentLang = lang;
-            const t = dict[lang];
-            if (!t) return;
-
+            const t = dict[lang]; if(!t) return;
             document.getElementById('welcome-title').innerText = t.welcome;
             document.getElementById('welcome-sub').innerText = t.sub;
             document.getElementById('factory-title').innerText = t.factory;
             document.getElementById('btn-token').innerText = t.token;
             document.getElementById('btn-nft').innerText = t.nft;
-
-            // Modal label'ları
-            document.getElementById('label-name').innerText = t.name;
-            document.getElementById('label-symbol').innerText = t.symbol;
-            document.getElementById('label-supply').innerText = t.supply;
-            document.getElementById('label-image').innerText = t.image;
-            document.getElementById('label-website').innerText = t.website;
-            document.getElementById('label-logo').innerText = t.logo;
-            document.getElementById('label-twitter').innerText = t.twitter;
-            document.getElementById('label-farcaster').innerText = t.farcaster;
-            document.getElementById('label-telegram').innerText = t.telegram;
-            document.getElementById('label-discord').innerText = t.discord;
-            document.getElementById('label-enable-al').innerText = t.enable_al;
-            document.getElementById('label-al-size').innerText = t.al_size;
-
-            // Aktif buton
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('lang-active'));
             btn.classList.add('lang-active');
-
-            // Modal açıksa başlık da güncellensin
-            if (document.getElementById('m').classList.contains('active')) {
-                document.getElementById('m-title').innerText = currentMode === 'token' ? t.mtitle_token : t.mtitle_nft;
-            }
         }
-
-        function openM(mode) {
-            currentMode = mode;
-            const t = dict[currentLang];
-            document.getElementById('m-title').innerText = mode === 'token' ? t.mtitle_token : t.mtitle_nft;
-            document.getElementById('image-required').classList.toggle('hidden', mode !== 'nft');
-            document.getElementById('m').classList.add('active');
-            document.getElementById('res').classList.add('hidden');
-        }
-
-        function closeM() {
-            document.getElementById('m').classList.remove('active');
-        }
-
-        function gen() {
-            const name = document.getElementById('name').value.trim() || "MyProject";
-            const image = document.getElementById('image').value.trim();
-
-            // NFT için görsel zorunlu
-            if (currentMode === 'nft' && !image) {
-                alert(currentLang === 'tr' ? 'NFT için Görsel URL zorunludur!' : 'Image URL is required for NFT!');
-                return;
-            }
-
-            const metadata = {
-                type: currentMode === 'token' ? "ERC-20 Token" : "ERC-721 NFT Collection",
-                name: name,
-                symbol: document.getElementById('symbol').value.trim(),
-                supply: document.getElementById('supply').value || "0",
-                image: image || null,
-                website: document.getElementById('website').value.trim() || null,
-                logo: document.getElementById('logo').value.trim() || null,
-                socials: {
-                    twitter: document.getElementById('twitter').value.trim() || null,
-                    farcaster: document.getElementById('farcaster').value.trim() || null,
-                    telegram: document.getElementById('telegram').value.trim() || null,
-                    discord: document.getElementById('discord').value.trim() || null
-                },
-                allowlist: {
-                    enabled: document.getElementById('enable-al').checked,
-                    size: document.getElementById('al-size').value || "0"
-                }
-            };
-
-            const out = document.getElementById('out');
-            out.innerHTML = `<span class="text-blue-400">// BaseKit Generated Metadata</span>\n` +
-                            JSON.stringify(metadata, null, 2) +
-                            `\n\n<span class="text-green-400">// Contract Stub</span>\n` +
-                            `contract ${name.replace(/\s/g,'')} {\n  // ... your contract here\n}`;
-
-            document.getElementById('res').classList.remove('hidden');
-        }
-
-        async function pay() {
-            const acc = await ethereum.request({ method: 'eth_requestAccounts' });
-            await ethereum.request({ method: 'eth_sendTransaction', params: [{ from: acc[0], to: OWNER, value: '0x9184E72A000' }] });
-            alert("Payment successful! Contract ready.");
-            closeM();
-        }
-
         async function connect() {
             if (window.ethereum) {
                 const acc = await ethereum.request({ method: 'eth_requestAccounts' });
-                document.getElementById('wallet-btn').innerText = acc[0].slice(0,6) + "..." + acc[0].slice(-4);
+                document.getElementById('wallet-btn').innerText = acc[0].slice(0,6)+"..."+acc[0].slice(-4);
             }
         }
-
-        // Farcaster kısmı (eski kod aynı)
-        function onSignInSuccess(data) { /* aynı */ }
+        function openM(t) { mode = t; document.getElementById('m-title').innerText = t; document.getElementById('m').classList.add('active'); }
+        function closeM() { document.getElementById('m').classList.remove('active'); }
+        function gen() { const n = document.getElementById('n').value || "Project"; document.getElementById('out').innerText = `// Built via BaseKit\ncontract ${n.replace(/\s/g,'')} { ... }`; document.getElementById('res').classList.remove('hidden'); }
+        async function pay() { const acc = await ethereum.request({ method: 'eth_requestAccounts' }); await ethereum.request({ method: 'eth_sendTransaction', params: [{ from: acc[0], to: OWNER, value: '0x9184E72A000' }] }); alert("Success!"); closeM(); }
     </script>
 </body>
 </html>
