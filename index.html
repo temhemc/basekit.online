@@ -16,6 +16,8 @@
         .lang-btn { cursor: pointer; padding: 6px 12px; border-radius: 8px; font-size: 11px; border: 1px solid rgba(255,255,255,0.1); }
         .lang-active { background: #0052FF !important; color: white !important; }
         .farcaster-card { background: rgba(133, 93, 205, 0.1); border: 1px solid rgba(133, 93, 205, 0.3); border-radius: 1.5rem; }
+        /* Görselin üstündeki metni daha okunaklı yapmak için */
+        .hero-glow { shadow-[0_0_80px_rgba(0,82,255,0.3)]; }
     </style>
 </head>
 <body class="p-4">
@@ -26,10 +28,6 @@
             <div id="lang-menu" class="hidden md:flex gap-2">
                 <button onclick="changeLang('en', this)" class="lang-btn lang-active">🇺🇸 EN</button>
                 <button onclick="changeLang('tr', this)" class="lang-btn">🇹🇷 TR</button>
-                <button onclick="changeLang('de', this)" class="lang-btn">🇩🇪 DE</button>
-                <button onclick="changeLang('zh', this)" class="lang-btn">🇨🇳 ZH</button>
-                <button onclick="changeLang('fr', this)" class="lang-btn">🇫🇷 FR</button>
-                <button onclick="changeLang('ko', this)" class="lang-btn">🇰🇷 KO</button>
             </div>
         </div>
         <button onclick="connect()" id="wallet-btn" class="bg-[#0052FF] px-8 py-2 rounded-full font-bold text-sm shadow-lg">Connect Wallet</button>
@@ -37,11 +35,11 @@
 
     <div class="max-w-7xl mx-auto text-center mb-24">
         <div class="relative inline-block w-full">
-            <img src="https://r.jina.ai/i/5661646675544d67" 
+            <img src="hero.png" 
                  onerror="this.src='https://images.mirror-media.xyz/publication-images/6990d705-7f41-4560-84a8-6b19e917d057.png'"
-                 class="w-full max-w-[1200px] mx-auto rounded-[2.5rem] border-2 border-blue-600/30 shadow-[0_0_60px_rgba(0,82,255,0.2)]">
+                 class="w-full max-w-[1100px] mx-auto rounded-[3rem] border-2 border-blue-500/20 shadow-[0_0_80px_rgba(0,82,255,0.3)] object-cover">
             
-            <div class="bg-black/80 backdrop-blur-2xl border border-blue-500/30 inline-block px-12 py-8 rounded-[3rem] -mt-16 relative z-10 shadow-2xl">
+            <div class="bg-black/70 backdrop-blur-3xl border border-blue-500/30 inline-block px-12 py-8 rounded-[3rem] -mt-20 relative z-10 shadow-2xl">
                 <h2 id="welcome-title" class="text-3xl font-bold uppercase italic tracking-[0.2em]">Welcome to BaseKit</h2>
                 <p id="welcome-sub" class="text-blue-400 text-sm italic mt-2">"I am here for you. Converting Information to Onchain Value."</p>
             </div>
@@ -122,28 +120,22 @@
         let mode = "";
 
         const dict = {
-            en: { welcome: "Welcome to BaseKit", sub: "I am here for you. Converting Information to Onchain Value.", factory: "Builder Factory", token: "🚀 Deploy New Token (ERC-20)", nft: "🖼️ Launch NFT Collection (ERC-721)", swap: "Decentralized Bridge Terminal" },
-            tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: "Sizin için buradayım. Bilgiyi Onchain Değere Dönüştürüyoruz.", factory: "Geliştirici Fabrikası", token: "🚀 Yeni Token Oluştur (ERC-20)", nft: "🖼️ NFT Koleksiyonu Başlat (ERC-721)", swap: "Merkeziyetsiz Takas Terminali" }
+            en: { welcome: "Welcome to BaseKit", sub: "I am here for you. Converting Information to Onchain Value.", factory: "Builder Factory", token: "🚀 Deploy New Token (ERC-20)", nft: "🖼️ Launch NFT Collection (ERC-721)" },
+            tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: "Sizin için buradayım. Bilgiyi Onchain Değere Dönüştürüyoruz.", factory: "Geliştirici Fabrikası", token: "🚀 Yeni Token Oluştur (ERC-20)", nft: "🖼️ NFT Koleksiyonu Başlat (ERC-721)" }
         };
 
-        // Farcaster Giriş Başarılı Olunca Çalışacak Fonksiyon
+        // NEYNAR SUCCESS CALLBACK
         function onSignInSuccess(data) {
-            console.log("Farcaster Success:", data);
             const user = data.user;
-            const userInfoDiv = document.getElementById('user-info');
-            const placeholder = document.getElementById('feed-placeholder');
-            const authDiv = document.querySelector('.neynar_signin');
+            document.getElementById('user-info').classList.remove('hidden');
+            document.getElementById('feed-placeholder').style.display = 'none';
+            document.querySelector('.neynar_signin').style.display = 'none';
 
-            // Giriş butonunu gizle, profil bilgisini göster
-            authDiv.style.display = 'none';
-            placeholder.style.display = 'none';
-            userInfoDiv.classList.remove('hidden');
-
-            userInfoDiv.innerHTML = `
+            document.getElementById('user-info').innerHTML = `
                 <img src="${user.pfp_url}" class="w-12 h-12 rounded-full border-2 border-purple-500 shadow-lg">
                 <div>
                     <p class="text-white font-bold text-base">@${user.username}</p>
-                    <p class="text-purple-400 text-[10px] font-mono tracking-tighter italic">FID: ${user.fid} • Onchain Verified</p>
+                    <p class="text-purple-400 text-[10px] font-mono italic">FID: ${user.fid} • Connected</p>
                 </div>
             `;
         }
@@ -172,7 +164,7 @@
 
         function gen() {
             const n = document.getElementById('n').value || "Project";
-            document.getElementById('out').innerText = `// Built via BaseKit & Neynar\ncontract ${n.replace(/\s/g,'')} { ... }`;
+            document.getElementById('out').innerText = `// Built via BaseKit\ncontract ${n.replace(/\s/g,'')} { ... }`;
             document.getElementById('res').classList.remove('hidden');
         }
 
