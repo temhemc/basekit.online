@@ -3,90 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaseKit.online | Pro Hub</title>
+    <title>BaseKit.online | Official Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #00050a; color: #fff; font-family: sans-serif; margin: 0; }
+        body { background-color: #00050a; color: #fff; font-family: sans-serif; margin: 0; padding: 0; }
         .base-blue { color: #0052FF; }
         .glass { background: rgba(0, 82, 255, 0.05); border: 1px solid rgba(0, 82, 255, 0.2); border-radius: 2rem; }
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal.active { display: flex; }
-        input, textarea { background: #000; border: 1px solid #1a2a4a; color: white; padding: 12px; border-radius: 10px; width: 100%; margin-bottom: 8px; outline: none; font-size: 13px; }
-        input:focus { border-color: #0052FF; }
+        input, textarea { background: #000; border: 1px solid #1a2a4a; color: white; padding: 12px; border-radius: 12px; width: 100%; margin-bottom: 8px; outline: none; }
+        .lang-btn { font-size: 10px; cursor: pointer; padding: 4px; opacity: 0.7; transition: 0.3s; }
+        .lang-btn:hover { opacity: 1; color: #0052FF; }
     </style>
 </head>
 <body>
 
     <nav class="p-4 flex justify-between items-center max-w-7xl mx-auto">
-        <div class="flex items-center gap-4">
-            <h1 class="text-xl font-bold italic">BASEKIT<span class="base-blue">.ONLINE</span></h1>
-            <div class="flex gap-2 text-[10px]">
-                <button class="hover:text-blue-500">🇺🇸 EN</button>
-                <button class="hover:text-blue-500">🇹🇷 TR</button>
-                <button class="hover:text-blue-500">🇩🇪 DE</button>
-                <button class="hover:text-blue-500">🇨🇳 ZH</button>
-                <button class="hover:text-blue-500">🇫🇷 FR</button>
-                <button class="hover:text-blue-500">🇰🇷 KO</button>
+        <div class="flex items-center gap-6">
+            <h1 class="text-2xl font-bold italic tracking-tighter">BASEKIT<span class="base-blue">.ONLINE</span></h1>
+            <div class="hidden md:flex gap-2">
+                <span class="lang-btn">🇺🇸 EN</span>
+                <span class="lang-btn">🇹🇷 TR</span>
+                <span class="lang-btn">🇩🇪 DE</span>
+                <span class="lang-btn">🇨🇳 ZH</span>
+                <span class="lang-btn">🇫🇷 FR</span>
+                <span class="lang-btn">🇰🇷 KO</span>
             </div>
         </div>
-        <button onclick="connect()" id="wallet-btn" class="bg-[#0052FF] px-6 py-2 rounded-full font-bold text-xs shadow-lg">Connect Any Wallet</button>
+        <button onclick="connect()" id="wallet-btn" class="bg-[#0052FF] px-6 py-2 rounded-full font-bold text-sm">Connect Any Wallet</button>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-4 mt-4">
-        <div class="relative group">
-            <img src="https://r.jina.ai/i/5661646675544d67" alt="Base Bridge" class="w-full rounded-[2rem] border-2 border-blue-600/30 shadow-[0_0_30px_rgba(0,82,255,0.2)]">
-            <div class="absolute bottom-0 left-0 right-0 bg-black/80 backdrop-blur-md p-6 rounded-b-[2rem] border-t border-blue-600/50 text-center">
-                <h2 class="text-2xl font-bold italic uppercase tracking-widest">Welcome to BaseKit</h2>
-                <p class="text-blue-400 text-sm italic">"I am here for you. Converting Information to Onchain Value."</p>
-            </div>
+    <div class="max-w-7xl mx-auto px-4 text-center mt-2">
+        <div style="width: 100%; text-align: center; margin-bottom: -10px;">
+            <a href="https://basekit.online" target="_blank">
+                <img src="https://r.jina.ai/i/5661646675544d67" 
+                     alt="Base Online to Onchain" 
+                     style="width: 100%; max-width: 1200px; border-radius: 2rem; border: 1px solid #0052FF; box-shadow: 0 0 40px rgba(0,82,255,0.3);">
+            </a>
+        </div>
+        
+        <div class="bg-black/60 backdrop-blur-xl border border-blue-500/40 inline-block px-12 py-6 rounded-[2rem] relative z-10 shadow-2xl">
+            <h2 class="text-3xl font-bold italic uppercase tracking-widest">Welcome to BaseKit</h2>
+            <p class="text-blue-400 text-sm italic mt-1">"I am here for you. Converting Information to Onchain Value."</p>
         </div>
     </div>
 
     <main class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 p-4 mt-12">
         <div class="lg:col-span-7">
-            <div class="glass h-[600px] overflow-hidden">
-                <iframe src="https://app.uniswap.org/#/swap?chain=base" width="100%" height="100%" style="border:none;"></iframe>
+            <div class="glass h-[600px] overflow-hidden border-blue-900/40">
+                <iframe 
+                    src="https://app.uniswap.org/#/swap?chain=base" 
+                    width="100%" 
+                    height="100%" 
+                    style="border: none;">
+                </iframe>
             </div>
         </div>
 
-        <div class="lg:col-span-5 space-y-6">
+        <div class="lg:col-span-5 space-y-8">
             <div class="glass p-8 border-l-4 border-blue-600">
-                <h3 class="text-xl font-bold mb-6 italic base-blue uppercase">Builder Factory</h3>
-                <div class="grid gap-4">
-                    <button onclick="openM('Token Lab')" class="p-5 bg-white/5 border border-white/10 rounded-2xl hover:border-blue-500 flex justify-between items-center transition">
-                        <span>🚀 Deploy Token (ERC-20)</span>
-                        <i class="fas fa-plus text-xs"></i>
+                <h3 class="text-xl font-bold mb-8 italic base-blue uppercase tracking-widest">Builder Factory</h3>
+                <div class="space-y-4">
+                    <button onclick="openM('Token Lab')" class="w-full p-6 bg-white/5 border border-white/10 rounded-2xl hover:border-blue-500 flex justify-between items-center transition">
+                        <span class="font-bold">🚀 Deploy Token (ERC-20)</span>
+                        <i class="fas fa-plus"></i>
                     </button>
-                    <button onclick="openM('NFT Engine')" class="p-5 bg-white/5 border border-white/10 rounded-2xl hover:border-purple-500 flex justify-between items-center transition">
-                        <span class="text-purple-400">🖼️ Deploy NFT (ERC-721)</span>
-                        <i class="fas fa-plus text-xs"></i>
+                    <button onclick="openM('NFT Engine')" class="w-full p-6 bg-white/5 border border-white/10 rounded-2xl hover:border-purple-500 flex justify-between items-center transition text-purple-400">
+                        <span class="font-bold">🖼️ Deploy NFT (ERC-721)</span>
+                        <i class="fas fa-plus"></i>
                     </button>
                 </div>
             </div>
         </div>
     </main>
 
-    <div id="modal" class="modal">
-        <div class="bg-[#000814] border border-blue-600 p-8 rounded-[2.5rem] w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div id="m" class="modal">
+        <div class="bg-[#000814] border border-blue-600 p-8 rounded-[3rem] w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <h3 id="m-title" class="text-2xl font-bold mb-6 base-blue italic"></h3>
             <div class="grid md:grid-cols-2 gap-4">
                 <input id="n" type="text" placeholder="Project Name *">
                 <input id="s" type="text" placeholder="Symbol *">
-                <input id="sup" type="number" placeholder="Total Supply (Adet)">
-                <input id="logo" type="text" placeholder="Logo URL (https://...)">
+                <input id="sup" type="number" placeholder="Total Supply (e.g. 1B)">
+                <input id="logo" type="text" placeholder="Logo Link (https://...)">
                 <input id="web" type="text" placeholder="Website URL">
-                <input id="tw" type="text" placeholder="Twitter / X Link">
-                <input id="tg" type="text" placeholder="Telegram Group">
-                <input id="fc" type="text" placeholder="Farcaster Channel">
+                <input id="tw" type="text" placeholder="Twitter / X">
+                <input id="tg" type="text" placeholder="Telegram Link">
+                <input id="fc" type="text" placeholder="Farcaster Handle">
             </div>
-            <textarea id="desc" placeholder="Describe your mission..." class="h-24"></textarea>
-            <button onclick="gen()" class="w-full bg-[#0052FF] py-4 mt-4 rounded-xl font-bold shadow-lg">GENERATE CONTRACT</button>
-            <div id="res" class="hidden mt-6 space-y-4">
-                <pre id="out" class="text-[10px] text-green-400 p-4 bg-black rounded-lg border border-green-900"></pre>
-                <button onclick="pay()" class="w-full border-2 border-blue-600 py-3 rounded-xl font-bold">VERIFY & PAY (0.00001 ETH)</button>
+            <textarea id="desc" placeholder="Mission Statement..." class="mt-4 h-24"></textarea>
+            <button onclick="gen()" class="w-full bg-[#0052FF] py-4 mt-6 rounded-2xl font-bold">GENERATE CONTRACT</button>
+            <div id="res" class="hidden mt-6">
+                <pre id="out" class="text-[10px] text-green-400 bg-black p-4 rounded-xl border border-green-900"></pre>
+                <button onclick="pay()" class="w-full border-2 border-blue-600 py-3 mt-4 rounded-xl font-bold">PAY 0.00001 ETH</button>
             </div>
-            <button onclick="closeM()" class="w-full text-gray-600 text-[10px] mt-6 uppercase">Close</button>
+            <button onclick="closeM()" class="w-full text-gray-600 text-[10px] mt-6 uppercase">Cancel</button>
         </div>
     </div>
 
@@ -101,12 +112,12 @@
             }
         }
 
-        function openM(t) { mode = t; document.getElementById('m-title').innerText = t; document.getElementById('modal').classList.add('active'); }
-        function closeM() { document.getElementById('modal').classList.remove('active'); }
+        function openM(t) { mode = t; document.getElementById('m-title').innerText = t; document.getElementById('m').classList.add('active'); }
+        function closeM() { document.getElementById('m').classList.remove('active'); }
 
         function gen() {
-            const name = document.getElementById('n').value || "Project";
-            const code = `// ${mode} for ${name}\n// Supply: ${document.getElementById('sup').value}\n// Twitter: ${document.getElementById('tw').value}\ncontract ${name.replace(/\s/g,'')} { ... }`;
+            const name = document.getElementById('n').value || "BaseProject";
+            const code = `// Contract: ${name}\n// Supply: ${document.getElementById('sup').value}\n// Twitter: ${document.getElementById('tw').value}\ncontract ${name.replace(/\s/g,'')} { ... }`;
             document.getElementById('out').innerText = code;
             document.getElementById('res').classList.remove('hidden');
         }
@@ -114,7 +125,7 @@
         async function pay() {
             const acc = await ethereum.request({ method: 'eth_requestAccounts' });
             await ethereum.request({ method: 'eth_sendTransaction', params: [{ from: acc[0], to: OWNER, value: '0x9184E72A000' }] });
-            alert("Sent!"); closeM();
+            alert("Success!"); closeM();
         }
     </script>
 </body>
