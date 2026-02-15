@@ -3,116 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaseKit.online | Ultimate Hub</title>
+    <title>BaseKit.online | Pro Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #00050a; color: #fff; font-family: sans-serif; overflow-x: hidden; }
+        body { background-color: #00050a; color: #fff; font-family: sans-serif; }
         .base-blue { color: #0052FF; }
         .bg-base-blue { background-color: #0052FF; }
-        .glass { background: rgba(0, 82, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(0, 82, 255, 0.1); border-radius: 1.5rem; }
+        .glass { background: rgba(0, 82, 255, 0.05); border: 1px solid rgba(0, 82, 255, 0.15); border-radius: 1.5rem; }
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal.active { display: flex; }
-        pre { background: #000; padding: 10px; border-radius: 8px; font-size: 11px; color: #00ff00; overflow-x: auto; border: 1px solid #1a2a4a; }
+        pre { background: #000; padding: 10px; border-radius: 8px; font-size: 10px; color: #00ff00; overflow-x: auto; border: 1px solid #1a2a4a; max-height: 150px; }
+        iframe { border-radius: 1.5rem; border: none; background: #000; }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-8">
 
     <div id="studio-modal" class="modal">
         <div class="bg-gray-900 border border-blue-600 p-8 rounded-3xl w-full max-w-lg">
-            <h3 id="modal-title" class="text-2xl font-bold mb-4 base-blue italic italic"></h3>
+            <h3 id="modal-title" class="text-2xl font-bold mb-4 base-blue italic uppercase"></h3>
             <div id="modal-inputs" class="space-y-4">
-                <input id="obj-name" type="text" placeholder="Name (e.g. Base Punk)" class="w-full bg-black border border-white/10 p-3 rounded-xl text-white outline-none focus:border-blue-500">
-                <input id="obj-symbol" type="text" placeholder="Symbol (e.g. BPUNK)" class="w-full bg-black border border-white/10 p-3 rounded-xl text-white outline-none focus:border-blue-500">
-                <button onclick="generateAsset()" class="w-full bg-base-blue py-4 rounded-xl font-bold hover:brightness-110 transition">GENERATE SMART CONTRACT</button>
+                <input id="obj-name" type="text" placeholder="Name (e.g. Base King)" class="w-full bg-black border border-white/10 p-3 rounded-xl text-white outline-none">
+                <input id="obj-symbol" type="text" placeholder="Symbol (e.g. KING)" class="w-full bg-black border border-white/10 p-3 rounded-xl text-white outline-none">
+                <button onclick="generateAsset()" class="w-full bg-base-blue py-4 rounded-xl font-bold hover:brightness-110">GENERATE CODE</button>
             </div>
             <div id="result-area" class="hidden mt-6 space-y-4">
-                <p class="text-xs text-blue-400">Copy this code to Remix IDE (remix.ethereum.org):</p>
                 <pre id="code-output"></pre>
-                <button onclick="payFee()" class="w-full border-2 border-blue-600 py-3 rounded-xl font-bold hover:bg-blue-600/20 transition">VERIFY & ACTIVATE (0.00001 ETH)</button>
+                <button onclick="payFee()" class="w-full border-2 border-blue-600 py-3 rounded-xl font-bold hover:bg-blue-600/20 uppercase text-xs">Verify & Pay (0.00001 ETH)</button>
             </div>
-            <button onclick="closeModal()" class="w-full text-gray-500 text-xs mt-6 uppercase tracking-widest">Close Window</button>
+            <button onclick="closeModal()" class="w-full text-gray-500 text-[10px] mt-6 uppercase">Close Window</button>
         </div>
     </div>
 
-    <nav class="p-6 flex justify-between items-center border-b border-blue-900/30 sticky top-0 bg-[#00050a]/80 backdrop-blur-md z-50">
+    <nav class="flex justify-between items-center mb-10 max-w-7xl mx-auto">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-base-blue rounded-full flex items-center justify-center font-bold text-xl shadow-lg shadow-blue-500/50">B</div>
-            <h1 class="text-2xl font-bold tracking-tighter uppercase">BASEKIT<span class="base-blue text-sm ml-1">.ONLINE</span></h1>
+            <div class="w-10 h-10 bg-base-blue rounded-full flex items-center justify-center font-bold text-xl">B</div>
+            <h1 class="text-2xl font-bold uppercase tracking-tighter">BASEKIT<span class="base-blue text-sm ml-1">.ONLINE</span></h1>
         </div>
-        <button onclick="connect()" id="wallet-btn" class="bg-base-blue px-8 py-2 rounded-full font-bold text-sm hover:scale-105 transition shadow-lg">Connect Wallet</button>
+        <button onclick="connect()" id="wallet-btn" class="bg-base-blue px-6 py-2 rounded-full font-bold text-sm shadow-lg hover:scale-105 transition">Connect Wallet</button>
     </nav>
 
-    <main class="container mx-auto px-4 py-12">
-        <div class="grid lg:grid-cols-12 gap-10">
-            
-            <div class="lg:col-span-7">
-                <h2 class="text-xs font-bold mb-4 text-gray-500 uppercase tracking-[0.3em]">Official Swap Hub</h2>
-                <div id="swap-widget" class="glass min-h-[600px] flex items-center justify-center relative overflow-hidden">
-                    <div id="widget-loader" class="text-center">
-                        <i class="fas fa-circle-notch fa-spin text-3xl base-blue mb-4"></i>
-                        <p class="text-xs animate-pulse">Initializing Base Liquidity...</p>
+    <main class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8">
+        
+        <div class="lg:col-span-7">
+            <div class="glass overflow-hidden h-[650px] relative">
+                <iframe 
+                    src="https://app.uniswap.org/#/swap?outputCurrency=0x4200000000000000000000000000000000000006&chain=base"
+                    width="100%" 
+                    height="100%"
+                    title="Uniswap Base">
+                </iframe>
+            </div>
+        </div>
+
+        <div class="lg:col-span-5 space-y-8">
+            <div class="glass p-8 border-l-4 border-blue-600">
+                <h3 class="text-xl font-bold mb-6 base-blue uppercase italic">Contract Studio</h3>
+                <div class="space-y-4">
+                    <div onclick="openStudio('Token Lab')" class="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500 cursor-pointer flex justify-between items-center">
+                        <span>🚀 Token Lab (ERC-20)</span>
+                        <i class="fas fa-chevron-right text-[10px]"></i>
+                    </div>
+                    <div onclick="openStudio('NFT Engine')" class="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-purple-500 cursor-pointer flex justify-between items-center">
+                        <span class="text-purple-400">🖼️ NFT Engine (ERC-721)</span>
+                        <i class="fas fa-chevron-right text-[10px]"></i>
                     </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-5 space-y-8">
-                <div class="glass p-8 border-l-4 border-blue-600">
-                    <h3 class="text-2xl font-bold mb-6 italic base-blue uppercase tracking-tighter">Contract Studio</h3>
-                    <div class="space-y-4">
-                        <div onclick="openStudio('Token Lab')" class="p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500 cursor-pointer transition-all group">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-bold group-hover:base-blue transition">Token Lab</h4>
-                                    <p class="text-[10px] text-gray-500 uppercase">Deploy ERC-20 on Base</p>
-                                </div>
-                                <i class="fas fa-coins text-blue-600"></i>
-                            </div>
-                        </div>
-                        <div onclick="openStudio('NFT Engine')" class="p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-purple-500 cursor-pointer transition-all group">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-bold group-hover:text-purple-400 transition">NFT Engine</h4>
-                                    <p class="text-[10px] text-gray-500 uppercase">Launch NFT Collection</p>
-                                </div>
-                                <i class="fas fa-images text-purple-600"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass p-8">
-                    <h3 class="text-xs font-bold mb-4 text-gray-500 uppercase">Live Market</h3>
-                    <div id="price-list" class="space-y-4 font-mono text-sm">
-                        </div>
+            <div class="glass p-8">
+                <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4 italic">Live Data</h3>
+                <div id="price-data" class="font-mono text-sm space-y-2">
+                    Loading markets...
                 </div>
             </div>
         </div>
     </main>
 
-    <footer class="p-10 text-center border-t border-white/5 mt-20">
-        <p class="text-[10px] text-gray-600 uppercase tracking-widest">Admin: 0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12 | © 2026 BaseKit</p>
-    </footer>
-
-    <script src="https://unpkg.com/@lifi/widget@latest/dist/index.umd.js"></script>
     <script>
         const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
-        let currentMode = "";
+        let mode = "";
 
-        // Wallet Connection
         async function connect() {
             if (window.ethereum) {
                 const acc = await ethereum.request({ method: 'eth_requestAccounts' });
-                const btn = document.getElementById('wallet-btn');
-                btn.innerText = acc[0].slice(0,6) + "..." + acc[0].slice(-4);
-                btn.classList.replace('bg-base-blue', 'bg-green-600');
-            } else { alert("Please install MetaMask!"); }
+                document.getElementById('wallet-btn').innerText = acc[0].slice(0,6)+"..."+acc[0].slice(-4);
+                document.getElementById('wallet-btn').style.background = "#16a34a";
+            }
         }
 
-        // Studio Logic
-        function openStudio(mode) {
-            currentMode = mode;
-            document.getElementById('modal-title').innerText = mode.toUpperCase();
+        function openStudio(m) {
+            mode = m;
+            document.getElementById('modal-title').innerText = m;
             document.getElementById('studio-modal').classList.add('active');
             document.getElementById('result-area').classList.add('hidden');
             document.getElementById('modal-inputs').classList.remove('hidden');
@@ -121,16 +103,11 @@
         function closeModal() { document.getElementById('studio-modal').classList.remove('active'); }
 
         function generateAsset() {
-            const name = document.getElementById('obj-name').value || "BaseAsset";
-            const symbol = document.getElementById('obj-symbol').value || "BASE";
-            let code = "";
-
-            if(currentMode === 'Token Lab') {
-                code = `// ERC-20 Token\ncontract ${name.replace(/\s/g, '')} is ERC20 {\n    constructor() ERC20("${name}", "${symbol}") {\n        _mint(msg.sender, 1000000 * 10 ** decimals());\n    }\n}`;
-            } else {
-                code = `// ERC-721 NFT\ncontract ${name.replace(/\s/g, '')}-NFT is ERC721 {\n    constructor() ERC721("${name}", "${symbol}") {}\n    function safeMint(address to, uint256 id) public {\n        _safeMint(to, id);\n    }\n}`;
-            }
-
+            const n = document.getElementById('obj-name').value || "BaseKitProject";
+            const s = document.getElementById('obj-symbol').value || "BKP";
+            let code = mode === 'Token Lab' 
+                ? `contract ${n.replace(/\s/g,'')} is ERC20 {\n constructor() ERC20("${n}","${s}") { _mint(msg.sender, 1000000 * 10**18); } }`
+                : `contract ${n.replace(/\s/g,'')} is ERC721 {\n constructor() ERC721("${n}","${s}") {} }`;
             document.getElementById('code-output').innerText = code;
             document.getElementById('modal-inputs').classList.add('hidden');
             document.getElementById('result-area').classList.remove('hidden');
@@ -138,40 +115,18 @@
 
         async function payFee() {
             const acc = await ethereum.request({ method: 'eth_requestAccounts' });
-            await ethereum.request({ method: 'eth_sendTransaction', params: [{
-                from: acc[0], to: OWNER, value: '0x9184E72A000' // 0.00001 ETH
-            }]});
-            alert("Success! Copy the code to Remix and deploy.");
-            closeModal();
+            await ethereum.request({ method: 'eth_sendTransaction', params: [{ from: acc[0], to: OWNER, value: '0x9184E72A000' }] });
+            alert("Verified!"); closeModal();
         }
 
-        // Markets
-        async function getPrices() {
+        async function fetchPrices() {
             try {
-                const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,base&vs_currencies=usd');
+                const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd');
                 const d = await r.json();
-                document.getElementById('price-list').innerHTML = `
-                    <div class="flex justify-between"><span>BITCOIN</span> <span class="base-blue">$${d.bitcoin.usd.toLocaleString()}</span></div>
-                    <div class="flex justify-between"><span>ETHEREUM</span> <span class="base-blue">$${d.ethereum.usd.toLocaleString()}</span></div>
-                    <div class="flex justify-between"><span>NETWORK</span> <span class="text-green-500">BASE MAINNET</span></div>
-                `;
+                document.getElementById('price-data').innerHTML = `BTC: $${d.bitcoin.usd.toLocaleString()}<br>ETH: $${d.ethereum.usd.toLocaleString()}<br>NETWORK: BASE`;
             } catch(e) {}
         }
-        getPrices();
-
-        // Initialize LiFi Swap (Uniswap Alternative for Base)
-        window.onload = () => {
-            const config = {
-                integrator: 'BaseKit',
-                containerStyle: { border: 'none', borderRadius: '1.5rem', width: '100%', height: '600px' },
-                fromChain: 8453, toChain: 8453, appearance: 'dark',
-                theme: { palette: { primary: { main: '#0052FF' } } }
-            };
-            if (typeof LiFiWidget !== 'undefined') {
-                document.getElementById('widget-loader').style.display = 'none';
-                new LiFiWidget.default(config, document.getElementById('swap-widget'));
-            }
-        };
+        fetchPrices();
     </script>
 </body>
 </html>
