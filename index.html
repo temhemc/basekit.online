@@ -16,8 +16,6 @@
         .lang-btn { cursor: pointer; padding: 6px 12px; border-radius: 8px; font-size: 11px; border: 1px solid rgba(255,255,255,0.1); }
         .lang-active { background: #0052FF !important; color: white !important; }
         .farcaster-card { background: rgba(133, 93, 205, 0.1); border: 1px solid rgba(133, 93, 205, 0.3); border-radius: 1.5rem; }
-        /* Görselin üstündeki metni daha okunaklı yapmak için */
-        .hero-glow { shadow-[0_0_80px_rgba(0,82,255,0.3)]; }
     </style>
 </head>
 <body class="p-4">
@@ -35,9 +33,9 @@
 
     <div class="max-w-7xl mx-auto text-center mb-24">
         <div class="relative inline-block w-full">
-            <img src="hero.png" 
-                 onerror="this.src='https://images.mirror-media.xyz/publication-images/6990d705-7f41-4560-84a8-6b19e917d057.png'"
-                 class="w-full max-w-[1100px] mx-auto rounded-[3rem] border-2 border-blue-500/20 shadow-[0_0_80px_rgba(0,82,255,0.3)] object-cover">
+            <img src="https://images.mirror-media.xyz/publication-images/6990d705-7f41-4560-84a8-6b19e917d057.png" 
+                 alt="Base Hub"
+                 class="w-full max-w-[1100px] mx-auto rounded-[3rem] border-2 border-blue-500/20 shadow-[0_0_80px_rgba(0,82,255,0.3)] object-cover h-[400px]">
             
             <div class="bg-black/70 backdrop-blur-3xl border border-blue-500/30 inline-block px-12 py-8 rounded-[3rem] -mt-20 relative z-10 shadow-2xl">
                 <h2 id="welcome-title" class="text-3xl font-bold uppercase italic tracking-[0.2em]">Welcome to BaseKit</h2>
@@ -47,7 +45,6 @@
     </div>
 
     <main class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8">
-        
         <div class="lg:col-span-7 space-y-8">
             <div class="glass h-[500px] overflow-hidden">
                 <iframe src="https://app.uniswap.org/#/swap?theme=dark&chain=base" width="100%" height="100%" style="border: none;"></iframe>
@@ -70,8 +67,7 @@
                 </div>
 
                 <div id="neynar-feed" class="space-y-4 text-sm text-gray-400 italic">
-                    <div id="user-info" class="hidden flex items-center gap-4 p-4 bg-purple-500/10 rounded-2xl border border-purple-500/20">
-                        </div>
+                    <div id="user-info" class="hidden flex items-center gap-4 p-4 bg-purple-500/10 rounded-2xl border border-purple-500/20"></div>
                     <p id="feed-placeholder">Connect your Farcaster account to sync with BaseKit.</p>
                 </div>
             </div>
@@ -99,9 +95,6 @@
                 <input id="n" type="text" placeholder="Project Name *">
                 <input id="s" type="text" placeholder="Symbol *">
                 <input id="sup" type="number" placeholder="Total Supply">
-                <input id="logo" type="text" placeholder="Logo URL">
-                <input id="tw" type="text" placeholder="Twitter / X">
-                <input id="fc" type="text" placeholder="Farcaster Handle">
             </div>
             <textarea id="desc" placeholder="Project Description..." class="mt-4 h-24"></textarea>
             <button onclick="gen()" class="w-full bg-[#0052FF] py-5 mt-6 rounded-2xl font-bold shadow-lg">GENERATE CONTRACT</button>
@@ -124,25 +117,16 @@
             tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: "Sizin için buradayım. Bilgiyi Onchain Değere Dönüştürüyoruz.", factory: "Geliştirici Fabrikası", token: "🚀 Yeni Token Oluştur (ERC-20)", nft: "🖼️ NFT Koleksiyonu Başlat (ERC-721)" }
         };
 
-        // NEYNAR SUCCESS CALLBACK
         function onSignInSuccess(data) {
             const user = data.user;
             document.getElementById('user-info').classList.remove('hidden');
             document.getElementById('feed-placeholder').style.display = 'none';
             document.querySelector('.neynar_signin').style.display = 'none';
-
-            document.getElementById('user-info').innerHTML = `
-                <img src="${user.pfp_url}" class="w-12 h-12 rounded-full border-2 border-purple-500 shadow-lg">
-                <div>
-                    <p class="text-white font-bold text-base">@${user.username}</p>
-                    <p class="text-purple-400 text-[10px] font-mono italic">FID: ${user.fid} • Connected</p>
-                </div>
-            `;
+            document.getElementById('user-info').innerHTML = `<img src="${user.pfp_url}" class="w-12 h-12 rounded-full border-2 border-purple-500 shadow-lg"><div><p class="text-white font-bold text-base">@${user.username}</p><p class="text-purple-400 text-[10px] font-mono italic">FID: ${user.fid} • Connected</p></div>`;
         }
 
         function changeLang(lang, btn) {
-            const t = dict[lang];
-            if(!t) return;
+            const t = dict[lang]; if(!t) return;
             document.getElementById('welcome-title').innerText = t.welcome;
             document.getElementById('welcome-sub').innerText = t.sub;
             document.getElementById('factory-title').innerText = t.factory;
@@ -161,18 +145,8 @@
 
         function openM(t) { mode = t; document.getElementById('m-title').innerText = t; document.getElementById('m').classList.add('active'); }
         function closeM() { document.getElementById('m').classList.remove('active'); }
-
-        function gen() {
-            const n = document.getElementById('n').value || "Project";
-            document.getElementById('out').innerText = `// Built via BaseKit\ncontract ${n.replace(/\s/g,'')} { ... }`;
-            document.getElementById('res').classList.remove('hidden');
-        }
-
-        async function pay() {
-            const acc = await ethereum.request({ method: 'eth_requestAccounts' });
-            await ethereum.request({ method: 'eth_sendTransaction', params: [{ from: acc[0], to: OWNER, value: '0x9184E72A000' }] });
-            alert("Success!"); closeM();
-        }
+        function gen() { const n = document.getElementById('n').value || "Project"; document.getElementById('out').innerText = `// Built via BaseKit\ncontract ${n.replace(/\s/g,'')} { ... }`; document.getElementById('res').classList.remove('hidden'); }
+        async function pay() { const acc = await ethereum.request({ method: 'eth_requestAccounts' }); await ethereum.request({ method: 'eth_sendTransaction', params: [{ from: acc[0], to: OWNER, value: '0x9184E72A000' }] }); alert("Success!"); closeM(); }
     </script>
 </body>
 </html>
