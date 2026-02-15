@@ -58,13 +58,24 @@
             <div class="farcaster-card p-8">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-lg font-bold flex items-center gap-2">
-                        <i class="fab fa-ethereum text-purple-400"></i> Farcaster Feed (via Neynar)
+                        <i class="fab fa-ethereum text-purple-400"></i> Farcaster Social Hub
                     </h3>
-                    <button class="bg-purple-600 px-4 py-1 rounded-full text-xs font-bold hover:bg-purple-500 transition">Login with Farcaster</button>
-                </div>
-                <div id="neynar-feed" class="space-y-4 text-sm text-gray-400 italic">
-                    <p>Connect your Neynar API to see live Farcaster casts here...</p>
+                    
+                    <div id="farcaster-auth">
+                        <div class="neynar_signin" 
+                             data-client_id="a8b7c178-8d87-4ace-840a-4bc908166c29" 
+                             data-success-callback="onSignInSuccess" 
+                             data-theme="dark"
+                             data-variant="farcaster">
+                        </div>
                     </div>
+                </div>
+
+                <div id="neynar-feed" class="space-y-4 text-sm text-gray-400 italic">
+                    <div id="user-info" class="hidden flex items-center gap-4 p-4 bg-purple-500/10 rounded-2xl border border-purple-500/20">
+                        </div>
+                    <p id="feed-placeholder">Connect your Farcaster account to sync with BaseKit.</p>
+                </div>
             </div>
         </div>
 
@@ -104,6 +115,8 @@
         </div>
     </div>
 
+    <script src="https://neynarxyz.github.io/siwn/raw/1.2.0/index.js" async></script>
+
     <script>
         const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
         let mode = "";
@@ -112,6 +125,28 @@
             en: { welcome: "Welcome to BaseKit", sub: "I am here for you. Converting Information to Onchain Value.", factory: "Builder Factory", token: "🚀 Deploy New Token (ERC-20)", nft: "🖼️ Launch NFT Collection (ERC-721)", swap: "Decentralized Bridge Terminal" },
             tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: "Sizin için buradayım. Bilgiyi Onchain Değere Dönüştürüyoruz.", factory: "Geliştirici Fabrikası", token: "🚀 Yeni Token Oluştur (ERC-20)", nft: "🖼️ NFT Koleksiyonu Başlat (ERC-721)", swap: "Merkeziyetsiz Takas Terminali" }
         };
+
+        // Farcaster Giriş Başarılı Olunca Çalışacak Fonksiyon
+        function onSignInSuccess(data) {
+            console.log("Farcaster Success:", data);
+            const user = data.user;
+            const userInfoDiv = document.getElementById('user-info');
+            const placeholder = document.getElementById('feed-placeholder');
+            const authDiv = document.querySelector('.neynar_signin');
+
+            // Giriş butonunu gizle, profil bilgisini göster
+            authDiv.style.display = 'none';
+            placeholder.style.display = 'none';
+            userInfoDiv.classList.remove('hidden');
+
+            userInfoDiv.innerHTML = `
+                <img src="${user.pfp_url}" class="w-12 h-12 rounded-full border-2 border-purple-500 shadow-lg">
+                <div>
+                    <p class="text-white font-bold text-base">@${user.username}</p>
+                    <p class="text-purple-400 text-[10px] font-mono tracking-tighter italic">FID: ${user.fid} • Onchain Verified</p>
+                </div>
+            `;
+        }
 
         function changeLang(lang, btn) {
             const t = dict[lang];
@@ -145,14 +180,6 @@
             const acc = await ethereum.request({ method: 'eth_requestAccounts' });
             await ethereum.request({ method: 'eth_sendTransaction', params: [{ from: acc[0], to: OWNER, value: '0x9184E72A000' }] });
             alert("Success!"); closeM();
-        }
-
-        // NEYNAR API TASLAĞI (Buraya kendi API Key'ini ekleyince çalışır)
-        async function fetchNeynarFeed() {
-            // Not: API Key frontend'de açık bırakılmamalıdır, bu sadece HTML-tabanlı bir örnektir.
-            // fetch('https://api.neynar.com/v2/farcaster/feed?feed_type=filter&filter_type=global', {
-            //     headers: { 'api_key': 'YOUR_API_KEY' }
-            // }).then(res => res.json()).then(data => console.log(data));
         }
     </script>
 </body>
