@@ -13,8 +13,8 @@
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal.active { display: flex; }
         input, textarea { background: #000; border: 1px solid #1a2a4a; color: white; padding: 12px; border-radius: 12px; width: 100%; margin-bottom: 8px; outline: none; }
-        .lang-btn { cursor: pointer; padding: 6px 12px; border-radius: 8px; transition: 0.3s; font-size: 11px; border: 1px solid rgba(255,255,255,0.1); }
-        .lang-btn:hover { border-color: #0052FF; color: #0052FF; }
+        .lang-btn { cursor: pointer; padding: 6px 12px; border-radius: 8px; transition: 0.3s; font-size: 11px; border: 1px solid rgba(255,255,255,0.1); color: #888; }
+        .lang-btn:hover { border-color: #0052FF; color: #fff; }
         .lang-active { background: #0052FF !important; color: white !important; border-color: #0052FF !important; }
     </style>
 </head>
@@ -37,21 +37,24 @@
     </nav>
 
     <div class="max-w-7xl mx-auto text-center mb-24">
-        <img src="https://r.jina.ai/i/5661646675544d67" 
-             id="main-image"
-             alt="Base Bridge Vision" 
-             onerror="this.src='https://images.mirror-media.xyz/publication-images/6990d705-7f41-4560-84a8-6b19e917d057.png'"
-             class="w-full max-w-[1200px] mx-auto rounded-[2.5rem] border-2 border-blue-600/30 shadow-[0_0_60px_rgba(0,82,255,0.3)]">
-        
-        <div class="bg-black/80 backdrop-blur-2xl border border-blue-500/30 inline-block px-12 py-8 rounded-[3rem] -mt-16 relative z-10 shadow-2xl">
-            <h2 id="welcome-title" class="text-3xl font-bold uppercase italic tracking-[0.2em]">Welcome to BaseKit</h2>
-            <p id="welcome-sub" class="text-blue-400 text-sm italic mt-2 font-light">"I am here for you. Converting Information to Onchain Value."</p>
+        <div class="relative inline-block w-full">
+            <img src="https://r.jina.ai/i/5661646675544d67" 
+                 id="main-image"
+                 alt="Base Bridge Vision" 
+                 loading="lazy"
+                 onerror="this.src='https://images.mirror-media.xyz/publication-images/6990d705-7f41-4560-84a8-6b19e917d057.png'"
+                 class="w-full max-w-[1200px] mx-auto rounded-[2.5rem] border-2 border-blue-600/30 shadow-[0_0_60px_rgba(0,82,255,0.2)] min-h-[300px] bg-blue-900/10">
+            
+            <div class="bg-black/80 backdrop-blur-2xl border border-blue-500/30 inline-block px-12 py-8 rounded-[3rem] -mt-16 relative z-10 shadow-2xl">
+                <h2 id="welcome-title" class="text-3xl font-bold uppercase italic tracking-[0.2em]">Welcome to BaseKit</h2>
+                <p id="welcome-sub" class="text-blue-400 text-sm italic mt-2 font-light">"I am here for you. Converting Information to Onchain Value."</p>
+            </div>
         </div>
     </div>
 
     <main class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-10">
         <div class="lg:col-span-7">
-            <h3 id="swap-header" class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.4em] mb-4 ml-6">Decentralized Bridge Terminal</h3>
+            <h3 id="swap-header" class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.4em] mb-4 ml-6 uppercase">Decentralized Bridge Terminal</h3>
             <div class="glass h-[600px] overflow-hidden">
                 <iframe src="https://app.uniswap.org/#/swap?theme=dark&chain=base" width="100%" height="100%" style="border: none;"></iframe>
             </div>
@@ -62,10 +65,12 @@
                 <h3 id="factory-title" class="text-xl font-bold mb-8 italic base-blue uppercase tracking-widest">Builder Factory</h3>
                 <div class="space-y-4">
                     <button onclick="openM('Token Lab')" class="w-full p-6 bg-white/5 border border-white/10 rounded-[1.5rem] hover:border-blue-500 flex justify-between items-center transition group">
-                        <span id="btn-token" class="font-bold uppercase text-xs">🚀 Deploy Token (ERC-20)</span>
+                        <span id="btn-token" class="font-bold">🚀 Deploy New Token (ERC-20)</span>
+                        <i class="fas fa-plus opacity-30"></i>
                     </button>
                     <button onclick="openM('NFT Engine')" class="w-full p-6 bg-white/5 border border-white/10 rounded-[1.5rem] hover:border-purple-500 flex justify-between items-center transition group text-purple-400">
-                        <span id="btn-nft" class="font-bold uppercase text-xs">🖼️ Deploy NFT (ERC-721)</span>
+                        <span id="btn-nft" class="font-bold">🖼️ Launch NFT Collection (ERC-721)</span>
+                        <i class="fas fa-plus opacity-30"></i>
                     </button>
                 </div>
             </div>
@@ -79,17 +84,17 @@
                 <input id="n" type="text" placeholder="Project Name *">
                 <input id="s" type="text" placeholder="Symbol *">
                 <input id="sup" type="number" placeholder="Total Supply">
-                <input id="logo" type="text" placeholder="Logo Direct Link">
+                <input id="logo" type="text" placeholder="Logo Direct Link (URL)">
                 <input id="web" type="text" placeholder="Website URL">
                 <input id="tw" type="text" placeholder="Twitter / X">
                 <input id="tg" type="text" placeholder="Telegram Link">
                 <input id="fc" type="text" placeholder="Farcaster Handle">
             </div>
-            <textarea id="desc" placeholder="Mission Statement..." class="mt-4 h-24"></textarea>
-            <button onclick="gen()" class="w-full bg-[#0052FF] py-5 mt-6 rounded-2xl font-bold text-lg hover:brightness-110 shadow-lg">GENERATE CONTRACT</button>
+            <textarea id="desc" placeholder="Project Mission..." class="mt-4 h-24"></textarea>
+            <button onclick="gen()" class="w-full bg-[#0052FF] py-5 mt-6 rounded-2xl font-bold text-lg hover:brightness-110">GENERATE CONTRACT</button>
             <div id="res" class="hidden mt-8 p-6 bg-black rounded-2xl border border-green-500/30">
                 <pre id="out" class="text-[10px] text-green-400 overflow-x-auto"></pre>
-                <button onclick="pay()" class="w-full border-2 border-blue-600 py-4 mt-6 rounded-xl font-bold">PAY 0.00001 ETH</button>
+                <button onclick="pay()" class="w-full border-2 border-blue-600 py-3 mt-4 rounded-xl font-bold">VERIFY & PAY (0.00001 ETH)</button>
             </div>
             <button onclick="closeM()" class="w-full text-gray-600 text-[10px] mt-8 uppercase font-bold">Back</button>
         </div>
@@ -99,22 +104,26 @@
         const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
         let mode = "";
 
+        // DİL ÇEVİRİLERİ
         const dict = {
-            en: { welcome: "Welcome to BaseKit", factory: "Builder Factory", token: "🚀 Deploy Token (ERC-20)", nft: "🖼️ Deploy NFT (ERC-721)", swap: "Decentralized Bridge Terminal" },
-            tr: { welcome: "BaseKit'e Hoş Geldiniz", factory: "Geliştirici Fabrikası", token: "🚀 Token Oluştur (ERC-20)", nft: "🖼️ NFT Başlat (ERC-721)", swap: "Merkeziyetsiz Takas Terminali" },
-            de: { welcome: "Willkommen bei BaseKit", factory: "Builder Fabrik", token: "🚀 Token Bereitstellen", nft: "🖼️ NFT Starten", swap: "Dezentrales Terminal" },
-            zh: { welcome: "欢迎来到 BaseKit", factory: "建设者工厂", token: "🚀 部署代币", nft: "🖼️ 启动 NFT", swap: "去中心化终端" },
-            fr: { welcome: "Bienvenue sur BaseKit", factory: "Usine de Constructeurs", token: "🚀 Déployer un Token", nft: "🖼️ Lancer un NFT", swap: "Terminal Décentralisé" },
-            ko: { welcome: "BaseKit에 오신 것을 환영합니다", factory: "빌더 팩토리", token: "🚀 토큰 배포", nft: "🖼️ NFT 시작", swap: "탈중앙화 터미널" }
+            en: { welcome: "Welcome to BaseKit", sub: "I am here for you. Converting Information to Onchain Value.", factory: "Builder Factory", token: "🚀 Deploy New Token (ERC-20)", nft: "🖼️ Launch NFT Collection (ERC-721)", swap: "Decentralized Bridge Terminal" },
+            tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: "Sizin için buradayım. Bilgiyi Onchain Değere Dönüştürüyoruz.", factory: "Geliştirici Fabrikası", token: "🚀 Yeni Token Oluştur (ERC-20)", nft: "🖼️ NFT Koleksiyonu Başlat (ERC-721)", swap: "Merkeziyetsiz Takas Terminali" },
+            de: { welcome: "Willkommen bei BaseKit", sub: "Ich bin für Sie da. Informationen in Onchain-Wert umwandeln.", factory: "Builder Fabrik", token: "🚀 Token Bereitstellen", nft: "🖼️ NFT Starten", swap: "Dezentrales Terminal" },
+            zh: { welcome: "欢迎来到 BaseKit", sub: "我在这里为您服务。将信息转化为链上价值。", factory: "建设者工厂", token: "🚀 部署代币", nft: "🖼️ 启动 NFT", swap: "去中心化终端" },
+            fr: { welcome: "Bienvenue sur BaseKit", sub: "Je suis là pour vous. Convertir l'information en valeur Onchain.", factory: "Usine de Constructeurs", token: "🚀 Déployer un Token", nft: "🖼️ Lancer un NFT", swap: "Terminal Décentralisé" },
+            ko: { welcome: "BaseKit에 오신 것을 환영합니다", sub: "여러분을 위해 여기 있습니다. 정보를 온체인 가치로 전환합니다.", factory: "빌더 팩토리", token: "🚀 토큰 배포", nft: "🖼️ NFT 시작", swap: "탈중앙화 터미널" }
         };
 
         function changeLang(lang, btn) {
             const t = dict[lang];
+            if(!t) return;
             document.getElementById('welcome-title').innerText = t.welcome;
+            document.getElementById('welcome-sub').innerText = t.sub;
             document.getElementById('factory-title').innerText = t.factory;
             document.getElementById('btn-token').innerText = t.token;
             document.getElementById('btn-nft').innerText = t.nft;
             document.getElementById('swap-header').innerText = t.swap;
+            
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('lang-active'));
             btn.classList.add('lang-active');
         }
@@ -130,9 +139,8 @@
         function closeM() { document.getElementById('m').classList.remove('active'); }
 
         function gen() {
-            const name = document.getElementById('n').value || "Project";
-            const code = `// Contract: ${name}\n// Supply: ${document.getElementById('sup').value}\ncontract ${name.replace(/\s/g,'')} { ... }`;
-            document.getElementById('out').innerText = code;
+            const n = document.getElementById('n').value || "BaseProject";
+            document.getElementById('out').innerText = `// Contract: ${n}\n// Built via BaseKit.online\ncontract ${n.replace(/\s/g,'')} { ... }`;
             document.getElementById('res').classList.remove('hidden');
         }
 
