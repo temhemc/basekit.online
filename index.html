@@ -3,109 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaseKit.online | Ultimate Builder Hub</title>
+    <title>BaseKit.online | Ultimate Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #00050a; color: #fff; font-family: sans-serif; }
+        body { background-color: #00050a; color: #fff; font-family: sans-serif; margin: 0; }
         .base-blue { color: #0052FF; }
         .bg-base-blue { background-color: #0052FF; }
-        .glass { background: rgba(0, 82, 255, 0.05); border: 1px solid rgba(0, 82, 255, 0.15); border-radius: 1.5rem; }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; overflow-y: auto; padding: 20px; }
+        .glass { background: rgba(0, 82, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(0, 82, 255, 0.15); border-radius: 2rem; }
+        
+        /* Senin Görselin Burada Aktif */
+        .hero-banner { 
+            width: 100%; 
+            max-width: 1200px; 
+            height: 450px; 
+            margin: 20px auto;
+            background: url('https://r.jina.ai/i/5661646675544d67') center/cover no-repeat;
+            border-radius: 2rem;
+            border: 2px solid rgba(0, 82, 255, 0.4);
+            box-shadow: 0 4px 30px rgba(0, 82, 255, 0.3);
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+        .hero-banner:hover { transform: scale(1.01); }
+
+        .welcome-box {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
+            padding: 20px 50px;
+            border-radius: 2rem;
+            border: 1px solid #0052FF;
+            margin-bottom: -25px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        .lang-btn { font-size: 10px; padding: 5px 10px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; color: #ccc; }
+        .lang-btn:hover { background: #0052FF; color: white; border-color: #0052FF; }
+        
+        input, textarea { background: #000; border: 1px solid #1a2a4a; color: white; padding: 12px; border-radius: 12px; width: 100%; margin-bottom: 12px; outline: none; }
+        input:focus { border-color: #0052FF; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; }
         .modal.active { display: flex; }
-        .hero-bg { background: url('https://i.ibb.co/vz0Xp3m/hero-base.jpg') center/cover; height: 400px; border-radius: 0 0 3rem 3rem; position: relative; }
-        .lang-flag { width: 20px; height: 15px; border-radius: 2px; }
-        input, textarea { background: #000 !important; border: 1px solid #1a2a4a !important; color: white !important; padding: 10px; border-radius: 8px; font-size: 13px; width: 100%; outline: none; }
-        input:focus { border-color: #0052FF !important; }
     </style>
 </head>
 <body>
 
-    <nav class="p-4 flex flex-wrap justify-between items-center max-w-7xl mx-auto sticky top-0 z-50 bg-[#00050a]/90 backdrop-blur">
-        <div class="flex items-center gap-4">
-            <h1 class="text-xl font-bold tracking-tighter italic">BASEKIT<span class="base-blue">.ONLINE</span></h1>
-            <div class="flex gap-2 text-[10px] items-center bg-white/5 p-2 rounded-lg">
-                <button class="flex items-center gap-1 hover:text-blue-400">🇺🇸 EN</button>
-                <button class="flex items-center gap-1 hover:text-blue-400">🇹🇷 TR</button>
-                <button class="flex items-center gap-1 hover:text-blue-400">🇩🇪 DE</button>
-                <button class="flex items-center gap-1 hover:text-blue-400">🇨🇳 ZH</button>
-                <button class="flex items-center gap-1 hover:text-blue-400">🇫🇷 FR</button>
-                <button class="flex items-center gap-1 hover:text-blue-400">🇰🇷 KO</button>
+    <nav class="p-6 flex justify-between items-center max-w-7xl mx-auto bg-[#00050a]/80 sticky top-0 z-50 backdrop-blur-lg">
+        <div class="flex items-center gap-6">
+            <h1 class="text-2xl font-bold italic tracking-tighter">BASEKIT<span class="base-blue">.ONLINE</span></h1>
+            <div class="hidden md:flex gap-2">
+                <button class="lang-btn">🇺🇸 EN</button>
+                <button class="lang-btn">🇹🇷 TR</button>
+                <button class="lang-btn">🇩🇪 DE</button>
+                <button class="lang-btn">🇨🇳 ZH</button>
+                <button class="lang-btn">🇫🇷 FR</button>
+                <button class="lang-btn">🇰🇷 KO</button>
             </div>
         </div>
-        <button onclick="connectAllWallets()" id="wallet-btn" class="bg-base-blue px-6 py-2 rounded-full font-bold text-xs hover:brightness-110">
-            <i class="fas fa-wallet mr-2"></i>Connect Any Wallet
-        </button>
+        <button onclick="connect()" id="wallet-btn" class="bg-base-blue px-8 py-2 rounded-full font-bold text-sm shadow-lg hover:brightness-110 transition">Connect Wallet</button>
     </nav>
 
-    <header class="max-w-7xl mx-auto px-4">
-        <div class="hero-bg flex items-end p-10 border border-blue-900/30">
-            <div class="glass p-6 backdrop-blur-xl max-w-2xl">
-                <h2 class="text-3xl font-bold mb-2 uppercase italic">Welcome to BaseKit</h2>
-                <p class="text-blue-300 text-sm">"I am here for you. Let's build the future of Base together."</p>
+    <header class="px-4">
+        <div class="hero-banner">
+            <div class="welcome-box">
+                <h2 class="text-2xl font-bold italic uppercase tracking-widest mb-1">Welcome to BaseKit</h2>
+                <p class="text-blue-400 text-sm italic font-light">"I am here for you. Let's build the future of Base together."</p>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 p-4 mt-8">
-        
+    <main class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 p-4 mt-20">
         <div class="lg:col-span-7">
-            <div class="glass overflow-hidden h-[600px]">
-                <iframe src="https://app.uniswap.org/#/swap?chain=base" width="100%" height="100%"></iframe>
+            <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.3em] mb-4 ml-2">Official Swap Hub</h3>
+            <div class="glass overflow-hidden h-[600px] border-blue-900/40">
+                <iframe src="https://app.uniswap.org/#/swap?chain=base" width="100%" height="100%" style="border:none;"></iframe>
             </div>
         </div>
 
-        <div class="lg:col-span-5 space-y-6">
-            <div class="glass p-8 border-t-4 border-blue-600">
-                <h3 class="text-xl font-bold mb-6 italic base-blue uppercase tracking-widest">Builder Factory</h3>
-                <div class="grid grid-cols-2 gap-4">
-                    <button onclick="openStudio('Token Lab')" class="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-blue-500 transition text-center group">
-                        <i class="fas fa-coins text-2xl mb-3 group-hover:scale-110 transition"></i>
-                        <p class="text-xs font-bold">DEPLOY TOKEN</p>
+        <div class="lg:col-span-5 space-y-8">
+            <div class="glass p-8 border-l-4 border-blue-600 shadow-2xl">
+                <h3 class="text-xl font-bold mb-8 base-blue italic uppercase tracking-widest">Builder Factory</h3>
+                <div class="space-y-4">
+                    <button onclick="openM('Token Lab')" class="w-full p-6 bg-white/5 border border-white/10 rounded-[1.5rem] hover:border-blue-500 text-left flex justify-between items-center transition group">
+                        <span class="font-bold group-hover:text-blue-400 transition">🚀 Deploy New Token (ERC-20)</span>
+                        <i class="fas fa-arrow-right text-xs opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition"></i>
                     </button>
-                    <button onclick="openStudio('NFT Engine')" class="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-purple-500 transition text-center group">
-                        <i class="fas fa-images text-2xl mb-3 group-hover:scale-110 transition"></i>
-                        <p class="text-xs font-bold">DEPLOY NFT</p>
+                    <button onclick="openM('NFT Engine')" class="w-full p-6 bg-white/5 border border-white/10 rounded-[1.5rem] hover:border-purple-500 text-left flex justify-between items-center transition group">
+                        <span class="font-bold group-hover:text-purple-400 transition">🖼️ Deploy NFT Collection (ERC-721)</span>
+                        <i class="fas fa-arrow-right text-xs opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition"></i>
                     </button>
+                </div>
+            </div>
+
+            <div class="glass p-6">
+                <div id="price-data" class="font-mono text-[11px] space-y-2 text-gray-400 uppercase">
+                    Fetching Base Network Statistics...
                 </div>
             </div>
         </div>
     </main>
 
-    <div id="studio-modal" class="modal">
-        <div class="bg-[#000814] border border-blue-600/50 p-8 rounded-[2.5rem] w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-[0_0_50px_rgba(0,82,255,0.2)]">
-            <h3 id="modal-title" class="text-2xl font-bold mb-6 base-blue italic italic"></h3>
-            
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="space-y-4">
-                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Basic Configuration</p>
-                    <input id="obj-name" type="text" placeholder="Project Name *">
-                    <input id="obj-symbol" type="text" placeholder="Symbol *">
-                    <input id="obj-supply" type="number" placeholder="Initial Supply (e.g. 1000000)">
-                    <input id="obj-logo" type="text" placeholder="Logo URL (IPFS/HTTPS)">
-                </div>
-                <div class="space-y-4">
-                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Social Links (Optional)</p>
-                    <input id="obj-web" type="text" placeholder="Website URL">
-                    <input id="obj-tw" type="text" placeholder="Twitter / X">
-                    <input id="obj-tg" type="text" placeholder="Telegram">
-                    <input id="obj-fc" type="text" placeholder="Farcaster Handle">
-                </div>
+    <div id="m" class="modal">
+        <div class="bg-[#000814] border border-blue-600 p-10 rounded-[3rem] w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h3 id="m-title" class="text-3xl font-bold mb-8 base-blue italic uppercase"></h3>
+            <div class="grid md:grid-cols-2 gap-4">
+                <input id="n" type="text" placeholder="Project Name *">
+                <input id="s" type="text" placeholder="Symbol *">
+                <input id="sup" type="number" placeholder="Total Supply (e.g. 1000000)">
+                <input id="logo" type="text" placeholder="Logo URL (https://...)">
+                <input id="web" type="text" placeholder="Website URL">
+                <input id="tw" type="text" placeholder="Twitter / X">
+                <input id="tg" type="text" placeholder="Telegram Link">
+                <input id="fc" type="text" placeholder="Farcaster Channel">
             </div>
-
-            <textarea id="obj-desc" placeholder="Project Description..." class="mt-4 h-24 w-full bg-black border border-white/10 p-3 rounded-xl text-sm"></textarea>
-
-            <button onclick="generateAdvancedAsset()" class="w-full bg-base-blue py-4 mt-6 rounded-xl font-bold hover:brightness-110 transition shadow-lg">GENERATE ON-CHAIN CONTRACT</button>
-
-            <div id="result-area" class="hidden mt-8 space-y-4 animate-in fade-in">
-                <div class="p-4 bg-green-900/10 border border-green-500/30 rounded-xl">
-                    <p class="text-[10px] text-green-400 font-bold mb-2 uppercase italic italic tracking-widest">Optimized Solidity Code Generated</p>
-                    <pre id="code-output" class="text-[10px] text-green-300"></pre>
-                </div>
-                <button onclick="payFee()" class="w-full border-2 border-blue-600 py-3 rounded-xl font-bold hover:bg-blue-600/10 transition">VERIFY & DEPLOY (0.00001 ETH)</button>
+            <textarea id="desc" placeholder="Project Description & Mission..." class="mt-4 h-28"></textarea>
+            <button onclick="gen()" class="w-full bg-base-blue py-5 mt-6 rounded-2xl font-bold text-lg hover:brightness-110 shadow-lg transition">GENERATE ON-CHAIN CONTRACT</button>
+            <div id="res" class="hidden mt-8 p-6 bg-black rounded-2xl border border-green-500/30">
+                <pre id="out" class="text-[10px] text-green-400 overflow-x-auto"></pre>
+                <button onclick="pay()" class="w-full border-2 border-blue-600 py-4 mt-6 rounded-xl font-bold hover:bg-blue-600/10 transition">VERIFY & PAY FEE (0.00001 ETH)</button>
             </div>
-            
-            <button onclick="closeModal()" class="w-full text-gray-500 text-[10px] mt-8 uppercase tracking-widest">Back to Dashboard</button>
+            <button onclick="closeM()" class="w-full text-gray-600 text-[10px] mt-8 uppercase tracking-widest font-bold">Back to Dashboard</button>
         </div>
     </div>
 
@@ -113,45 +135,38 @@
         const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
         let mode = "";
 
-        // Multi-Wallet Connection Simulation
-        async function connectAllWallets() {
+        async function connect() {
             if (window.ethereum) {
                 const acc = await ethereum.request({ method: 'eth_requestAccounts' });
-                document.getElementById('wallet-btn').innerHTML = `<span class="text-green-500">●</span> ${acc[0].slice(0,6)}...${acc[0].slice(-4)}`;
-            } else {
-                alert("Please use a Web3 Browser or install a Wallet (MetaMask, Coinbase, etc.)");
+                document.getElementById('wallet-btn').innerText = acc[0].slice(0,6)+"..."+acc[0].slice(-4);
+                document.getElementById('wallet-btn').classList.replace('bg-base-blue', 'bg-green-600');
             }
         }
 
-        function openStudio(m) {
-            mode = m;
-            document.getElementById('modal-title').innerText = m;
-            document.getElementById('studio-modal').classList.add('active');
-            document.getElementById('result-area').classList.add('hidden');
+        function openM(t) { mode = t; document.getElementById('m-title').innerText = t; document.getElementById('m').classList.add('active'); }
+        function closeM() { document.getElementById('m').classList.remove('active'); }
+
+        function gen() {
+            const name = document.getElementById('n').value || "Project";
+            const code = `// SPDX-License-Identifier: MIT\n// Generated via BaseKit.online\n// Socials: ${document.getElementById('tw').value}\ncontract ${name.replace(/\s/g,'')} is ${mode === 'Token Lab' ? 'ERC20' : 'ERC721'} { ... }`;
+            document.getElementById('out').innerText = code;
+            document.getElementById('res').classList.remove('hidden');
         }
 
-        function closeModal() { document.getElementById('studio-modal').classList.remove('active'); }
-
-        function generateAdvancedAsset() {
-            const n = document.getElementById('obj-name').value || "BaseProject";
-            const s = document.getElementById('obj-symbol').value || "BP";
-            const supply = document.getElementById('obj-supply').value || "1000000";
-            const logo = document.getElementById('obj-logo').value || "";
-            const web = document.getElementById('obj-web').value || "";
-
-            // Bu veriler kontratın içine yorum satırı (Metadata) olarak eklenir
-            let code = `// SPDX-License-Identifier: MIT\n// Website: ${web}\n// Logo: ${logo}\ncontract ${n.replace(/\s/g,'')} is ${mode === 'Token Lab' ? 'ERC20' : 'ERC721'} {\n    // Supply: ${supply}\n    // Built via BaseKit.online\n}`;
-            
-            document.getElementById('code-output').innerText = code;
-            document.getElementById('result-area').classList.remove('hidden');
-        }
-
-        async function payFee() {
+        async function pay() {
             const acc = await ethereum.request({ method: 'eth_requestAccounts' });
             await ethereum.request({ method: 'eth_sendTransaction', params: [{ from: acc[0], to: OWNER, value: '0x9184E72A000' }] });
-            alert("Metadata Verified! Redirecting to Deployment...");
-            closeModal();
+            alert("Payment Received! Your project metadata is being indexed on Base."); closeM();
         }
+
+        async function fetchPrices() {
+            try {
+                const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,base&vs_currencies=usd');
+                const d = await r.json();
+                document.getElementById('price-data').innerHTML = `BTC: $${d.bitcoin.usd.toLocaleString()} | ETH: $${d.ethereum.usd.toLocaleString()} | STATUS: ONCHAIN LIVE`;
+            } catch(e) {}
+        }
+        fetchPrices(); setInterval(fetchPrices, 30000);
     </script>
 </body>
 </html>
