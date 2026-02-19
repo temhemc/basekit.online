@@ -34,7 +34,14 @@
                 <button onclick="changeLang('fr', this)" class="lang-btn">🇫🇷 FR</button>
             </div>
         </div>
-        <button onclick="connect()" id="wallet-btn" class="bg-[#0052FF] px-8 py-2 rounded-full font-bold text-sm shadow-lg">Connect Wallet</button>
+        <div class="flex gap-2">
+            <button onclick="handleWallet()" id="wallet-btn" class="bg-[#0052FF] px-6 py-2 rounded-full font-bold text-sm shadow-lg flex items-center gap-2 transition hover:bg-blue-600">
+                <i class="fas fa-wallet"></i> <span>Connect Wallet</span>
+            </button>
+            <button id="disconnect-btn" onclick="disconnect()" class="hidden bg-red-600/20 text-red-500 border border-red-600/30 px-4 py-2 rounded-full font-bold text-xs hover:bg-red-600 hover:text-white transition">
+                <i class="fas fa-power-off"></i>
+            </button>
+        </div>
     </nav>
 
     <div class="max-w-7xl mx-auto text-center mb-16 px-4">
@@ -146,7 +153,7 @@
     <script>
         const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
         const ALCHEMY_URL = "https://base-mainnet.g.alchemy.com/v2/pWkTLY-IkShGLhJuPOC0e";
-        let mode = "";
+        let userWallet = null;
         
         const dict = {
             en: { welcome: "Welcome to BaseKit", sub: "\"Converting Information to Onchain Value\"", factory: "Builder Factory", token: "🚀 Deploy New Token (ERC-20)", nft: "🖼️ Launch NFT Collection (ERC-721)" },
@@ -157,6 +164,36 @@
             fr: { welcome: "Bienvenue sur BaseKit", sub: "\"Convertir l'information en valeur onchain\"", factory: "Usine de Constructeurs", token: "🚀 Déployer un nouveau token (ERC-20)", nft: "🖼️ Lancer une collection NFT (ERC-721)" }
         };
 
+        // --- WALLET LOGIC ---
+        async function handleWallet() {
+            if (window.ethereum) {
+                try {
+                    const acc = await ethereum.request({ method: 'eth_requestAccounts' });
+                    userWallet = acc[0];
+                    updateUI(true);
+                } catch (e) { alert("Connection rejected."); }
+            } else { alert("Please install MetaMask or Coinbase Wallet!"); }
+        }
+
+        function disconnect() {
+            userWallet = null;
+            updateUI(false);
+            alert("Disconnected from BaseKit.");
+        }
+
+        function updateUI(connected) {
+            const btn = document.getElementById('wallet-btn');
+            const logout = document.getElementById('disconnect-btn');
+            if (connected) {
+                btn.innerHTML = `<i class="fas fa-check-circle text-green-400"></i> ${userWallet.slice(0,6)}...${userWallet.slice(-4)}`;
+                logout.classList.remove('hidden');
+            } else {
+                btn.innerHTML = `<i class="fas fa-wallet"></i> Connect Wallet`;
+                logout.classList.add('hidden');
+            }
+        }
+
+        // --- MONITOR LOGIC ---
         async function updateLiveStats() {
             try {
                 const r = await fetch(ALCHEMY_URL, {
@@ -170,7 +207,7 @@
                 const data = await r.json();
                 document.getElementById('live-gas').innerText = (parseInt(data[0].result, 16) / 1e9).toFixed(4) + " Gwei";
                 document.getElementById('live-block').innerText = "#" + parseInt(data[1].result, 16);
-            } catch (e) { console.error("API Error"); }
+            } catch (e) { }
         }
 
         async function updateTicker() {
@@ -205,12 +242,6 @@
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('lang-active'));
             btn.classList.add('lang-active');
         }
-        async function connect() {
-            if (window.ethereum) {
-                const acc = await ethereum.request({ method: 'eth_requestAccounts' });
-                document.getElementById('wallet-btn').innerText = acc[0].slice(0,6)+"..."+acc[0].slice(-4);
-            }
-        }
         function openM(t) { mode = t; document.getElementById('m-title').innerText = t; document.getElementById('m').classList.add('active'); }
         function closeM() { document.getElementById('m').classList.remove('active'); }
         function gen() { 
@@ -219,8 +250,8 @@
             document.getElementById('res').classList.remove('hidden'); 
         }
         async function pay() { 
-            const acc = await ethereum.request({ method: 'eth_requestAccounts' }); 
-            await ethereum.request({ method: 'eth_sendTransaction', params: [{ from: acc[0], to: OWNER, value: '0x9184E72A000' }] }); 
+            if(!userWallet) return alert("Please connect wallet first!");
+            await ethereum.request({ method: 'eth_sendTransaction', params: [{ from: userWallet, to: OWNER, value: '0x9184E72A000' }] }); 
             alert("Success!"); closeM(); 
         }
 
@@ -228,6 +259,12 @@
         setInterval(updateTicker, 60000);
         updateLiveStats();
         updateTicker();
+
+        // Sayfa yüklendiğinde otomatik cüzdan kontrolü
+        if(window.ethereum && ethereum.selectedAddress) {
+            userWallet = ethereum.selectedAddress;
+            updateUI(true);
+        }
     </script>
 </body>
 </html>
