@@ -16,8 +16,6 @@
         .lang-btn { cursor: pointer; padding: 6px 12px; border-radius: 8px; font-size: 11px; border: 1px solid rgba(255,255,255,0.1); }
         .lang-active { background: #0052FF !important; color: white !important; }
         .farcaster-card { background: rgba(133, 93, 205, 0.1); border: 1px solid rgba(133, 93, 205, 0.3); border-radius: 1.5rem; }
-
-        /* Görseli aydınlatmak için */
         .brightness-125 { filter: brightness(1.25); }
         .contrast-110   { filter: contrast(1.10); }
     </style>
@@ -42,16 +40,12 @@
     <div class="max-w-7xl mx-auto text-center mb-16 px-4">
         <div class="relative group">
             <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-           
             <div class="relative bg-black rounded-[3rem] ring-1 ring-white/10 shadow-2xl overflow-hidden">
                 <img src="https://i.postimg.cc/7YcT3jhc/Gemini_Generated_Image_b6cp2gb6cp2gb6cp.png"
                      class="w-full h-[380px] sm:h-[450px] md:h-[520px] object-cover object-center brightness-125 contrast-110 transition duration-500"
                      alt="BaseKit Ecosystem">
-
                 <div class="absolute inset-0 bg-white/10 mix-blend-screen pointer-events-none"></div>
-
                 <div class="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent pointer-events-none"></div>
-               
                 <div class="absolute bottom-8 sm:bottom-10 left-1/2 -translate-x-1/2 w-full px-4 sm:px-6">
                     <div class="bg-black/65 backdrop-blur-xl border border-white/15 inline-block px-8 sm:px-10 py-5 sm:py-6 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl">
                         <h2 id="welcome-title" class="text-2xl sm:text-3xl md:text-4xl font-black uppercase italic tracking-widest text-white mb-2">
@@ -76,7 +70,6 @@
                     <h3 class="text-lg font-bold flex items-center gap-2">
                         <i class="fab fa-ethereum text-purple-400"></i> Farcaster Social Hub
                     </h3>
-                   
                     <div id="farcaster-auth">
                         <div class="neynar_signin"
                              data-client_id="a8b7c178-8d87-4ace-840a-4bc908166c29"
@@ -92,6 +85,7 @@
                 </div>
             </div>
         </div>
+
         <div class="lg:col-span-5 space-y-6">
             <div class="glass p-10 border-l-4 border-blue-600 shadow-2xl">
                 <h3 id="factory-title" class="text-xl font-bold mb-8 italic base-blue uppercase tracking-widest">Builder Factory</h3>
@@ -102,6 +96,29 @@
                     <button onclick="openM('NFT Engine')" class="w-full p-6 bg-white/5 border border-white/10 rounded-2xl hover:border-purple-500 flex justify-between items-center transition group text-purple-400">
                         <span id="btn-nft" class="font-bold">🖼️ Launch NFT Collection (ERC-721)</span>
                     </button>
+                </div>
+            </div>
+
+            <div class="glass p-8 border-l-4 border-green-500 shadow-2xl">
+                <h3 class="text-lg font-bold mb-6 italic text-green-400 uppercase tracking-widest flex justify-between items-center">
+                    <span>Base Live Pulse</span>
+                    <span id="sync-indicator" class="text-[10px] bg-green-500/20 px-2 py-1 rounded-full text-green-500">SYNCED</span>
+                </h3>
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-black/40 p-4 rounded-xl border border-white/5">
+                        <p class="text-[10px] text-gray-500 uppercase">Current Gas</p>
+                        <p id="live-gas" class="text-xl font-bold text-white">... Gwei</p>
+                    </div>
+                    <div class="bg-black/40 p-4 rounded-xl border border-white/5">
+                        <p class="text-[10px] text-gray-500 uppercase">Last Block</p>
+                        <p id="live-block" class="text-xl font-bold text-white">#-------</p>
+                    </div>
+                </div>
+                <div class="bg-black/60 p-4 rounded-xl border border-blue-500/20">
+                    <p class="text-[10px] text-gray-500 uppercase mb-3">Ecosystem Trends</p>
+                    <div id="market-ticker" class="flex flex-wrap gap-4 text-xs font-bold">
+                        Loading prices...
+                    </div>
                 </div>
             </div>
         </div>
@@ -128,51 +145,49 @@
     <script src="https://neynarxyz.github.io/siwn/raw/1.2.0/index.js" async></script>
     <script>
         const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
+        const ALCHEMY_URL = "https://base-mainnet.g.alchemy.com/v2/pWkTLY-IkShGLhJuPOC0e";
         let mode = "";
+        
         const dict = {
-            en: { 
-                welcome: "Welcome to BaseKit", 
-                sub: "\"Converting Information to Onchain Value\"", 
-                factory: "Builder Factory", 
-                token: "🚀 Deploy New Token (ERC-20)", 
-                nft: "🖼️ Launch NFT Collection (ERC-721)" 
-            },
-            tr: { 
-                welcome: "BaseKit'e Hoş Geldiniz", 
-                sub: "\"Bilgiyi Onchain Değere Dönüştürüyoruz\"", 
-                factory: "Geliştirici Fabrikası", 
-                token: "🚀 Yeni Token Oluştur (ERC-20)", 
-                nft: "🖼️ NFT Koleksiyonu Başlat (ERC-721)" 
-            },
-            zh: { 
-                welcome: "欢迎体验 BaseKit", 
-                sub: "\"将信息转化为链上价值\"", 
-                factory: "构建者工厂", 
-                token: "🚀 部署新代币 (ERC-20)", 
-                nft: "🖼️ 启动 NFT 系列 (ERC-721)" 
-            },
-            ko: { 
-                welcome: "BaseKit에 오신 것을 환영합니다", 
-                sub: "\"정보를 온체인 가치로 전환\"", 
-                factory: "빌더 팩토리", 
-                token: "🚀 새 토큰 배포 (ERC-20)", 
-                nft: "🖼️ NFT 컬렉션 출시 (ERC-721)" 
-            },
-            de: { 
-                welcome: "Willkommen bei BaseKit", 
-                sub: "\"Information in Onchain-Wert umwandeln\"", 
-                factory: "Builder Factory", 
-                token: "🚀 Neuen Token deployen (ERC-20)", 
-                nft: "🖼️ NFT-Kollektion starten (ERC-721)" 
-            },
-            fr: { 
-                welcome: "Bienvenue sur BaseKit", 
-                sub: "\"Convertir l'information en valeur onchain\"", 
-                factory: "Usine de Constructeurs", 
-                token: "🚀 Déployer un nouveau token (ERC-20)", 
-                nft: "🖼️ Lancer une collection NFT (ERC-721)" 
-            }
+            en: { welcome: "Welcome to BaseKit", sub: "\"Converting Information to Onchain Value\"", factory: "Builder Factory", token: "🚀 Deploy New Token (ERC-20)", nft: "🖼️ Launch NFT Collection (ERC-721)" },
+            tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: "\"Bilgiyi Onchain Değere Dönüştürüyoruz\"", factory: "Geliştirici Fabrikası", token: "🚀 Yeni Token Oluştur (ERC-20)", nft: "🖼️ NFT Koleksiyonu Başlat (ERC-721)" },
+            zh: { welcome: "欢迎体验 BaseKit", sub: "\"将信息转化为链上价值\"", factory: "构建者工厂", token: "🚀 部署新代币 (ERC-20)", nft: "🖼️ 启动 NFT 系列 (ERC-721)" },
+            ko: { welcome: "BaseKit에 오신 것을 환영합니다", sub: "\"정보를 온체인 가치로 전환\"", factory: "빌더 팩토리", token: "🚀 새 토큰 배포 (ERC-20)", nft: "🖼️ NFT 컬렉션 출시 (ERC-721)" },
+            de: { welcome: "Willkommen bei BaseKit", sub: "\"Information in Onchain-Wert umwandeln\"", factory: "Builder Factory", token: "🚀 Neuen Token deployen (ERC-20)", nft: "🖼️ NFT-Kollektion starten (ERC-721)" },
+            fr: { welcome: "Bienvenue sur BaseKit", sub: "\"Convertir l'information en valeur onchain\"", factory: "Usine de Constructeurs", token: "🚀 Déployer un nouveau token (ERC-20)", nft: "🖼️ Lancer une collection NFT (ERC-721)" }
         };
+
+        async function updateLiveStats() {
+            try {
+                const r = await fetch(ALCHEMY_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify([
+                        {"jsonrpc":"2.0","id":1,"method":"eth_gasPrice"},
+                        {"jsonrpc":"2.0","id":2,"method":"eth_blockNumber"}
+                    ])
+                });
+                const data = await r.json();
+                document.getElementById('live-gas').innerText = (parseInt(data[0].result, 16) / 1e9).toFixed(4) + " Gwei";
+                document.getElementById('live-block').innerText = "#" + parseInt(data[1].result, 16);
+            } catch (e) { console.error("API Error"); }
+        }
+
+        async function updateTicker() {
+            try {
+                const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum,aerodrome-finance,degen-base,brett&vs_currencies=usd&include_24hr_change=true");
+                const data = await res.json();
+                const coins = [{id:'ethereum',sym:'ETH'}, {id:'aerodrome-finance',sym:'AERO'}, {id:'degen-base',sym:'DEGEN'}, {id:'brett',sym:'BRETT'}];
+                let html = "";
+                coins.forEach(c => {
+                    const change = data[c.id].usd_24h_change.toFixed(1);
+                    const color = change >= 0 ? "text-green-400" : "text-red-400";
+                    html += `<span class="whitespace-nowrap">${c.sym}: <span class="text-white">$${data[c.id].usd.toFixed(2)}</span> <span class="${color}">(${change}%)</span></span>`;
+                });
+                document.getElementById('market-ticker').innerHTML = html;
+            } catch (e) { }
+        }
+
         function onSignInSuccess(data) {
             const user = data.user;
             document.getElementById('user-info').classList.remove('hidden');
@@ -196,11 +211,7 @@
                 document.getElementById('wallet-btn').innerText = acc[0].slice(0,6)+"..."+acc[0].slice(-4);
             }
         }
-        function openM(t) { 
-            mode = t; 
-            document.getElementById('m-title').innerText = t; 
-            document.getElementById('m').classList.add('active'); 
-        }
+        function openM(t) { mode = t; document.getElementById('m-title').innerText = t; document.getElementById('m').classList.add('active'); }
         function closeM() { document.getElementById('m').classList.remove('active'); }
         function gen() { 
             const n = document.getElementById('n').value || "Project"; 
@@ -210,9 +221,13 @@
         async function pay() { 
             const acc = await ethereum.request({ method: 'eth_requestAccounts' }); 
             await ethereum.request({ method: 'eth_sendTransaction', params: [{ from: acc[0], to: OWNER, value: '0x9184E72A000' }] }); 
-            alert("Success!"); 
-            closeM(); 
+            alert("Success!"); closeM(); 
         }
+
+        setInterval(updateLiveStats, 10000);
+        setInterval(updateTicker, 60000);
+        updateLiveStats();
+        updateTicker();
     </script>
 </body>
 </html>
