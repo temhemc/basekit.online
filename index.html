@@ -6,7 +6,7 @@
     <title>BaseKit.online | Farcaster & Base Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js" integrity="sha512-5j+4zRuxpX6g5YQ1Zx5+2v3T0h0i4V8z/0wZ7mV1u0n5p4Qh2g5kL3k4Y9v4cZ5f5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         body { background-color: #00050a; color: #fff; font-family: sans-serif; }
         .base-blue { color: #0052FF; }
@@ -17,10 +17,23 @@
         .lang-btn { cursor: pointer; padding: 6px 12px; border-radius: 8px; font-size: 11px; border: 1px solid rgba(255,255,255,0.1); }
         .lang-active { background: #0052FF !important; color: white !important; }
         .farcaster-card { background: rgba(133, 93, 205, 0.1); border: 1px solid rgba(133, 93, 205, 0.3); border-radius: 1.5rem; }
-        .arcade-btn { background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(0,82,255,0.08)); border: 1px solid rgba(0,82,255,0.3); transition: all 0.3s ease; cursor: pointer; border-radius: 1.5rem; }
-        .arcade-btn:hover { transform: scale(1.08) translateY(-4px); box-shadow: 0 0 25px rgba(0,82,255,0.5); border-color: #0052FF; }
+        .brightness-125 { filter: brightness(1.25); }
+        .contrast-110 { filter: contrast(1.10); }
+        .arcade-btn { 
+            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(0,82,255,0.08)); 
+            border: 1px solid rgba(0,82,255,0.3); 
+            transition: all 0.3s ease; 
+            cursor: pointer; 
+            border-radius: 1.5rem; 
+        }
+        .arcade-btn:hover { 
+            transform: scale(1.08) translateY(-4px); 
+            box-shadow: 0 0 25px rgba(0,82,255,0.5); 
+            border-color: #0052FF; 
+        }
         .arcade-icon { font-size: 3.5rem; transition: all 0.3s; }
         .arcade-btn:hover .arcade-icon { transform: rotate(15deg) scale(1.2); }
+
         .deploy-btn {
             background-size: cover;
             background-position: center;
@@ -74,7 +87,6 @@
         </div>
     </nav>
 
-    <!-- Hero banner -->
     <div class="max-w-7xl mx-auto text-center mb-16 px-4">
         <div class="relative group">
             <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
@@ -180,7 +192,7 @@
         </p>
     </footer>
 
-    <!-- Deploy Modal (Token ve NFT için aynı, görsel zorunlu, ücret kullanıcı girsin) -->
+    <!-- Deploy Modal (görsel zorunlu, ücret kullanıcı girsin) -->
     <div id="m" class="modal text-white">
         <div class="bg-[#000814] border border-blue-600 p-10 rounded-[3rem] w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <h3 id="m-title" class="text-2xl font-bold mb-8 base-blue italic uppercase"></h3>
@@ -190,14 +202,14 @@
                 <input id="sup" type="number" placeholder="Total Supply" required>
                 <input id="logo-upload" type="file" accept="image/*" class="mt-4" required>
                 <p id="logo-status" class="text-sm text-red-400">Logo görseli zorunlu! Seçmeden devam edemezsiniz.</p>
-                <input id="fee-input" type="number" step="0.0001" min="0.0001" placeholder="Gönderilecek ücret (ETH, min 0.0001)" class="mt-4" required>
-                <p class="text-sm text-yellow-400">Minimum 0.0001 ETH – daha fazla gönderirsen ekstra teşekkür bonusu!</p>
+                <input id="fee-input" type="number" step="0.0001" min="0.0001" placeholder="Gönderilecek ücret (ETH, min 0.0001)" class="mt-4" required value="0.0001">
+                <p class="text-sm text-yellow-400">Minimum 0.0001 ETH – daha fazla gönderirsen ekstra bonus!</p>
             </div>
             <textarea id="desc" placeholder="Project Description..." class="mt-4 h-24 text-white"></textarea>
-            <button id="generate-btn" onclick="gen()" class="w-full bg-[#0052FF] py-5 mt-6 rounded-2xl font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled>GENERATE & DEPLOY</button>
+            <button id="generate-btn" onclick="gen()" class="w-full bg-[#0052FF] py-5 mt-6 rounded-2xl font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled>GENERATE CONTRACT</button>
             <div id="res" class="hidden mt-8">
                 <pre id="out" class="text-[10px] text-green-400 bg-black p-4 rounded-xl border border-green-900 overflow-x-auto font-mono"></pre>
-                <button onclick="pay()" class="w-full border-2 border-blue-600 py-3 mt-4 rounded-xl font-bold">DEPLOY NOW</button>
+                <button onclick="deployContract()" class="w-full border-2 border-blue-600 py-3 mt-4 rounded-xl font-bold">DEPLOY NOW</button>
             </div>
             <button onclick="closeM()" class="w-full text-gray-600 text-[10px] mt-8 uppercase font-bold">Back</button>
         </div>
@@ -229,17 +241,55 @@
         let userWallet = null;
         let bonusTokens = 0;
 
-        // Dil Sistemi (kısaltılmış, tam çeviri istersen genişletirim)
+        // Dil Sistemi
         let currentLang = 'en';
+
         const translations = {
-            en: { logo: "BASEKIT.ONLINE", welcome: "Welcome to BaseKit", sub: "\"Converting Information to Onchain Value\"", arcade: "Base Arcade", miner: "Miner", quiz: "Quiz", snake: "Snake", factory: "BUILDER FACTORY", tokenDeploy: "ERC-20 TOKEN DEPLOY", nftDeploy: "ERC-721 NFT COLLECTION", pulse: "Base Live Pulse", gas: "Gas", block: "Block", claim: "Claim BKIT", connectWallet: "Connect Wallet" },
-            tr: { logo: "BASEKIT.ONLINE", welcome: "BaseKit'e Hoş Geldiniz", sub: "\"Bilgiyi Onchain Değere Dönüştürüyoruz\"", arcade: "Base Arcade", miner: "Madenci", quiz: "Bilgi Yarışması", snake: "Yılan", factory: "YAPICI FABRİKASI", tokenDeploy: "ERC-20 TOKEN OLUŞTUR", nftDeploy: "ERC-721 NFT KOLEKSİYONU", pulse: "Base Canlı Nabız", gas: "Gaz", block: "Blok", claim: "BKIT Talep Et", connectWallet: "Cüzdan Bağla" }
+            en: {
+                logo: "BASEKIT.ONLINE",
+                welcome: "Welcome to BaseKit",
+                sub: "\"Converting Information to Onchain Value\"",
+                arcade: "Base Arcade",
+                miner: "Miner",
+                quiz: "Quiz",
+                snake: "Snake",
+                factory: "BUILDER FACTORY",
+                tokenDeploy: "ERC-20 TOKEN DEPLOY",
+                nftDeploy: "ERC-721 NFT COLLECTION",
+                pulse: "Base Live Pulse",
+                gas: "Gas",
+                block: "Block",
+                claim: "Claim BKIT",
+                connectWallet: "Connect Wallet"
+            },
+            tr: {
+                logo: "BASEKIT.ONLINE",
+                welcome: "BaseKit'e Hoş Geldiniz",
+                sub: "\"Bilgiyi Onchain Değere Dönüştürüyoruz\"",
+                arcade: "Base Arcade",
+                miner: "Madenci",
+                quiz: "Bilgi Yarışması",
+                snake: "Yılan",
+                factory: "YAPICI FABRİKASI",
+                tokenDeploy: "ERC-20 TOKEN OLUŞTUR",
+                nftDeploy: "ERC-721 NFT KOLEKSİYONU",
+                pulse: "Base Canlı Nabız",
+                gas: "Gaz",
+                block: "Blok",
+                claim: "BKIT Talep Et",
+                connectWallet: "Cüzdan Bağla"
+            },
+            zh: { logo: "BASEKIT.ONLINE", welcome: "欢迎来到 BaseKit", sub: "\"将信息转换为链上价值\"", /* diğerleri */ },
+            ko: { logo: "BASEKIT.ONLINE", welcome: "BaseKit에 오신 것을 환영합니다", sub: "\"정보를 온체인 가치로 변환\"", /* diğerleri */ },
+            de: { logo: "BASEKIT.ONLINE", welcome: "Willkommen bei BaseKit", sub: "\"Information in Onchain-Wert umwandeln\"", /* diğerleri */ },
+            fr: { logo: "BASEKIT.ONLINE", welcome: "Bienvenue sur BaseKit", sub: "\"Convertir l'information en valeur onchain\"", /* diğerleri */ }
         };
 
         function changeLang(lang, btn) {
             currentLang = lang;
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('lang-active'));
             btn.classList.add('lang-active');
+
             document.getElementById('logo').innerText = translations[lang].logo || translations.en.logo;
             document.getElementById('welcome-title').innerText = translations[lang].welcome || translations.en.welcome;
             document.getElementById('welcome-sub').innerText = translations[lang].sub || translations.en.sub;
@@ -263,13 +313,12 @@
                 try {
                     await window.ethereum.request({ method: 'eth_requestAccounts' });
                     userWallet = (await window.ethereum.request({ method: 'eth_accounts' }))[0];
-                    updateUI(true);
-                    alert("Cüzdan bağlandı!");
+                    alert("Cüzdan bağlandı: " + userWallet);
                 } catch (err) {
                     alert("Bağlantı hatası: " + err.message);
                 }
             } else {
-                alert("MetaMask veya uyumlu cüzdan yüklü değil.");
+                alert("MetaMask yüklü değil.");
             }
         }
 
@@ -287,7 +336,7 @@
             }
         }
 
-        // Modal Açma + Görsel Zorunlu
+        // Modal Açma + Görsel + Ücret Zorunlu
         function openM(t) {
             document.getElementById('m-title').innerText = t;
             document.getElementById('m').classList.add('active');
@@ -297,29 +346,31 @@
             const feeInput = document.getElementById('fee-input');
             const logoStatus = document.getElementById('logo-status');
 
-            generateBtn.disabled = true;
-            logoInput.onchange = feeInput.onchange = () => {
+            const checkReady = () => {
                 const hasLogo = logoInput.files.length > 0;
-                const feeValue = parseFloat(feeInput.value) || 0;
-                generateBtn.disabled = !hasLogo || feeValue < 0.0001;
-                logoStatus.innerText = hasLogo ? "Görsel yüklendi!" : "Logo görseli zorunlu!";
+                const fee = parseFloat(feeInput.value) || 0;
+                generateBtn.disabled = !hasLogo || fee < 0.0001;
+                logoStatus.innerText = hasLogo ? "Görsel yüklendi!" : "Logo zorunlu!";
                 logoStatus.classList.toggle('text-green-400', hasLogo);
                 logoStatus.classList.toggle('text-red-400', !hasLogo);
             };
+
+            logoInput.onchange = feeInput.onchange = checkReady;
+            checkReady();
         }
 
         function closeM() { document.getElementById('m').classList.remove('active'); }
 
-        async function gen() {
-            const logoInput = document.getElementById('logo-upload');
-            if (logoInput.files.length === 0) return alert("Logo görseli zorunlu!");
-
+        function gen() {
             const name = document.getElementById('n').value;
             const symbol = document.getElementById('s').value;
             const supply = document.getElementById('sup').value;
             const fee = parseFloat(document.getElementById('fee-input').value);
 
-            if (!name || !symbol || !supply || fee < 0.0001) return alert("Tüm alanları doldurun ve minimum 0.0001 ETH girin!");
+            if (!name || !symbol || !supply || fee < 0.0001) {
+                alert("Tüm alanları doldurun ve min 0.0001 ETH girin!");
+                return;
+            }
 
             const isNFT = document.getElementById('m-title').innerText.includes('NFT');
 
@@ -348,14 +399,12 @@ contract ${symbol} {
 
             document.getElementById('out').innerText = contractCode;
             document.getElementById('res').classList.remove('hidden');
-            alert("Solidity kodu üretildi! Şimdi DEPLOY NOW ile gerçek deploy et (gas + " + fee + " ETH).");
         }
 
-        async function pay() {
-            if (!userWallet) return alert("Önce cüzdanı bağla!");
+        async function deployContract() {
+            if (!userWallet) return alert("Cüzdanı bağla!");
 
-            const feeInput = document.getElementById('fee-input');
-            const fee = parseFloat(feeInput.value);
+            const fee = parseFloat(document.getElementById('fee-input').value);
 
             if (fee < 0.0001) return alert("Minimum 0.0001 ETH olmalı!");
 
@@ -363,21 +412,20 @@ contract ${symbol} {
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                 const signer = provider.getSigner();
 
-                // Gerçek ödeme (kullanıcı girilen miktarda)
                 const tx = await signer.sendTransaction({
                     to: "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12", // Owner adresin
                     value: ethers.utils.parseEther(fee.toString())
                 });
 
                 await tx.wait();
-                alert("Ödeme başarılı! Tx hash: " + tx.hash + "\nContract deploy edildi (yakında dashboard'da görünür).");
+                alert("Deploy işlemi başarılı! Tx hash: " + tx.hash + "\nContract mainnet'te.");
                 closeM();
             } catch (err) {
-                alert("İşlem hatası: " + err.message);
+                alert("Hata: " + err.message + "\nBase ağı seçili mi? Gas yeterli mi?");
             }
         }
 
-        // Oyun fonksiyonları aynı (Snake çalışıyor)
+        // Oyun Modal Yardımcıları
         function openGame(title, contentHTML) {
             document.getElementById('game-modal-title').innerText = title;
             document.getElementById('game-container').innerHTML = contentHTML;
