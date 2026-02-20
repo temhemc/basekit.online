@@ -16,6 +16,22 @@
         .lang-btn { cursor: pointer; padding: 6px 12px; border-radius: 8px; font-size: 11px; border: 1px solid rgba(255,255,255,0.1); }
         .lang-active { background: #0052FF !important; color: white !important; }
         .farcaster-card { background: rgba(133, 93, 205, 0.1); border: 1px solid rgba(133, 93, 205, 0.3); border-radius: 1.5rem; }
+        .brightness-125 { filter: brightness(1.25); }
+        .contrast-110 { filter: contrast(1.10); }
+        .arcade-btn { 
+            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(0,82,255,0.08)); 
+            border: 1px solid rgba(0,82,255,0.3); 
+            transition: all 0.3s ease; 
+            cursor: pointer; 
+            border-radius: 1.5rem; 
+        }
+        .arcade-btn:hover { 
+            transform: scale(1.08) translateY(-4px); 
+            box-shadow: 0 0 25px rgba(0,82,255,0.5); 
+            border-color: #0052FF; 
+        }
+        .arcade-icon { font-size: 3.5rem; transition: all 0.3s; }
+        .arcade-btn:hover .arcade-icon { transform: rotate(15deg) scale(1.2); }
 
         /* Profesyonel Deploy Butonları */
         .deploy-btn {
@@ -57,14 +73,8 @@
             align-items: center;
             gap: 1rem;
         }
-
         .token-btn { background-image: linear-gradient(rgba(0,82,255,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1639762681485-8b8c3d7e8b1c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'); }
         .nft-btn { background-image: linear-gradient(rgba(139,92,246,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'); }
-
-        .arcade-btn { background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(0,82,255,0.08)); border: 1px solid rgba(0,82,255,0.3); transition: all 0.3s ease; cursor: pointer; border-radius: 1.5rem; }
-        .arcade-btn:hover { transform: scale(1.08) translateY(-4px); box-shadow: 0 0 25px rgba(0,82,255,0.5); border-color: #0052FF; }
-        .arcade-icon { font-size: 3.5rem; transition: all 0.3s; }
-        .arcade-btn:hover .arcade-icon { transform: rotate(15deg) scale(1.2); }
     </style>
 </head>
 <body class="p-4">
@@ -98,7 +108,9 @@
         <div class="relative group">
             <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
             <div class="relative bg-black rounded-[3rem] ring-1 ring-white/10 shadow-2xl overflow-hidden">
-                <img src="https://i.postimg.cc/7YcT3jhc/Gemini_Generated_Image_b6cp2gb6cp2gb6cp.png" class="w-full h-[380px] sm:h-[450px] md:h-[520px] object-cover object-center brightness-125 contrast-110 transition duration-500" alt="BaseKit Ecosystem">
+                <img src="https://i.postimg.cc/7YcT3jhc/Gemini_Generated_Image_b6cp2gb6cp2gb6cp.png"
+                     class="w-full h-[380px] sm:h-[450px] md:h-[520px] object-cover object-center brightness-125 contrast-110 transition duration-500"
+                     alt="BaseKit Ecosystem">
                 <div class="absolute inset-0 bg-white/10 mix-blend-screen pointer-events-none"></div>
                 <div class="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent pointer-events-none"></div>
                 <div class="absolute bottom-8 sm:bottom-10 left-1/2 -translate-x-1/2 w-full px-4 sm:px-6 text-white">
@@ -120,21 +132,21 @@
             <div class="glass h-[500px] overflow-hidden shadow-2xl">
                 <iframe src="https://app.uniswap.org/#/swap?theme=dark&chain=base" width="100%" height="100%" style="border: none;"></iframe>
             </div>
-
+           
             <div class="glass p-8 border-t-4 border-yellow-500 shadow-2xl text-white bg-gradient-to-b from-yellow-500/5 to-transparent">
                 <h3 class="text-xl font-bold mb-8 italic text-yellow-500 uppercase tracking-widest flex items-center gap-3">
                     <i class="fas fa-gamepad text-2xl"></i> Base Arcade
                 </h3>
                 <div class="grid grid-cols-3 gap-4">
-                    <div onclick="playGame('Gas Miner')" class="arcade-btn p-6 rounded-2xl text-center group flex flex-col items-center">
+                    <div onclick="playGame('Gas Miner')" class="arcade-btn p-6 rounded-2xl text-center group flex flex-col items-center justify-center">
                         <i class="fas fa-hammer arcade-icon text-blue-400 mb-3"></i>
                         <p class="text-sm font-bold uppercase">Miner</p>
                     </div>
-                    <div onclick="playGame('Quiz')" class="arcade-btn p-6 rounded-2xl text-center group flex flex-col items-center">
+                    <div onclick="playGame('Quiz')" class="arcade-btn p-6 rounded-2xl text-center group flex flex-col items-center justify-center">
                         <i class="fas fa-brain arcade-icon text-yellow-400 mb-3"></i>
                         <p class="text-sm font-bold uppercase">Quiz</p>
                     </div>
-                    <div onclick="playGame('Snake')" class="arcade-btn p-6 rounded-2xl text-center group flex flex-col items-center">
+                    <div onclick="playGame('Snake')" class="arcade-btn p-6 rounded-2xl text-center group flex flex-col items-center justify-center">
                         <i class="fas fa-dragon arcade-icon text-green-400 mb-3"></i>
                         <p class="text-sm font-bold uppercase">Snake</p>
                     </div>
@@ -164,7 +176,6 @@
                     <button onclick="openM('Token Lab')" class="deploy-btn token-btn">
                         <span><i class="fas fa-rocket text-5xl"></i> ERC-20 TOKEN DEPLOY</span>
                     </button>
-
                     <button onclick="openM('NFT Engine')" class="deploy-btn nft-btn">
                         <span><i class="fas fa-palette text-5xl"></i> ERC-721 NFT COLLECTION</span>
                     </button>
@@ -244,11 +255,6 @@
         const ALCHEMY_URL = "https://base-mainnet.g.alchemy.com/v2/pWkTLY-IkShGLhJuPOC0e";
         let userWallet = null; let bonusTokens = 0;
 
-        const dict = {
-            en: { welcome: "Welcome to BaseKit", sub: "\"Converting Information to Onchain Value\"", factory: "Builder Factory", token: "🚀 Deploy New Token (ERC-20)", nft: "🖼️ Launch NFT Collection (ERC-721)" },
-            tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: "\"Bilgiyi Onchain Değere Dönüştürüyoruz\"", factory: "Geliştirici Fabrikası", token: "🚀 Yeni Token Oluştur (ERC-20)", nft: "🖼️ NFT Koleksiyonu Başlat (ERC-721)" }
-        };
-
         async function handleWallet() {
             if (window.ethereum) {
                 const acc = await ethereum.request({ method: 'eth_requestAccounts' });
@@ -319,47 +325,42 @@
         }
 
         function playGame(type) {
-            if (!userWallet) return alert("Connect Wallet first!");
-
             let reward = (type === 'Quiz') ? 5 : 0.5;
             bonusTokens += reward;
             updateBonus();
+            alert(type + " başladı! +" + reward + " BKIT kazandın!");
 
             if (type === 'Snake') startSnake();
             else if (type === 'Quiz') startQuiz();
             else if (type === 'Gas Miner') startGasMiner();
-
-            alert(type + " başladı! +" + reward + " BKIT kazandın!");
         }
 
         function startSnake() {
             openGame('SNAKE - BaseKit Edition', `
                 <div class="relative mx-auto" style="width:420px;">
-                    <canvas id="snake-canvas" width="400" height="400" class="bg-black border-4 border-[#0052FF] rounded-2xl shadow-2xl mx-auto block"></canvas>
+                    <canvas id="snake-canvas" width="400" height="400" class="bg-black border-4 border-[#0052FF] rounded-2xl shadow-2xl mx-auto block" tabindex="0"></canvas>
                     <div class="absolute top-3 left-3 bg-black/70 px-4 py-2 rounded-xl text-lg font-bold">Score: <span id="snake-score">0</span></div>
                 </div>
-                <p class="mt-4 text-blue-300">Arrow keys veya WASD ile hareket et • Yemek ye, büyü!</p>
+                <p class="mt-4 text-blue-300">Ok tuşları veya WASD ile hareket et • Yemek ye, büyü!</p>
+                <p class="mt-2 text-sm text-gray-400">Tuşlar çalışmıyorsa canvas'a tıkla!</p>
             `);
 
             setTimeout(() => {
                 const canvas = document.getElementById('snake-canvas');
-                if (!canvas) return alert("Canvas yüklenemedi, sayfayı yenile!");
+                if (!canvas) return alert("Canvas yüklenemedi!");
+                canvas.focus(); // Odak ver
                 const ctx = canvas.getContext('2d');
                 const grid = 20;
                 let snake = [{x:10, y:10}];
                 let dx = 1, dy = 0;
                 let food = {x: Math.floor(Math.random()*20), y: Math.floor(Math.random()*20)};
                 let score = 0;
-                let gameOver = false;
 
                 function draw() {
                     ctx.fillStyle = '#000';
                     ctx.fillRect(0,0,400,400);
                     ctx.fillStyle = '#FF3366';
-                    ctx.shadowColor = '#FF3366';
-                    ctx.shadowBlur = 20;
                     ctx.fillRect(food.x*grid, food.y*grid, grid, grid);
-                    ctx.shadowBlur = 0;
                     snake.forEach((part, i) => {
                         ctx.fillStyle = i === 0 ? '#00FFAA' : '#00CC88';
                         ctx.fillRect(part.x*grid + 2, part.y*grid + 2, grid-4, grid-4);
@@ -367,13 +368,10 @@
                 }
 
                 function update() {
-                    if (gameOver) return;
                     const head = {x: snake[0].x + dx, y: snake[0].y + dy};
-                    if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20 ||
-                        snake.some(s => s.x === head.x && s.y === head.y)) {
-                        gameOver = true;
+                    if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20 || snake.some(s => s.x === head.x && s.y === head.y)) {
                         clearInterval(window.gameLoop);
-                        alert(`GAME OVER!\nFinal Score: ${score}\n\nTekrar dene!`);
+                        alert(`Oyun Bitti! Skor: ${score}`);
                         return;
                     }
                     snake.unshift(head);
@@ -381,43 +379,40 @@
                         score += 10;
                         document.getElementById('snake-score').innerText = score;
                         food = {x: Math.floor(Math.random()*20), y: Math.floor(Math.random()*20)};
-                        bonusTokens += 0.5;
-                        updateBonus();
-                    } else {
-                        snake.pop();
-                    }
+                    } else snake.pop();
                     draw();
                 }
 
-                document.addEventListener('keydown', e => {
-                    if (['ArrowLeft','a','A'].includes(e.key) && dx !== 1)  { dx=-1; dy=0; }
-                    if (['ArrowUp','w','W'].includes(e.key) && dy !== 1)    { dx=0; dy=-1; }
-                    if (['ArrowRight','d','D'].includes(e.key) && dx !== -1){ dx=1; dy=0; }
-                    if (['ArrowDown','s','S'].includes(e.key) && dy !== -1) { dx=0; dy=1; }
-                });
+                const handleKey = e => {
+                    if (['ArrowLeft','a','A'].includes(e.key) && dx !== 1) { dx = -1; dy = 0; e.preventDefault(); }
+                    if (['ArrowUp','w','W'].includes(e.key) && dy !== 1) { dx = 0; dy = -1; e.preventDefault(); }
+                    if (['ArrowRight','d','D'].includes(e.key) && dx !== -1) { dx = 1; dy = 0; e.preventDefault(); }
+                    if (['ArrowDown','s','S'].includes(e.key) && dy !== -1) { dx = 0; dy = 1; e.preventDefault(); }
+                };
+
+                canvas.addEventListener('keydown', handleKey);
+                canvas.addEventListener('click', () => canvas.focus()); // Tıkla odaklansın
 
                 draw();
-                window.gameLoop = setInterval(update, 100);
+                window.gameLoop = setInterval(update, 120);
             }, 300);
         }
 
         function startQuiz() {
-            openGame('BASEKIT QUIZ', '<p>Quiz soruları yükleniyor... İlk soru geliyor!</p>');
-            // Tam quiz kodunu istersen genişletebilirim, şimdilik basit alert
+            openGame('QUIZ', '<p>Quiz soruları yükleniyor...</p>');
             setTimeout(() => alert("Quiz başladı! İlk soru: Base nedir?"), 500);
         }
 
         function startGasMiner() {
             let mined = 0;
             openGame('GAS MINER', `
-                <h3 class="text-3xl mb-6 font-black">GAS MINER</h3>
-                <button id="mine-btn" class="arcade-btn text-5xl p-12 rounded-full bg-gradient-to-br from-blue-600 to-purple-800 hover:scale-110 transition transform">⛏️ MINE!</button>
-                <div class="mt-8 text-2xl">Mined: <span id="mined-val">0.0</span> BKIT</div>
+                <button id="mine-btn" class="text-6xl p-16 bg-blue-600 rounded-full">⛏️ KAZ!</button>
+                <p class="mt-8 text-2xl">Kazanılan: <span id="mined">0</span> BKIT</p>
             `);
 
             document.getElementById('mine-btn').onclick = () => {
                 mined += 1;
-                document.getElementById('mined-val').innerText = mined.toFixed(1);
+                document.getElementById('mined').innerText = mined;
                 bonusTokens += 0.2;
                 updateBonus();
             };
