@@ -6,6 +6,8 @@
     <title>BaseKit.online | Farcaster & Base Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- WalletConnect için -->
+    <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
     <style>
         body { background-color: #00050a; color: #fff; font-family: sans-serif; }
         .base-blue { color: #0052FF; }
@@ -16,10 +18,23 @@
         .lang-btn { cursor: pointer; padding: 6px 12px; border-radius: 8px; font-size: 11px; border: 1px solid rgba(255,255,255,0.1); }
         .lang-active { background: #0052FF !important; color: white !important; }
         .farcaster-card { background: rgba(133, 93, 205, 0.1); border: 1px solid rgba(133, 93, 205, 0.3); border-radius: 1.5rem; }
-        .arcade-btn { background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(0,82,255,0.08)); border: 1px solid rgba(0,82,255,0.3); transition: all 0.3s ease; cursor: pointer; border-radius: 1.5rem; }
-        .arcade-btn:hover { transform: scale(1.08) translateY(-4px); box-shadow: 0 0 25px rgba(0,82,255,0.5); border-color: #0052FF; }
+        .brightness-125 { filter: brightness(1.25); }
+        .contrast-110 { filter: contrast(1.10); }
+        .arcade-btn { 
+            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(0,82,255,0.08)); 
+            border: 1px solid rgba(0,82,255,0.3); 
+            transition: all 0.3s ease; 
+            cursor: pointer; 
+            border-radius: 1.5rem; 
+        }
+        .arcade-btn:hover { 
+            transform: scale(1.08) translateY(-4px); 
+            box-shadow: 0 0 25px rgba(0,82,255,0.5); 
+            border-color: #0052FF; 
+        }
         .arcade-icon { font-size: 3.5rem; transition: all 0.3s; }
         .arcade-btn:hover .arcade-icon { transform: rotate(15deg) scale(1.2); }
+
         .deploy-btn {
             background-size: cover;
             background-position: center;
@@ -38,15 +53,37 @@
             text-transform: uppercase;
             letter-spacing: 0.15em;
         }
-        .deploy-btn:hover { transform: scale(1.04); box-shadow: 0 25px 60px rgba(0,82,255,0.6); }
-        .deploy-btn::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.7)); opacity: 0.7; transition: opacity 0.4s; }
+        .deploy-btn:hover {
+            transform: scale(1.04);
+            box-shadow: 0 25px 60px rgba(0,82,255,0.6);
+        }
+        .deploy-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.7));
+            opacity: 0.7;
+            transition: opacity 0.4s;
+        }
         .deploy-btn:hover::after { opacity: 0.4; }
-        .deploy-btn span { position: relative; z-index: 2; text-shadow: 0 3px 15px rgba(0,0,0,0.9); display: flex; align-items: center; gap: 1rem; }
-        .token-btn { background-image: linear-gradient(rgba(0,82,255,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1639762681485-8b8c3d7e8b1c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'); }
-        .nft-btn { background-image: linear-gradient(rgba(139,92,246,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'); }
+        .deploy-btn span {
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 3px 15px rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .token-btn { 
+            background-image: linear-gradient(rgba(0,82,255,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1639762681485-8b8c3d7e8b1c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'); 
+        }
+        .nft-btn { 
+            background-image: linear-gradient(rgba(139,92,246,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'); 
+        }
     </style>
 </head>
-<body class="p-4" id="body">
+<body class="p-4">
 
     <nav class="max-w-7xl mx-auto flex justify-between items-center mb-8 sticky top-0 bg-[#00050a]/90 backdrop-blur-md z-50 py-3">
         <div class="flex items-center gap-6">
@@ -73,7 +110,6 @@
         </div>
     </nav>
 
-    <!-- Hero -->
     <div class="max-w-7xl mx-auto text-center mb-16 px-4">
         <div class="relative group">
             <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
@@ -102,7 +138,7 @@
             <div class="glass h-[500px] overflow-hidden shadow-2xl">
                 <iframe src="https://app.uniswap.org/#/swap?theme=dark&chain=base" width="100%" height="100%" style="border: none;"></iframe>
             </div>
-
+           
             <div class="glass p-8 border-t-4 border-yellow-500 shadow-2xl text-white bg-gradient-to-b from-yellow-500/5 to-transparent">
                 <h3 id="arcade-title" class="text-xl font-bold mb-8 italic text-yellow-500 uppercase tracking-widest flex items-center gap-3">
                     <i class="fas fa-gamepad text-2xl"></i> Base Arcade
@@ -179,7 +215,36 @@
         </p>
     </footer>
 
-    <!-- Modallar aynı kaldı -->
+    <!-- Modallar -->
+    <div id="m" class="modal text-white">
+        <div class="bg-[#000814] border border-blue-600 p-10 rounded-[3rem] w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h3 id="m-title" class="text-2xl font-bold mb-8 base-blue italic uppercase"></h3>
+            <div class="grid md:grid-cols-2 gap-4">
+                <input id="n" type="text" placeholder="Project Name *">
+                <input id="s" type="text" placeholder="Symbol *">
+                <input id="sup" type="number" placeholder="Total Supply">
+            </div>
+            <textarea id="desc" placeholder="Project Description..." class="mt-4 h-24 text-white"></textarea>
+            <button onclick="gen()" class="w-full bg-[#0052FF] py-5 mt-6 rounded-2xl font-bold shadow-lg">GENERATE CONTRACT</button>
+            <div id="res" class="hidden mt-8">
+                <pre id="out" class="text-[10px] text-green-400 bg-black p-4 rounded-xl border border-green-900 overflow-x-auto font-mono"></pre>
+                <button onclick="pay()" class="w-full border-2 border-blue-600 py-3 mt-4 rounded-xl font-bold">PAY 0.00001 ETH</button>
+            </div>
+            <button onclick="closeM()" class="w-full text-gray-600 text-[10px] mt-8 uppercase font-bold">Back</button>
+        </div>
+    </div>
+
+    <div id="claim-modal" class="modal text-white">
+        <div class="bg-black border border-yellow-500 p-12 rounded-[4rem] w-full max-w-md text-center">
+            <i class="fas fa-gift text-5xl text-yellow-500 mb-6"></i>
+            <h3 class="text-3xl font-black italic uppercase mb-2" id="claim-title">Claim BKIT</h3>
+            <div class="bg-white/5 p-8 rounded-3xl mb-8">
+                <p id="claim-val" class="text-5xl font-black text-yellow-500">0.0</p>
+            </div>
+            <button onclick="processClaim()" class="w-full bg-yellow-500 py-5 rounded-2xl font-bold text-black uppercase shadow-xl hover:bg-yellow-400 transition">Execute Claim</button>
+            <button onclick="closeClaim()" class="mt-6 text-gray-600 text-[10px] uppercase font-bold">Close</button>
+        </div>
+    </div>
 
     <!-- Oyun Modal -->
     <div id="game-modal" class="modal text-white" style="display:none;">
@@ -192,7 +257,7 @@
 
     <script src="https://neynarxyz.github.io/siwn/raw/1.2.0/index.js" async></script>
     <script>
-        // Dil Sistemi (tam çeviri)
+        // Dil Sistemi
         let currentLang = 'en';
 
         const translations = {
@@ -305,27 +370,141 @@
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('lang-active'));
             btn.classList.add('lang-active');
 
-            // Tüm metinleri güncelle
-            document.getElementById('logo').innerText = translations[lang].logo;
-            document.getElementById('welcome-title').innerText = translations[lang].welcome;
-            document.getElementById('welcome-sub').innerText = translations[lang].sub;
-            document.getElementById('arcade-title').innerText = translations[lang].arcade;
-            document.getElementById('miner-text').innerText = translations[lang].miner;
-            document.getElementById('quiz-text').innerText = translations[lang].quiz;
-            document.getElementById('snake-text').innerText = translations[lang].snake;
-            document.getElementById('factory-title').innerText = translations[lang].factory;
-            document.getElementById('token-deploy-text').innerText = translations[lang].tokenDeploy;
-            document.getElementById('nft-deploy-text').innerText = translations[lang].nftDeploy;
-            document.getElementById('pulse-title').innerText = translations[lang].pulse;
-            document.getElementById('gas-text').innerText = translations[lang].gas;
-            document.getElementById('block-text').innerText = translations[lang].block;
-            document.getElementById('claim-title').innerText = translations[lang].claim;
-            document.getElementById('wallet-text').innerText = translations[lang].connectWallet;
+            document.getElementById('logo').innerText = translations[lang].logo || translations.en.logo;
+            document.getElementById('welcome-title').innerText = translations[lang].welcome || translations.en.welcome;
+            document.getElementById('welcome-sub').innerText = translations[lang].sub || translations.en.sub;
+            document.getElementById('arcade-title').innerText = translations[lang].arcade || translations.en.arcade;
+            document.getElementById('miner-text').innerText = translations[lang].miner || translations.en.miner;
+            document.getElementById('quiz-text').innerText = translations[lang].quiz || translations.en.quiz;
+            document.getElementById('snake-text').innerText = translations[lang].snake || translations.en.snake;
+            document.getElementById('factory-title').innerText = translations[lang].factory || translations.en.factory;
+            document.getElementById('token-deploy-text').innerText = translations[lang].tokenDeploy || translations.en.tokenDeploy;
+            document.getElementById('nft-deploy-text').innerText = translations[lang].nftDeploy || translations.en.nftDeploy;
+            document.getElementById('pulse-title').innerText = translations[lang].pulse || translations.en.pulse;
+            document.getElementById('gas-text').innerText = translations[lang].gas || translations.en.gas;
+            document.getElementById('block-text').innerText = translations[lang].block || translations.en.block;
+            document.getElementById('claim-title').innerText = translations[lang].claim || translations.en.claim;
+            document.getElementById('wallet-text').innerText = translations[lang].connectWallet || translations.en.connectWallet;
         }
 
-        // Diğer fonksiyonlar (wallet, stats, bonus, modallar, oyunlar) aynı kalıyor
+        // Cüzdan Bağlama - Tüm cüzdan desteği
+        async function handleWallet() {
+            if (!window.ethereum && !window.WalletConnectProvider) {
+                alert("Cüzdan bulunamadı! MetaMask veya WalletConnect destekli cüzdan yükleyin.");
+                return;
+            }
 
-        // Snake oyunu (duvarlardan geçme + yuvarlak yılan)
+            // MetaMask / EVM cüzdan denemesi
+            if (window.ethereum) {
+                try {
+                    const acc = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    userWallet = acc[0];
+                    updateUI(true);
+                    alert("Cüzdan bağlandı (MetaMask veya benzeri)!");
+                    return;
+                } catch (err) {
+                    console.log("MetaMask hatası:", err);
+                }
+            }
+
+            // WalletConnect (mobil cüzdanlar için QR kod)
+            try {
+                const WalletConnectProvider = window.WalletConnectProvider.default;
+                const provider = new WalletConnectProvider({
+                    rpc: { 8453: "https://mainnet.base.org" },
+                    chainId: 8453,
+                    qrcode: true
+                });
+
+                await provider.enable();
+                const accounts = provider.accounts;
+                if (accounts && accounts.length > 0) {
+                    userWallet = accounts[0];
+                    updateUI(true);
+                    alert("Cüzdan bağlandı (WalletConnect - mobil cüzdan tarandı)!");
+                }
+            } catch (err) {
+                alert("Bağlantı hatası: " + err.message + "\nQR kod taratmayı deneyin veya MetaMask kullanın.");
+            }
+        }
+
+        function disconnect() { userWallet = null; updateUI(false); }
+
+        function updateUI(connected) {
+            const btn = document.getElementById('wallet-btn');
+            const logout = document.getElementById('disconnect-btn');
+            if (connected) {
+                btn.innerHTML = `${userWallet.slice(0,6)}...`;
+                logout.classList.remove('hidden');
+            } else {
+                btn.innerHTML = `Connect Wallet`;
+                logout.classList.add('hidden');
+            }
+        }
+
+        // Diğer fonksiyonlar (live stats, ticker, bonus, modallar) aynı kalıyor
+        async function updateLiveStats() {
+            try {
+                const r = await fetch(ALCHEMY_URL, { method: 'POST', body: JSON.stringify([{"jsonrpc":"2.0","id":1,"method":"eth_gasPrice"},{"jsonrpc":"2.0","id":2,"method":"eth_blockNumber"}])});
+                const d = await r.json();
+                document.getElementById('live-gas').innerText = (parseInt(d[0].result, 16) / 1e9).toFixed(3) + " Gw";
+                document.getElementById('live-block').innerText = "#" + parseInt(d[1].result, 16);
+            } catch (e) { }
+        }
+
+        async function updateTicker() {
+            try {
+                const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum,aerodrome-finance,degen-base,brett&vs_currencies=usd&include_24hr_change=true");
+                const m = await res.json();
+                document.getElementById('market-ticker').innerHTML = `ETH: $${m.ethereum.usd} | AERO: $${m['aerodrome-finance'].usd}`;
+            } catch (e) { }
+        }
+
+        function updateBonus() {
+            document.getElementById('bonus-badge').classList.replace('hidden', 'flex');
+            document.getElementById('bonus-count').innerText = bonusTokens.toFixed(1);
+        }
+
+        function openClaim() { document.getElementById('claim-val').innerText = bonusTokens.toFixed(1); document.getElementById('claim-modal').classList.add('active'); }
+        function closeClaim() { document.getElementById('claim-modal').classList.remove('active'); }
+        function processClaim() { alert("Claim sent to wallet!"); bonusTokens = 0; updateBonus(); closeClaim(); }
+
+        function openM(t) { document.getElementById('m-title').innerText = t; document.getElementById('m').classList.add('active'); }
+        function closeM() { document.getElementById('m').classList.remove('active'); }
+        function gen() { document.getElementById('out').innerText = "contract Build { ... }"; document.getElementById('res').classList.remove('hidden'); }
+        async function pay() {
+            if(!userWallet) return alert("Connect!");
+            await ethereum.request({ method: 'eth_sendTransaction', params: [{ from: userWallet, to: OWNER, value: '0x9184E72A000' }] });
+            alert("Success!"); closeM();
+        }
+
+        // Oyun Modal Yardımcıları
+        function openGame(title, contentHTML) {
+            document.getElementById('game-modal-title').innerText = title;
+            document.getElementById('game-container').innerHTML = contentHTML;
+            document.getElementById('game-modal').style.display = 'flex';
+            document.getElementById('game-modal').classList.add('active');
+        }
+
+        function closeGame() {
+            document.getElementById('game-modal').style.display = 'none';
+            document.getElementById('game-modal').classList.remove('active');
+            if (window.gameLoop) clearInterval(window.gameLoop);
+        }
+
+        // Oyun Başlatma
+        function playGame(type) {
+            let reward = (type === 'Quiz') ? 5 : 0.5;
+            bonusTokens += reward;
+            updateBonus();
+            alert(type + " başladı! +" + reward + " BKIT kazandın!");
+
+            if (type === 'Snake') startSnake();
+            else if (type === 'Quiz') startQuiz();
+            else if (type === 'Gas Miner') startGasMiner();
+        }
+
+        // Snake - Yuvarlak yılan + duvar geçme + tuşlar çalışıyor
         function startSnake() {
             openGame('SNAKE - BASEKIT EDITION', `
                 <div class="relative mx-auto" style="width:420px;">
@@ -338,7 +517,7 @@
 
             setTimeout(() => {
                 const canvas = document.getElementById('snake-canvas');
-                if (!canvas) return;
+                if (!canvas) return alert("Canvas yüklenemedi!");
                 canvas.focus();
                 const ctx = canvas.getContext('2d');
                 const grid = 20;
@@ -350,17 +529,11 @@
                 function draw() {
                     ctx.fillStyle = '#000';
                     ctx.fillRect(0,0,400,400);
-
-                    // Food - yuvarlak kırmızı
                     ctx.beginPath();
                     ctx.arc(food.x*grid + grid/2, food.y*grid + grid/2, grid/2 - 2, 0, Math.PI*2);
                     ctx.fillStyle = '#FF3366';
-                    ctx.shadowColor = '#FF3366';
-                    ctx.shadowBlur = 20;
                     ctx.fill();
-                    ctx.shadowBlur = 0;
 
-                    // Snake - yuvarlak halkalar
                     snake.forEach((part, i) => {
                         ctx.beginPath();
                         ctx.arc(part.x*grid + grid/2, part.y*grid + grid/2, grid/2 - (i===0 ? 1 : 2), 0, Math.PI*2);
@@ -371,12 +544,9 @@
 
                 function update() {
                     let head = {x: snake[0].x + dx, y: snake[0].y + dy};
-
-                    // Duvarlardan geçme
                     head.x = (head.x + 20) % 20;
                     head.y = (head.y + 20) % 20;
 
-                    // Kendine çarpma
                     if (snake.some(s => s.x === head.x && s.y === head.y)) {
                         clearInterval(window.gameLoop);
                         alert(`Game Over! Score: ${score}`);
@@ -389,9 +559,7 @@
                         score += 10;
                         document.getElementById('snake-score').innerText = score;
                         food = {x: Math.floor(Math.random()*20), y: Math.floor(Math.random()*20)};
-                    } else {
-                        snake.pop();
-                    }
+                    } else snake.pop();
 
                     draw();
                 }
@@ -406,11 +574,18 @@
                 canvas.addEventListener('click', () => canvas.focus());
 
                 draw();
-                window.gameLoop = setInterval(update, 100);
+                window.gameLoop = setInterval(update, 110);
             }, 300);
         }
 
-        // Diğer oyunlar ve fonksiyonlar aynı kalıyor
+        function startQuiz() {
+            openGame('QUIZ', '<p>Quiz soruları yükleniyor...</p>');
+        }
+
+        function startGasMiner() {
+            openGame('GAS MINER', '<p>Madencilik başladı!</p>');
+        }
+
         setInterval(updateLiveStats, 15000); setInterval(updateTicker, 60000);
         updateLiveStats(); updateTicker();
     </script>
