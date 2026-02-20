@@ -17,7 +17,7 @@
         .lang-active { background: #0052FF !important; color: white !important; }
         .farcaster-card { background: rgba(133, 93, 205, 0.1); border: 1px solid rgba(133, 93, 205, 0.3); border-radius: 1.5rem; }
         .brightness-125 { filter: brightness(1.25); }
-        .contrast-110   { filter: contrast(1.10); }
+        .contrast-110 { filter: contrast(1.10); }
         /* Yeni: Arcade ve Bonus Stilleri */
         .arcade-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; cursor: pointer; }
         .arcade-btn:hover { border-color: #0052FF; transform: translateY(-3px); }
@@ -79,7 +79,7 @@
             <div class="glass h-[500px] overflow-hidden shadow-2xl">
                 <iframe src="https://app.uniswap.org/#/swap?theme=dark&chain=base" width="100%" height="100%" style="border: none;"></iframe>
             </div>
-            
+           
             <div class="glass p-8 border-t-4 border-yellow-500 shadow-2xl text-white bg-gradient-to-b from-yellow-500/5 to-transparent">
                 <h3 class="text-xl font-bold mb-8 italic text-yellow-500 uppercase tracking-widest flex items-center gap-3">
                     <i class="fas fa-gamepad text-2xl"></i> Base Arcade
@@ -154,6 +154,7 @@
         </p>
     </footer>
 
+    <!-- Mevcut modallar -->
     <div id="m" class="modal text-white">
         <div class="bg-[#000814] border border-blue-600 p-10 rounded-[3rem] w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <h3 id="m-title" class="text-2xl font-bold mb-8 base-blue italic uppercase"></h3>
@@ -184,12 +185,21 @@
         </div>
     </div>
 
+    <!-- ─── Yeni Oyun Modal ─────────────────────────────────────── -->
+    <div id="game-modal" class="modal text-white" style="display:none;">
+        <div class="bg-[#000814] border-2 border-[#0052FF] p-6 sm:p-10 rounded-3xl w-full max-w-5xl max-h-[92vh] overflow-y-auto relative shadow-2xl">
+            <button onclick="closeGame()" class="absolute top-4 right-6 text-3xl text-gray-400 hover:text-white transition">&times;</button>
+            <h2 id="game-modal-title" class="text-3xl font-black mb-6 text-center base-blue uppercase tracking-wider"></h2>
+            <div id="game-container" class="text-center"></div>
+        </div>
+    </div>
+
     <script src="https://neynarxyz.github.io/siwn/raw/1.2.0/index.js" async></script>
     <script>
         const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
         const ALCHEMY_URL = "https://base-mainnet.g.alchemy.com/v2/pWkTLY-IkShGLhJuPOC0e";
         let userWallet = null; let bonusTokens = 0;
-        
+       
         const dict = {
             en: { welcome: "Welcome to BaseKit", sub: "\"Converting Information to Onchain Value\"", factory: "Builder Factory", token: "🚀 Deploy New Token (ERC-20)", nft: "🖼️ Launch NFT Collection (ERC-721)" },
             tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: "\"Bilgiyi Onchain Değere Dönüştürüyoruz\"", factory: "Geliştirici Fabrikası", token: "🚀 Yeni Token Oluştur (ERC-20)", nft: "🖼️ NFT Koleksiyonu Başlat (ERC-721)" }
@@ -213,7 +223,6 @@
                 logout.classList.add('hidden');
             }
         }
-
         async function updateLiveStats() {
             try {
                 const r = await fetch(ALCHEMY_URL, { method: 'POST', body: JSON.stringify([{"jsonrpc":"2.0","id":1,"method":"eth_gasPrice"},{"jsonrpc":"2.0","id":2,"method":"eth_blockNumber"}])});
@@ -222,7 +231,6 @@
                 document.getElementById('live-block').innerText = "#" + parseInt(d[1].result, 16);
             } catch (e) { }
         }
-
         async function updateTicker() {
             try {
                 const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum,aerodrome-finance,degen-base,brett&vs_currencies=usd&include_24hr_change=true");
@@ -231,13 +239,243 @@
             } catch (e) { }
         }
 
-        // ARCADE LOGIC
-        function playGame(type) {
-            if(!userWallet) return alert("Connect Wallet!");
-            bonusTokens += type === 'Quiz' ? 5 : 0.5;
-            updateBonus();
-            alert(type + " reward: BKIT added!");
+        // ───────────────────────────────────────────────
+        // GAME SYSTEM - Eklenen kısım başlıyor
+        // ───────────────────────────────────────────────
+
+        let currentGame = null;
+
+        function openGame(title, contentHTML) {
+            document.getElementById('game-modal-title').innerText = title;
+            document.getElementById('game-container').innerHTML = contentHTML;
+            document.getElementById('game-modal').style.display = 'flex';
+            document.getElementById('game-modal').classList.add('active');
         }
+
+        function closeGame() {
+            document.getElementById('game-modal').style.display = 'none';
+            document.getElementById('game-modal').classList.remove('active');
+            if (window.gameLoop) clearInterval(window.gameLoop);
+            if (window.minerInterval) clearInterval(window.minerInterval);
+            currentGame = null;
+        }
+
+        // Mevcut playGame'i genişletiyoruz (eski davranış korunuyor)
+        const originalPlayGame = playGame || function(){};
+        playGame = function(type) {
+            if (!userWallet) return alert("Connect Wallet first!");
+
+            let reward = (type === 'Quiz') ? 5 : 0.5;
+            bonusTokens += reward;
+            updateBonus();
+
+            if (type === 'Snake') {
+                startSnake();
+            } else if (type === 'Quiz') {
+                startQuiz();
+            } else if (type === 'Gas Miner') {
+                startGasMiner();
+            }
+
+            alert(type + " başladı! +" + reward + " BKIT kazandın!");
+        };
+
+        // SNAKE - Gelişmiş versiyon
+        function startSnake() {
+            currentGame = 'snake';
+            const content = `
+                <div class="relative mx-auto" style="width:420px;">
+                    <canvas id="snake-canvas" width="400" height="400" class="bg-black border-4 border-[#0052FF] rounded-2xl shadow-2xl mx-auto block"></canvas>
+                    <div class="absolute top-3 left-3 bg-black/70 px-4 py-2 rounded-xl text-lg font-bold">Score: <span id="snake-score">0</span></div>
+                </div>
+                <p class="mt-4 text-blue-300">Arrow keys veya WASD ile hareket et • Yemek ye, büyü!</p>
+            `;
+            openGame('SNAKE - BaseKit Edition', content);
+
+            setTimeout(() => {
+                const canvas = document.getElementById('snake-canvas');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                const grid = 20;
+                let snake = [{x:10, y:10}];
+                let dx = 1, dy = 0;
+                let food = {x: Math.floor(Math.random()*20), y: Math.floor(Math.random()*20)};
+                let score = 0;
+                let gameOver = false;
+
+                function draw() {
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(0,0,400,400);
+                    ctx.fillStyle = '#FF3366';
+                    ctx.shadowColor = '#FF3366';
+                    ctx.shadowBlur = 20;
+                    ctx.fillRect(food.x*grid, food.y*grid, grid, grid);
+                    ctx.shadowBlur = 0;
+                    snake.forEach((part, i) => {
+                        ctx.fillStyle = i === 0 ? '#00FFAA' : '#00CC88';
+                        ctx.fillRect(part.x*grid + 2, part.y*grid + 2, grid-4, grid-4);
+                    });
+                }
+
+                function update() {
+                    if (gameOver) return;
+                    const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+                    if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20 ||
+                        snake.some(s => s.x === head.x && s.y === head.y)) {
+                        gameOver = true;
+                        clearInterval(window.gameLoop);
+                        alert(`GAME OVER!\nFinal Score: ${score}\n\nTekrar dene!`);
+                        return;
+                    }
+                    snake.unshift(head);
+                    if (head.x === food.x && head.y === food.y) {
+                        score += 10;
+                        document.getElementById('snake-score').innerText = score;
+                        food = {x: Math.floor(Math.random()*20), y: Math.floor(Math.random()*20)};
+                        bonusTokens += 0.5;
+                        updateBonus();
+                    } else {
+                        snake.pop();
+                    }
+                    draw();
+                }
+
+                document.addEventListener('keydown', e => {
+                    if (['ArrowLeft','a','A'].includes(e.key) && dx !== 1)  { dx=-1; dy=0; }
+                    if (['ArrowUp','w','W'].includes(e.key) && dy !== 1)    { dx=0; dy=-1; }
+                    if (['ArrowRight','d','D'].includes(e.key) && dx !== -1){ dx=1; dy=0; }
+                    if (['ArrowDown','s','S'].includes(e.key) && dy !== -1) { dx=0; dy=1; }
+                });
+
+                draw();
+                window.gameLoop = setInterval(update, 100);
+            }, 300);
+        }
+
+        // QUIZ
+        function startQuiz() {
+            currentGame = 'quiz';
+            const questions = [
+                {q: "Base, hangi blockchain'in Layer-2 çözümüdür?", opts: ["Ethereum", "Solana", "Binance Smart Chain"], ans: 0},
+                {q: "Farcaster'ın temel amacı nedir?", opts: ["Merkezi sosyal medya", "Decentralized social protocol", "NFT pazaryeri"], ans: 1},
+                {q: "Onchain değer nedir?", opts: ["Sadece ETH", "Bilgiyi token'a dönüştürme", "Off-chain veri"], ans: 1},
+                {q: "En popüler Base token'lardan biri?", opts: ["DEGEN", "PEPE", "SHIB"], ans: 0},
+                {q: "Gas ücreti neyi etkiler?", opts: ["İşlem hızı ve maliyeti", "Cüzdan bakiyesi", "NFT boyutu"], ans: 0},
+                {q: "Base'in kurucusu kim?", opts: ["Vitalik Buterin", "Coinbase", "Brian Armstrong"], ans: 2},
+                {q: "ERC-20 ne içindir?", opts: ["Fungible token", "NFT", "Domain"], ans: 0}
+            ];
+
+            let idx = 0;
+            let score = 0;
+            let timeLeft = 15;
+            let timer;
+
+            function loadQuestion() {
+                if (idx >= questions.length) {
+                    clearInterval(timer);
+                    alert(`Quiz Tamamlandı!\nSkor: ${score}/${questions.length} → +${score*3} BKIT`);
+                    bonusTokens += score * 3;
+                    updateBonus();
+                    closeGame();
+                    return;
+                }
+                const q = questions[idx];
+                let optsHTML = q.opts.map((o,i) => 
+                    `<button onclick="quizAnswer(${i})" class="arcade-btn block w-4/5 mx-auto my-3 p-4 text-lg font-bold hover:bg-blue-700 transition">${o}</button>`
+                ).join('');
+
+                document.getElementById('game-container').innerHTML = `
+                    <div class="text-xl mb-4">Süre: <span id="quiz-timer">${timeLeft}</span>s</div>
+                    <h3 class="text-2xl font-bold mb-6">${q.q}</h3>
+                    ${optsHTML}
+                    <p class="mt-8 text-sm">Soru ${idx+1} / ${questions.length} • Skor: ${score}</p>
+                `;
+
+                timeLeft = 15;
+                clearInterval(timer);
+                timer = setInterval(() => {
+                    timeLeft--;
+                    document.getElementById('quiz-timer').innerText = timeLeft;
+                    if (timeLeft <= 0) {
+                        idx++;
+                        alert("Süre bitti! → Geçildi");
+                        loadQuestion();
+                    }
+                }, 1000);
+            }
+
+            window.quizAnswer = function(selected) {
+                clearInterval(timer);
+                const correct = questions[idx].ans === selected;
+                if (correct) {
+                    score++;
+                    alert("Doğru! +3 BKIT");
+                    bonusTokens += 3;
+                    updateBonus();
+                } else {
+                    alert("Yanlış! Doğru cevap: " + questions[idx].opts[questions[idx].ans]);
+                }
+                idx++;
+                loadQuestion();
+            };
+
+            openGame('BASEKIT QUIZ - Test Et!', '<p class="text-lg">Yükleniyor...</p>');
+            setTimeout(loadQuestion, 400);
+        }
+
+        // GAS MINER
+        function startGasMiner() {
+            currentGame = 'miner';
+            let mined = 0;
+            let level = 1;
+            let autoRate = 0.1;
+
+            const content = `
+                <h3 class="text-3xl mb-6 font-black">GAS MINER v${level}</h3>
+                <button id="mine-btn" class="arcade-btn text-5xl p-12 rounded-full bg-gradient-to-br from-blue-600 to-purple-800 hover:scale-110 transition transform">⛏️ MINE!</button>
+                <div class="mt-8 text-2xl">Mined: <span id="mined-val">0.0</span> BKIT</div>
+                <div class="mt-4 text-lg">Auto: <span id="auto-rate">0.1</span> / sn • Level <span id="level-val">1</span></div>
+                <button id="upgrade-btn" class="mt-6 arcade-btn px-8 py-4 text-xl bg-yellow-600/40 hover:bg-yellow-600 disabled:opacity-50" disabled>Upgrade (50 BKIT)</button>
+            `;
+            openGame('GAS MINER - Maden Kaz!', content);
+
+            function updateDisplay() {
+                document.getElementById('mined-val').innerText = mined.toFixed(1);
+                document.getElementById('auto-rate').innerText = autoRate.toFixed(1);
+                document.getElementById('level-val').innerText = level;
+                document.getElementById('upgrade-btn').disabled = mined < 50;
+            }
+
+            document.getElementById('mine-btn').onclick = () => {
+                mined += 1 * level;
+                bonusTokens += 0.2;
+                updateBonus();
+                updateDisplay();
+            };
+
+            document.getElementById('upgrade-btn').onclick = () => {
+                if (mined >= 50) {
+                    mined -= 50;
+                    level++;
+                    autoRate += 0.4;
+                    updateDisplay();
+                }
+            };
+
+            window.minerInterval = setInterval(() => {
+                mined += autoRate;
+                bonusTokens += autoRate * 0.05;
+                updateBonus();
+                updateDisplay();
+            }, 1000);
+
+            updateDisplay();
+        }
+
+        // ───────────────────────────────────────────────
+        // Orijinal fonksiyonlar devam ediyor
+        // ───────────────────────────────────────────────
+
         function updateBonus() {
             document.getElementById('bonus-badge').classList.replace('hidden', 'flex');
             document.getElementById('bonus-count').innerText = bonusTokens.toFixed(1);
@@ -245,15 +483,13 @@
         function openClaim() { document.getElementById('claim-val').innerText = bonusTokens.toFixed(1); document.getElementById('claim-modal').classList.add('active'); }
         function closeClaim() { document.getElementById('claim-modal').classList.remove('active'); }
         function processClaim() { alert("Claim sent to wallet!"); bonusTokens = 0; updateBonus(); closeClaim(); }
-
-        // ORIGINAL WRAPPERS
         function openM(t) { document.getElementById('m-title').innerText = t; document.getElementById('m').classList.add('active'); }
         function closeM() { document.getElementById('m').classList.remove('active'); }
         function gen() { document.getElementById('out').innerText = "contract Build { ... }"; document.getElementById('res').classList.remove('hidden'); }
-        async function pay() { 
+        async function pay() {
             if(!userWallet) return alert("Connect!");
-            await ethereum.request({ method: 'eth_sendTransaction', params: [{ from: userWallet, to: OWNER, value: '0x9184E72A000' }] }); 
-            alert("Success!"); closeM(); 
+            await ethereum.request({ method: 'eth_sendTransaction', params: [{ from: userWallet, to: OWNER, value: '0x9184E72A000' }] });
+            alert("Success!"); closeM();
         }
 
         setInterval(updateLiveStats, 15000); setInterval(updateTicker, 60000);
