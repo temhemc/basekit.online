@@ -324,38 +324,57 @@
 
     // Builder Attribution + Deploy
     async function deployContract() {
-      if (!activeUser) return alert("Önce cüzdanı bağlayın!");
+  if (!activeUser) return alert("Önce cüzdanı bağlayın!");
 
-      const name = document.getElementById('inp-name')?.value.trim();
-      const symbol = document.getElementById('inp-sym')?.value.trim();
-      const feeStr = document.getElementById('inp-fee')?.value.trim() || "0.0001";
+  const name = document.getElementById('inp-name')?.value.trim();
+  const symbol = document.getElementById('inp-sym')?.value.trim();
+  const feeStr = document.getElementById('inp-fee')?.value.trim() || "0.0001";
 
-      if (!name || !symbol || parseFloat(feeStr) < 0.0001) {
-        return alert("Proje adı, sembol ve minimum 0.0001 ETH ücret zorunlu!");
-      }
+  if (!name || !symbol || parseFloat(feeStr) < 0.0001) {
+    return alert("Proje adı, sembol ve minimum 0.0001 ETH zorunlu!");
+  }
 
-      try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
+  try {
+    // Attribution suffix (bc_h8ua8gs9 hex + ERC-8021 marker)
+    const builderCode = "bc_h8ua8gs9";
+    const codeBytes = ethers.utils.toUtf8Bytes(builderCode);
+    const codeHex = ethers.utils.hexlify(codeBytes).slice(2);
+    const ercMarker = "80218021802180218021802180218021";
+    const dataSuffix = "0x" + codeHex + ercMarker;
 
-        // Builder Code suffix (bc_h8ua8gs9 + ERC-8021 marker)
-        const codeHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(BUILDER_CODE));
-        const suffix = codeHex.slice(2) + "80218021802180218021802180218021";
+    // wallet_sendCalls ile attribution'ı otomatik ekle
+    const response = await window.ethereum.request({
+      method: 'wallet_sendCalls',
+      params: [{
+        version: '1.0',
+        chainId: '0x2105',  // Base Mainnet chainId = 8453 (0x2105 hex)
+        from: activeUser,
+        calls: [{
+          to: OWNER_ADDRESS,  // Hedef adres (ücret gidecek yer)
+          value: ethers.utils.parseEther(feeStr).toHexString(),
+          data: '0x'  // Boş data – attribution suffix otomatik eklenecek
+        }],
+        capabilities: {
+          dataSuffix: {
+            value: dataSuffix,
+            optional: true
+          }
+        }
+      }]
+    });
 
-        const tx = await signer.sendTransaction({
-          to: OWNER_ADDRESS,
-          value: ethers.utils.parseEther(feeStr),
-          data: "0x" + suffix,
-          gasLimit: 300000  // Manuel gas limit – estimate hatasını önler
-        });
-
-        alert("Deploy başarılı! Tx hash: " + tx.hash + "\nAttribution eklendi (bc_h8ua8gs9)");
-        closeFact();
-      } catch (err) {
-        alert("Hata: " + err.message + "\nBase Mainnet seçili mi? Cüzdanda yeterli ETH var mı?");
-      }
+    // Response'tan tx hash al (MetaMask onayladıktan sonra döner)
+    const txHash = response?.results?.[0]?.hash || response?.hash;
+    if (txHash) {
+      alert("Deploy başarılı! Tx hash: " + txHash + "\nAttribution eklendi (bc_h8ua8gs9)");
+      closeFact();
+    } else {
+      alert("İşlem onaylandı ama hash alınamadı – Basescan'da kontrol et.");
     }
-
+  } catch (err) {
+    alert("Hata: " + (err.message || err) + "\nMetaMask'ta Base Mainnet seçili mi? Cüzdanda yeterli ETH var mı?");
+  }
+}
     // Snake Engine – Duvardan geçiyor
     function startSnakeEngine() {
       document.getElementById('game-viewport').classList.remove('hidden');
