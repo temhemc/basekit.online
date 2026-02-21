@@ -10,42 +10,47 @@
     <style>
         body { background-color: #00050a; color: #fff; font-family: sans-serif; overflow-x: hidden; }
         .base-blue { color: #0052FF; }
-        .glass { background: rgba(0, 82, 255, 0.08); border: 1px solid rgba(0, 82, 255, 0.25); border-radius: 2rem; backdrop-filter: blur(12px); }
+        .glass { background: rgba(0, 82, 255, 0.08); border: 1px solid rgba(0, 82, 255, 0.25); border-radius: 2rem; backdrop-filter: blur(12px); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
         
-        /* Modallar */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
-        .modal.active { display: flex; }
+        /* Modallar ve Animasyonlar */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; transition: all 0.3s ease; }
+        .modal.active { display: flex; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
         
-        input, textarea { background: #000; border: 1px solid #1a2a4a; color: white; padding: 12px; border-radius: 12px; width: 100%; margin-bottom: 8px; outline: none; }
+        input, textarea { background: #000; border: 1px solid #1a2a4a; color: white; padding: 14px; border-radius: 14px; width: 100%; margin-bottom: 12px; outline: none; transition: 0.3s; }
+        input:focus { border-color: #0052FF; box-shadow: 0 0 10px rgba(0,82,255,0.3); }
         
-        /* Cüzdan Seçenekleri Stili */
-        .wallet-option { background: rgba(255,255,255,0.03); border: 1px solid rgba(0,82,255,0.2); transition: all 0.3s ease; cursor: pointer; }
-        .wallet-option:hover { border-color: #0052FF; background: rgba(0,82,255,0.12); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,82,255,0.2); }
+        /* Cüzdan Seçenekleri Profesyonel Görünüm */
+        .wallet-option { background: rgba(255,255,255,0.03); border: 1px solid rgba(0,82,255,0.2); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .wallet-option:hover { border-color: #0052FF; background: rgba(0,82,255,0.15); transform: translateY(-4px); box-shadow: 0 15px 30px rgba(0,82,255,0.2); }
         
-        /* Dil ve Arcade Butonları */
-        .lang-btn { cursor: pointer; padding: 6px 12px; border-radius: 8px; font-size: 11px; border: 1px solid rgba(255,255,255,0.1); }
-        .lang-active { background: #0052FF !important; color: white !important; }
-        .arcade-btn { background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(0,82,255,0.08)); border: 1px solid rgba(0,82,255,0.3); transition: all 0.3s ease; cursor: pointer; border-radius: 1.5rem; }
-        .arcade-btn:hover { transform: scale(1.08) translateY(-4px); box-shadow: 0 0 25px rgba(0,82,255,0.5); border-color: #0052FF; }
-        .arcade-icon { font-size: 3.5rem; transition: all 0.3s; }
-        .arcade-btn:hover .arcade-icon { transform: rotate(15deg) scale(1.2); }
+        .lang-btn { cursor: pointer; padding: 8px 14px; border-radius: 10px; font-size: 11px; border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
+        .lang-active { background: #0052FF !important; color: white !important; box-shadow: 0 0 15px rgba(0,82,255,0.4); }
         
-        /* Builder Factory Büyük Butonlar */
-        .deploy-btn { background-size: cover; background-position: center; border: 2px solid transparent; transition: all 0.4s ease; border-radius: 1.5rem; overflow: hidden; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.6); height: 180px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; }
-        .deploy-btn:hover { transform: scale(1.04); box-shadow: 0 25px 60px rgba(0,82,255,0.6); }
-        .deploy-btn::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.7)); opacity: 0.7; transition: opacity 0.4s; }
-        .deploy-btn:hover::after { opacity: 0.4; }
-        .deploy-btn span { position: relative; z-index: 2; text-shadow: 0 3px 15px rgba(0,0,0,0.9); display: flex; align-items: center; gap: 1rem; }
-        .token-btn { background-image: linear-gradient(rgba(0,82,255,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1639762681485-8b8c3d7e8b1c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'); }
-        .nft-btn { background-image: linear-gradient(rgba(139,92,246,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'); }
+        .arcade-btn { background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(0,82,255,0.08)); border: 1px solid rgba(0,82,255,0.3); transition: all 0.4s ease; cursor: pointer; border-radius: 1.5rem; position: relative; overflow: hidden; }
+        .arcade-btn:hover { transform: scale(1.08) translateY(-6px); box-shadow: 0 0 35px rgba(0,82,255,0.6); border-color: #0052FF; }
+        .arcade-icon { font-size: 3.5rem; transition: all 0.4s; }
+        .arcade-btn:hover .arcade-icon { transform: rotate(12deg) scale(1.15); }
+        
+        /* Factory Büyük Kartlar */
+        .deploy-btn { background-size: cover; background-position: center; border: 2px solid transparent; transition: all 0.5s ease; border-radius: 2rem; overflow: hidden; position: relative; box-shadow: 0 12px 40px rgba(0,0,0,0.7); height: 200px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; }
+        .deploy-btn:hover { transform: scale(1.05); box-shadow: 0 30px 70px rgba(0,82,255,0.7); border-color: rgba(0,82,255,0.5); }
+        .deploy-btn::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.8)); opacity: 0.8; transition: 0.5s; }
+        .deploy-btn:hover::after { opacity: 0.5; }
+        .deploy-btn span { position: relative; z-index: 2; text-shadow: 0 4px 20px rgba(0,0,0,1); display: flex; align-items: center; gap: 1.2rem; }
+        
+        .token-btn { background-image: url('https://images.unsplash.com/photo-1639762681485-8b8c3d7e8b1c?auto=format&fit=crop&w=1200&q=80'); }
+        .nft-btn { background-image: url('https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&w=1200&q=80'); }
+
+        canvas { background: #000; border: 3px solid #0052FF; border-radius: 1.5rem; display: block; margin: 0 auto; box-shadow: 0 0 40px rgba(0,82,255,0.2); }
     </style>
 </head>
-<body class="p-4">
+<body class="p-6">
 
-    <nav class="max-w-7xl mx-auto flex justify-between items-center mb-8 sticky top-0 bg-[#00050a]/90 backdrop-blur-md z-50 py-3">
-        <div class="flex items-center gap-6">
-            <h1 class="text-2xl font-bold italic tracking-tighter" id="logo">BASEKIT<span class="base-blue">.ONLINE</span></h1>
-            <div id="lang-menu" class="hidden md:flex gap-2 flex-wrap">
+    <nav class="max-w-7xl mx-auto flex justify-between items-center mb-10 sticky top-0 bg-[#00050a]/95 backdrop-blur-xl z-50 py-4 border-b border-white/5">
+        <div class="flex items-center gap-8">
+            <h1 class="text-2xl font-bold italic tracking-tighter uppercase" id="logo">BASEKIT<span class="base-blue">.ONLINE</span></h1>
+            <div id="lang-menu" class="hidden lg:flex gap-2 flex-wrap">
                 <button onclick="changeLang('en', this)" class="lang-btn lang-active">🇺🇸 EN</button>
                 <button onclick="changeLang('tr', this)" class="lang-btn">🇹🇷 TR</button>
                 <button onclick="changeLang('zh', this)" class="lang-btn">🇨🇳 ZH</button>
@@ -54,17 +59,17 @@
                 <button onclick="changeLang('fr', this)" class="lang-btn">🇫🇷 FR</button>
             </div>
         </div>
-        <div class="flex items-center gap-2">
-            <div id="wallet-wrapper" class="relative">
-                <button onclick="toggleWalletAction()" id="wallet-btn" class="bg-[#0052FF] px-6 py-2 rounded-full font-bold text-sm shadow-lg flex items-center gap-2 transition hover:bg-blue-600">
-                    <i class="fas fa-wallet"></i> <span id="wallet-text">Connect Wallet</span>
+        <div class="flex items-center gap-4">
+            <div id="wallet-wrap" class="relative">
+                <button onclick="toggleWalletActions()" id="wallet-btn" class="bg-[#0052FF] px-8 py-2.5 rounded-full font-black text-sm shadow-[0_0_20px_rgba(0,82,255,0.4)] flex items-center gap-2 transition hover:bg-blue-600 hover:scale-105">
+                    <i class="fas fa-wallet"></i> <span id="wallet-text">CONNECT WALLET</span>
                 </button>
-                <div id="wallet-dropdown" class="hidden absolute right-0 mt-3 w-48 bg-[#000814] border border-blue-600 rounded-2xl p-2 shadow-2xl z-[1001]">
-                    <div class="px-4 py-2 border-b border-white/10 mb-1">
-                        <p class="text-[9px] text-gray-500 uppercase font-bold">Account</p>
-                        <p id="display-address" class="text-[10px] truncate text-blue-400 font-mono"></p>
+                <div id="wallet-dropdown" class="hidden absolute right-0 mt-4 w-56 bg-[#000814] border-2 border-blue-600 rounded-[1.5rem] p-3 z-[1100] shadow-2xl">
+                    <div class="px-4 py-3 border-b border-white/10 mb-2">
+                        <p class="text-[10px] text-gray-500 uppercase font-black tracking-widest">Account Active</p>
+                        <p id="addr-show" class="text-[11px] truncate text-blue-400 font-mono mt-1"></p>
                     </div>
-                    <button onclick="disconnect()" class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-500/10 rounded-xl font-bold text-xs transition">
+                    <button onclick="disconnectWallet()" class="w-full text-left px-4 py-3 text-red-500 hover:bg-red-500/10 rounded-xl font-black text-xs transition uppercase">
                         <i class="fas fa-power-off mr-2"></i> Disconnect
                     </button>
                 </div>
@@ -72,215 +77,244 @@
         </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto text-center mb-16 px-4">
+    <div class="max-w-7xl mx-auto text-center mb-20 px-4">
         <div class="relative group">
-            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-            <div class="relative bg-black rounded-[3rem] ring-1 ring-white/10 shadow-2xl overflow-hidden">
-                <img src="https://i.postimg.cc/7YcT3jhc/Gemini_Generated_Image_b6cp2gb6cp2gb6cp.png" class="w-full h-[380px] sm:h-[450px] md:h-[520px] object-cover object-center brightness-125 contrast-110" alt="BaseKit">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent"></div>
-                <div class="absolute bottom-8 left-1/2 -translate-x-1/2 w-full px-4 text-white">
-                    <div class="bg-black/65 backdrop-blur-xl border border-white/15 inline-block px-8 py-5 rounded-[2.5rem] shadow-2xl">
-                        <h2 id="welcome-title" class="text-2xl sm:text-3xl font-black uppercase italic tracking-widest text-white mb-2">Welcome to <span class="text-[#0052FF]">BaseKit</span></h2>
-                        <p id="welcome-sub" class="text-blue-200 text-xs sm:text-sm font-medium italic uppercase">"Converting Information to Onchain Value"</p>
+            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[3.5rem] blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+            <div class="relative bg-black rounded-[3.5rem] ring-1 ring-white/10 shadow-2xl overflow-hidden">
+                <img src="https://i.postimg.cc/7YcT3jhc/Gemini_Generated_Image_b6cp2gb6cp2gb6cp.png" class="w-full h-[450px] md:h-[550px] object-cover brightness-110 contrast-110 hover:scale-105 transition duration-700">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+                <div class="absolute bottom-12 left-1/2 -translate-x-1/2 w-full px-6 text-white">
+                    <div class="bg-black/70 backdrop-blur-2xl border border-white/20 inline-block px-12 py-8 rounded-[3rem] shadow-2xl">
+                        <h2 id="welcome-title" class="text-3xl md:text-5xl font-black uppercase italic tracking-widest text-white mb-3">Welcome to <span class="text-[#0052FF]">BaseKit</span></h2>
+                        <p id="welcome-sub" class="text-blue-200 text-sm md:text-base font-bold italic uppercase tracking-widest opacity-80">"Converting Information to Onchain Value"</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <main class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8">
-        <div class="lg:col-span-7 space-y-8">
-            <div class="glass h-[500px] overflow-hidden shadow-2xl">
+    <main class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-10">
+        <div class="lg:col-span-7 space-y-10">
+            <div class="glass h-[550px] overflow-hidden shadow-2xl border-b-4 border-blue-600">
                 <iframe src="https://app.uniswap.org/#/swap?theme=dark&chain=base" width="100%" height="100%" style="border: none;"></iframe>
             </div>
 
-            <div class="glass p-8 border-t-4 border-yellow-500 shadow-2xl">
-                <h3 id="arcade-title" class="text-xl font-bold mb-8 italic text-yellow-500 uppercase tracking-widest flex items-center gap-3">
-                    <i class="fas fa-gamepad text-2xl"></i> Base Arcade
-                </h3>
-                <div class="grid grid-cols-3 gap-4">
-                    <div onclick="playGame('Gas Miner')" class="arcade-btn p-6 flex flex-col items-center">
-                        <i class="fas fa-hammer arcade-icon text-blue-400 mb-3"></i>
-                        <p class="text-sm font-bold uppercase" id="miner-text">Miner</p>
+            <div class="glass p-10 border-t-8 border-yellow-500 shadow-2xl">
+                <div class="flex justify-between items-center mb-10">
+                    <h3 id="arcade-title" class="text-2xl font-black italic text-yellow-500 uppercase tracking-tighter flex items-center gap-4">
+                        <i class="fas fa-gamepad text-3xl"></i> Base Arcade
+                    </h3>
+                    <div id="game-stats-box" class="hidden bg-yellow-500/10 px-4 py-2 rounded-xl border border-yellow-500/20">
+                        <span class="text-yellow-500 font-black font-mono" id="live-score">SCORE: 0</span>
                     </div>
-                    <div onclick="playGame('Quiz')" class="arcade-btn p-6 flex flex-col items-center">
-                        <i class="fas fa-brain arcade-icon text-yellow-400 mb-3"></i>
-                        <p class="text-sm font-bold uppercase" id="quiz-text">Quiz</p>
+                </div>
+                <div class="grid grid-cols-3 gap-6 mb-10">
+                    <div onclick="playGame('Miner')" class="arcade-btn p-8 text-center group">
+                        <i class="fas fa-hammer arcade-icon text-blue-400 mb-4 drop-shadow-lg"></i>
+                        <p class="text-sm font-black uppercase tracking-widest" id="miner-text">Miner</p>
                     </div>
-                    <div onclick="playSnake()" class="arcade-btn p-6 flex flex-col items-center text-white">
-                        <i class="fas fa-dragon arcade-icon text-green-400 mb-3"></i>
-                        <p class="text-sm font-bold uppercase" id="snake-text">Snake</p>
+                    <div onclick="playGame('Quiz')" class="arcade-btn p-8 text-center group">
+                        <i class="fas fa-brain arcade-icon text-yellow-400 mb-4 drop-shadow-lg"></i>
+                        <p class="text-sm font-black uppercase tracking-widest" id="quiz-text">Quiz</p>
+                    </div>
+                    <div onclick="runSnakeEngine()" class="arcade-btn p-8 text-center group">
+                        <i class="fas fa-dragon arcade-icon text-green-400 mb-4 drop-shadow-lg"></i>
+                        <p class="text-sm font-black uppercase tracking-widest" id="snake-text">Snake</p>
+                    </div>
+                </div>
+                <div id="arcade-viewport" class="hidden animate-pulse-slow">
+                    <canvas id="snakeCanvas" width="400" height="400" class="mx-auto"></canvas>
+                    <div class="mt-6 flex justify-center gap-4">
+                        <button onclick="terminateGame()" class="text-xs font-black text-gray-500 uppercase border-b border-gray-500 hover:text-white hover:border-white transition">Exit Game Session</button>
                     </div>
                 </div>
             </div>
 
-            <div class="glass p-8 border-l-4 border-purple-600">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold flex items-center gap-2"><i class="fab fa-ethereum text-purple-400"></i> Farcaster Social Hub</h3>
-                    <div id="farcaster-auth">
+            <div class="glass p-10 border-l-8 border-purple-600">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="text-xl font-black italic flex items-center gap-3 uppercase">
+                        <i class="fab fa-ethereum text-purple-400"></i> Farcaster Protocol Hub
+                    </h3>
+                    <div id="farcaster-root">
                         <div class="neynar_signin" data-client_id="a8b7c178-8d87-4ace-840a-4bc908166c29" data-theme="dark" data-variant="farcaster"></div>
                     </div>
                 </div>
-                <div id="user-info" class="hidden flex items-center gap-4 p-4 bg-purple-500/10 rounded-2xl border border-purple-500/20"></div>
-                <p id="feed-placeholder" class="text-sm text-gray-400 italic">Connect your Farcaster account to sync with BaseKit.</p>
+                <div id="fc-feed" class="p-6 bg-purple-500/5 rounded-[2rem] border border-purple-500/10 text-center">
+                    <p class="text-sm text-gray-500 italic uppercase font-bold tracking-widest">Awaiting Protocol Authorization...</p>
+                </div>
             </div>
         </div>
 
-        <div class="lg:col-span-5 space-y-6">
-            <div class="glass p-10 border-l-4 border-blue-600 shadow-2xl text-white">
-                <h3 id="factory-title" class="text-2xl font-black mb-10 italic base-blue uppercase tracking-widest text-center">BUILDER FACTORY</h3>
-                <div class="space-y-8">
-                    <button onclick="openM('Token Lab')" class="deploy-btn token-btn">
-                        <span><i class="fas fa-rocket"></i> <span id="token-deploy-text">ERC-20 TOKEN DEPLOY</span></span>
+        <div class="lg:col-span-5 space-y-8">
+            <div class="glass p-12 border-l-8 border-blue-600 shadow-2xl">
+                <h3 id="factory-title" class="text-3xl font-black mb-12 italic base-blue uppercase tracking-tighter text-center drop-shadow-2xl">BUILDER FACTORY</h3>
+                <div class="space-y-10">
+                    <button onclick="triggerModal('Token Lab')" class="deploy-btn token-btn group">
+                        <span><i class="fas fa-rocket text-5xl"></i> <span id="token-deploy-text">ERC-20 TOKEN</span></span>
                     </button>
-                    <button onclick="openM('NFT Engine')" class="deploy-btn nft-btn">
-                        <span><i class="fas fa-palette"></i> <span id="nft-deploy-text">ERC-721 NFT COLLECTION</span></span>
+                    <button onclick="triggerModal('NFT Engine')" class="deploy-btn nft-btn group">
+                        <span><i class="fas fa-palette text-5xl"></i> <span id="nft-deploy-text">ERC-721 NFT</span></span>
                     </button>
                 </div>
             </div>
 
-            <div class="glass p-8 border-l-4 border-green-500 shadow-2xl">
-                <h3 class="text-lg font-bold mb-6 italic text-green-400 uppercase tracking-widest flex justify-between items-center">
+            <div class="glass p-10 border-l-8 border-green-500 shadow-2xl">
+                <h3 class="text-xl font-black mb-8 italic text-green-400 uppercase tracking-widest flex justify-between items-center">
                     <span id="pulse-title">Base Live Pulse</span>
-                    <span id="sync-indicator" class="text-[10px] bg-green-500/20 px-2 py-1 rounded-full text-green-500 font-bold">LIVE</span>
+                    <span class="text-[11px] bg-green-500/20 px-3 py-1 rounded-full text-green-500 font-black animate-pulse">NETWORK LIVE</span>
                 </h3>
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="bg-black/40 p-4 rounded-xl border border-white/5">
-                        <p class="text-[10px] text-gray-500 uppercase font-bold text-white" id="gas-text">Gas</p>
-                        <p id="live-gas" class="text-xl font-bold text-white">... Gwei</p>
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <div class="bg-black/50 p-6 rounded-3xl border border-white/5 shadow-inner">
+                        <p class="text-[11px] text-gray-500 uppercase font-black mb-2" id="gas-text">Gas Price</p>
+                        <p id="live-gas" class="text-2xl font-black text-white">... Gwei</p>
                     </div>
-                    <div class="bg-black/40 p-4 rounded-xl border border-white/5">
-                        <p class="text-[10px] text-gray-500 uppercase font-bold text-white" id="block-text">Block</p>
-                        <p id="live-block" class="text-xl font-bold text-white">#-------</p>
+                    <div class="bg-black/50 p-6 rounded-3xl border border-white/5 shadow-inner">
+                        <p class="text-[11px] text-gray-500 uppercase font-black mb-2" id="block-text">Latest Block</p>
+                        <p id="live-block" class="text-2xl font-black text-white">#-------</p>
                     </div>
                 </div>
-                <div id="market-ticker" class="bg-black/60 p-4 rounded-xl border border-blue-500/20 text-[10px] font-bold flex flex-wrap gap-4 text-white">Syncing Market Data...</div>
+                <div id="ticker" class="bg-blue-600/5 p-5 rounded-2xl border border-blue-500/10 text-[11px] font-black uppercase text-blue-400 tracking-tighter overflow-hidden whitespace-nowrap">
+                    Syncing Base Ecosystem Data Stream...
+                </div>
             </div>
         </div>
     </main>
 
     <div id="wallet-modal" class="modal">
-        <div class="bg-[#000814] border-2 border-blue-600 p-8 rounded-[3rem] w-full max-w-sm">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold italic uppercase base-blue">Select Wallet</h3>
-                <button onclick="closeWalletModal()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="space-y-4">
-                <div onclick="connect('metamask')" class="wallet-option p-4 rounded-2xl flex items-center gap-4">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Logo.svg" class="w-8 h-8">
-                    <span class="font-bold">MetaMask</span>
+        <div class="bg-[#000814] border-4 border-blue-600 p-10 rounded-[3.5rem] w-full max-w-sm text-center shadow-[0_0_100px_rgba(0,82,255,0.3)]">
+            <h3 class="text-2xl font-black italic mb-8 base-blue uppercase tracking-widest">Select Provider</h3>
+            <div class="space-y-5">
+                <div onclick="initAuth('metamask')" class="wallet-option p-5 rounded-[1.5rem] flex items-center gap-5">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Logo.svg" class="w-10 h-10">
+                    <span class="font-black text-white text-lg">METAMASK</span>
                 </div>
-                <div onclick="connect('coinbase')" class="wallet-option p-4 rounded-2xl flex items-center gap-4">
-                    <img src="https://avatars.githubusercontent.com/u/18060234?s=280&v=4" class="w-8 h-8 rounded-lg">
-                    <span class="font-bold">Coinbase Wallet</span>
+                <div onclick="initAuth('walletconnect')" class="wallet-option p-5 rounded-[1.5rem] flex items-center gap-5">
+                    <img src="https://avatars.githubusercontent.com/u/18060234?v=4" class="w-10 h-10 rounded-xl">
+                    <span class="font-black text-white text-lg">COINBASE & OTHERS</span>
                 </div>
             </div>
-            <p class="text-[9px] text-gray-600 mt-6 text-center uppercase font-bold">Secured by Base Protocol</p>
+            <button onclick="hideWalletModal()" class="mt-8 text-gray-600 text-[10px] font-black uppercase tracking-widest hover:text-white transition">Abort Connection</button>
         </div>
     </div>
 
-    <div id="m" class="modal">
-        <div class="bg-[#000814] border border-blue-600 p-10 rounded-[3.5rem] w-full max-w-2xl max-h-[90vh] overflow-y-auto text-white">
-            <h3 id="m-title" class="text-2xl font-bold mb-8 base-blue italic uppercase"></h3>
-            <div class="grid md:grid-cols-2 gap-4">
-                <input id="n" type="text" placeholder="Project Name *">
-                <input id="s" type="text" placeholder="Symbol *">
-                <input id="sup" type="number" placeholder="Total Supply">
-                <input id="fee-input" type="number" step="0.0001" value="0.0001">
-            </div>
-            <textarea id="desc" placeholder="Project Description..." class="mt-4 h-24 text-white"></textarea>
-            <button onclick="gen()" class="w-full bg-[#0052FF] py-5 mt-6 rounded-2xl font-bold">GENERATE CONTRACT</button>
-            <div id="res" class="hidden mt-8">
-                <pre id="out" class="text-[10px] text-green-400 bg-black p-4 rounded-xl border border-green-900 overflow-x-auto font-mono"></pre>
-                <button onclick="deployContract()" class="w-full border-2 border-blue-600 py-3 mt-4 rounded-xl font-bold">DEPLOY NOW</button>
-            </div>
-            <button onclick="closeM()" class="w-full text-gray-600 text-[10px] mt-8 uppercase font-bold">Back</button>
-        </div>
-    </div>
-
-    <footer class="max-w-7xl mx-auto py-16 border-t border-white/5 text-center opacity-50 mt-10">
-        <p class="text-[10px] uppercase tracking-[0.4em] mb-4">© 2024 BASEKIT.ONLINE | ALL RIGHTS RESERVED</p>
-        <p class="text-[9px] italic max-w-2xl mx-auto uppercase leading-relaxed text-white">
-            Legal Disclaimer: BaseKit is a decentralized tooling hub. On-chain activities carry high risk. Use at your own discretion. Not financial advice.
-        </p>
-    </footer>
-
-    <script src="https://neynarxyz.github.io/siwn/raw/1.2.0/index.js" async></script>
     <script>
-        // --- TEMEL DEĞİŞKENLER ---
-        const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
-        const RPC_URL = "https://mainnet.base.org";
-        let userAddress = null;
-        let bonusTokens = 0;
+        const TRANSLATIONS = {
+            en: { welcome: "Welcome to BaseKit", sub: '"Converting Information to Onchain Value"', arcade: "Base Arcade", miner: "Miner", quiz: "Quiz", snake: "Snake", factory: "BUILDER FACTORY", token: "ERC-20 TOKEN", nft: "ERC-721 NFT", pulse: "Base Live Pulse", gas: "Gas Price", block: "Latest Block", connect: "CONNECT WALLET" },
+            tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: '"Bilgiyi Onchain Değere Dönüştürüyoruz"', arcade: "Base Arcade", miner: "Madenci", quiz: "Quiz", snake: "Yılan", factory: "YAPICI FABRİKASI", token: "ERC-20 TOKEN OLUŞTUR", nft: "ERC-721 NFT OLUŞTUR", pulse: "Base Canlı Nabız", gas: "Gas Ücreti", block: "Son Blok", connect: "CÜZDAN BAĞLA" },
+            zh: { welcome: "欢迎来到 BaseKit", sub: '"将信息转化为链上价值"', arcade: "Base 游戏中心", miner: "矿工", quiz: "测验", snake: "贪吃蛇", factory: "建设者工厂", token: "部署 ERC-20", nft: "部署 NFT", pulse: "Base 实时脉搏", gas: "燃料费", block: "最新区块", connect: "连接钱包" },
+            ko: { welcome: "BaseKit에 오신 것을 환영합니다", sub: '"정보를 온체인 가치로 전환"', arcade: "Base 아케이드", miner: "광부", quiz: "퀴즈", snake: "스네이크", factory: "빌더 팩토리", token: "ERC-20 토큰 배포", nft: "NFT 컬렉션 배포", pulse: "Base 실시간 상태", gas: "가스 가격", block: "최신 블록", connect: "지갑 연결" },
+            de: { welcome: "Willkommen bei BaseKit", sub: '"Informationen in Onchain-Wert umwandeln"', arcade: "Base Arcade", miner: "Miner", quiz: "Quiz", snake: "Snake", factory: "BUILDER FABRIK", token: "ERC-20 TOKEN", nft: "ERC-721 NFT", pulse: "Base Live Puls", gas: "Gaspreis", block: "Letzter Block", connect: "WALLET VERBINDEN" },
+            fr: { welcome: "Bienvenue sur BaseKit", sub: '"Convertir l\'information en valeur onchain"', arcade: "Base Arcade", miner: "Mineur", quiz: "Quiz", snake: "Snake", factory: "USINE DE CONSTRUCTEURS", token: "TOKEN ERC-20", nft: "NFT ERC-721", pulse: "Base Live Pulse", gas: "Prix du Gas", block: "Dernier Bloc", connect: "CONNECTER LE WALLET" }
+        };
 
-        // --- CÜZDAN SİSTEMİ (PRO) ---
-        function toggleWalletAction() {
-            if (userAddress) {
-                document.getElementById('wallet-dropdown').classList.toggle('hidden');
-            } else {
-                openWalletModal();
-            }
+        let userAccount = null;
+        let activeInterval = null;
+        const BASE_RPC = "https://mainnet.base.org";
+
+        // Wallet Controller
+        function toggleWalletActions() { 
+            if(userAccount) document.getElementById('wallet-dropdown').classList.toggle('hidden'); 
+            else document.getElementById('wallet-modal').classList.add('active'); 
         }
+        function hideWalletModal() { document.getElementById('wallet-modal').classList.remove('active'); }
 
-        function openWalletModal() { document.getElementById('wallet-modal').classList.add('active'); }
-        function closeWalletModal() { document.getElementById('wallet-modal').classList.remove('active'); }
-
-        async function connect(walletType) {
-            if (!window.ethereum) return alert("Wallet not found!");
+        async function initAuth(type) {
+            if(!window.ethereum) return alert("Provider not found!");
             try {
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                 await provider.send("eth_requestAccounts", []);
-                const signer = provider.getSigner();
-                userAddress = await signer.getAddress();
-                
-                updateWalletUI(true);
-                closeWalletModal();
-            } catch (err) { alert("Connection failed!"); }
+                userAccount = await provider.getSigner().getAddress();
+                updateInterface(true);
+                hideWalletModal();
+            } catch(e) { alert("Auth Failed!"); }
         }
 
-        function disconnect() {
-            userAddress = null;
-            updateWalletUI(false);
+        function disconnectWallet() {
+            userAccount = null;
+            updateInterface(false);
             document.getElementById('wallet-dropdown').classList.add('hidden');
         }
 
-        function updateWalletUI(connected) {
+        function updateInterface(isConnected) {
             const btn = document.getElementById('wallet-btn');
-            const text = document.getElementById('wallet-text');
-            const displayAddr = document.getElementById('display-address');
-            
-            if (connected) {
-                btn.classList.replace('bg-[#0052FF]', 'bg-green-600/20');
+            const txt = document.getElementById('wallet-text');
+            const show = document.getElementById('addr-show');
+            if(isConnected) {
+                btn.style.background = "rgba(16, 185, 129, 0.15)";
                 btn.style.border = "1px solid #10b981";
-                text.innerText = userAddress.slice(0, 6) + "..." + userAddress.slice(-4);
-                text.classList.add('text-green-400');
-                displayAddr.innerText = userAddress;
+                txt.innerText = userAccount.slice(0,6) + "..." + userAccount.slice(-4);
+                txt.classList.add('text-green-400');
+                show.innerText = userAccount;
             } else {
-                btn.classList.replace('bg-green-600/20', 'bg-[#0052FF]');
+                btn.style.background = "#0052FF";
                 btn.style.border = "none";
-                text.innerText = "Connect Wallet";
-                text.classList.remove('text-green-400');
+                txt.innerText = "CONNECT WALLET";
+                txt.classList.remove('text-green-400');
             }
         }
 
-        // --- LIVE STATS & DİL ---
-        async function updateLiveStats() {
-            try {
-                const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
-                const gasPrice = await provider.getGasPrice();
-                const blockNumber = await provider.getBlockNumber();
-                document.getElementById('live-gas').innerText = (parseFloat(ethers.utils.formatUnits(gasPrice, 'gwei'))).toFixed(4) + " Gwei";
-                document.getElementById('live-block').innerText = "#" + blockNumber;
-            } catch (e) { }
+        // Snake Engine (Mühürlü)
+        function runSnakeEngine() {
+            document.getElementById('arcade-viewport').classList.remove('hidden');
+            document.getElementById('game-stats-box').classList.remove('hidden');
+            const canvas = document.getElementById('snakeCanvas');
+            const ctx = canvas.getContext('2d');
+            let snake = [{x:10, y:10}], food = {x:15, y:15}, dx=1, dy=0, score=0;
+
+            document.addEventListener('keydown', e => {
+                const key = e.key;
+                if(key === 'ArrowUp' && dy === 0) { dx=0; dy=-1; }
+                if(key === 'ArrowDown' && dy === 0) { dx=0; dy=1; }
+                if(key === 'ArrowLeft' && dx === 0) { dx=-1; dy=0; }
+                if(key === 'ArrowRight' && dx === 0) { dx=1; dy=0; }
+            });
+
+            clearInterval(activeInterval);
+            activeInterval = setInterval(() => {
+                const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+                if(head.x === food.x && head.y === food.y) {
+                    score += 10; document.getElementById('live-score').innerText = "SCORE: " + score;
+                    food = {x: Math.floor(Math.random()*20), y: Math.floor(Math.random()*20)};
+                } else { snake.pop(); }
+
+                if(head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20) {
+                    alert("WIPED OUT! FINAL SCORE: " + score); terminateGame(); return;
+                }
+                
+                snake.unshift(head);
+                ctx.fillStyle = "#000"; ctx.fillRect(0,0,400,400);
+                // Grid
+                ctx.strokeStyle = "#111"; ctx.lineWidth = 1;
+                for(let i=0; i<400; i+=20) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,400); ctx.stroke(); }
+                // Snake
+                ctx.shadowBlur = 10; ctx.shadowColor = "#0052FF";
+                ctx.fillStyle = "#0052FF"; snake.forEach(s => ctx.fillRect(s.x*20, s.y*20, 19, 19));
+                // Food
+                ctx.shadowColor = "#ff0000"; ctx.fillStyle = "#ff0000";
+                ctx.fillRect(food.x*20, food.y*20, 19, 19);
+                ctx.shadowBlur = 0;
+            }, 110);
         }
 
-        const translations = {
-            en: { logo: "BASEKIT.ONLINE", welcome: "Welcome to BaseKit", sub: '"Converting Information to Onchain Value"', arcade: "Base Arcade", miner: "Miner", quiz: "Quiz", snake: "Snake", factory: "BUILDER FACTORY", tokenDeploy: "ERC-20 TOKEN DEPLOY", nftDeploy: "ERC-721 NFT COLLECTION", pulse: "Base Live Pulse", gas: "Gas", block: "Block", connectWallet: "Connect Wallet" },
-            tr: { logo: "BASEKIT.ONLINE", welcome: "BaseKit'e Hoş Geldiniz", sub: '"Bilgiyi Onchain Değere Dönüştürüyoruz"', arcade: "Base Arcade", miner: "Madenci", quiz: "Yarışma", snake: "Yılan", factory: "YAPICI FABRİKASI", tokenDeploy: "ERC-20 TOKEN OLUŞTUR", nftDeploy: "ERC-721 NFT KOLEKSİYONU", pulse: "Base Canlı Nabız", gas: "Gaz", block: "Blok", connectWallet: "Cüzdan Bağla" }
-        };
+        function terminateGame() {
+            clearInterval(activeInterval);
+            document.getElementById('arcade-viewport').classList.add('hidden');
+            document.getElementById('game-stats-box').classList.add('hidden');
+        }
 
-        function changeLang(lang, btn) {
-            const t = translations[lang] || translations.en;
+        // Network Pulse
+        async function fetchPulse() {
+            try {
+                const provider = new ethers.providers.JsonRpcProvider(BASE_RPC);
+                const g = await provider.getGasPrice();
+                const b = await provider.getBlockNumber();
+                document.getElementById('live-gas').innerText = (parseFloat(ethers.utils.formatUnits(g, 'gwei'))).toFixed(4) + " Gwei";
+                document.getElementById('live-block').innerText = "#" + b;
+            } catch(e) {}
+        }
+
+        function changeLang(l, b) {
+            const t = TRANSLATIONS[l];
             document.getElementById('welcome-title').innerText = t.welcome;
             document.getElementById('welcome-sub').innerText = t.sub;
             document.getElementById('arcade-title').innerText = t.arcade;
@@ -288,45 +322,21 @@
             document.getElementById('quiz-text').innerText = t.quiz;
             document.getElementById('snake-text').innerText = t.snake;
             document.getElementById('factory-title').innerText = t.factory;
-            document.getElementById('token-deploy-text').innerText = t.tokenDeploy;
-            document.getElementById('nft-deploy-text').innerText = t.nftDeploy;
+            document.getElementById('token-deploy-text').innerText = t.token;
+            document.getElementById('nft-deploy-text').innerText = t.nft;
             document.getElementById('pulse-title').innerText = t.pulse;
             document.getElementById('gas-text').innerText = t.gas;
             document.getElementById('block-text').innerText = t.block;
-            if(!userAddress) document.getElementById('wallet-text').innerText = t.connectWallet;
-            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('lang-active'));
-            btn.classList.add('lang-active');
+            if(!userAccount) document.getElementById('wallet-text').innerText = t.connect;
+            document.querySelectorAll('.lang-btn').forEach(x => x.classList.remove('lang-active'));
+            b.classList.add('lang-active');
         }
 
-        // --- MODAL & LOGIC ---
-        function openM(t) { document.getElementById('m-title').innerText = t; document.getElementById('m').classList.add('active'); }
-        function closeM() { document.getElementById('m').classList.remove('active'); }
+        function triggerModal(t) { /* Factory Modal Logic */ }
+        function playGame(m) { alert(m + " Mode Initializing..."); }
 
-        function gen() {
-            const name = document.getElementById('n').value;
-            const symbol = document.getElementById('s').value;
-            document.getElementById('out').innerText = `contract ${symbol} { // Build via BaseKit\n string public name = "${name}"; \n}`;
-            document.getElementById('res').classList.remove('hidden');
-        }
-
-        async function deployContract() {
-            if (!userAddress) return alert("Connect Wallet!");
-            const fee = document.getElementById('fee-input').value;
-            try {
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-                const signer = provider.getSigner();
-                const tx = await signer.sendTransaction({
-                    to: OWNER,
-                    value: ethers.utils.parseEther(fee)
-                });
-                alert("Transaction Sent: " + tx.hash);
-            } catch (err) { alert("Transaction Failed"); }
-        }
-
-        // Diğer: Click Outside, Initial Sync
-        window.onclick = e => { if (e.target.classList.contains('modal')) { closeM(); closeWalletModal(); } };
-        setInterval(updateLiveStats, 15000);
-        updateLiveStats();
+        setInterval(fetchPulse, 12000);
+        fetchPulse();
     </script>
 </body>
 </html>
