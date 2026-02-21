@@ -1,352 +1,485 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaseKit.online | Professional Builder & Arcade Ecosystem</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js" crossorigin="anonymous"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;700;900&display=swap');
-        
-        :root { --base-color: #0052FF; --purple-glow: #7c3aed; --bg-dark: #00050a; }
-        body { background-color: var(--bg-dark); color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
-        .orbitron { font-family: 'Orbitron', sans-serif; }
-        .base-blue { color: var(--base-color); }
-        
-        /* Gelişmiş Glassmorphism */
-        .glass { background: rgba(0, 82, 255, 0.05); border: 1px solid rgba(0, 82, 255, 0.2); border-radius: 2.5rem; backdrop-filter: blur(15px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .glass:hover { border-color: var(--base-color); box-shadow: 0 0 40px rgba(0, 82, 255, 0.15); transform: translateY(-5px); }
-        
-        /* Özel Builder Animasyonları */
-        @keyframes pulse-border { 0% { border-color: rgba(0,82,255,0.3); } 50% { border-color: #0052FF; } 100% { border-color: rgba(0,82,255,0.3); } }
-        .builder-active { border: 2px solid #0052FF; animation: pulse-border 2s infinite; }
-        
-        /* Modal Mimarisi */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9999; align-items: center; justify-content: center; padding: 25px; backdrop-filter: grayscale(1); }
-        .modal.active { display: flex; animation: modalReveal 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
-        @keyframes modalReveal { from { opacity: 0; transform: scale(0.9) translateY(50px); filter: blur(10px); } to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); } }
-        
-        /* Form Elemanları */
-        input { background: rgba(255,255,255,0.03); border: 2px solid #1e293b; color: white; padding: 18px; border-radius: 18px; width: 100%; outline: none; transition: 0.4s; font-weight: 700; }
-        input:focus { border-color: var(--base-color); background: rgba(0,82,255,0.05); box-shadow: 0 0 20px rgba(0,82,255,0.2); }
-        
-        /* Factory Büyük Kartlar */
-        .deploy-card { height: 240px; border-radius: 3rem; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1); border: 2px solid transparent; }
-        .deploy-card:hover { transform: scale(1.03); border-color: var(--base-color); box-shadow: 0 30px 100px rgba(0,82,255,0.4); }
-        .deploy-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.9)); z-index: 2; transition: 0.4s; }
-        .deploy-card:hover::before { opacity: 0.6; }
-        .deploy-card span { position: relative; z-index: 5; font-size: 2.2rem; font-weight: 900; letter-spacing: 3px; text-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-        
-        .bg-token { background-image: url('https://images.unsplash.com/photo-1639762681485-8b8c3d7e8b1c?auto=format&fit=crop&w=1200&q=80'); background-size: cover; }
-        .bg-nft { background-image: url('https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&w=1200&q=80'); background-size: cover; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BaseKit.online | Professional Builder & Arcade Ecosystem</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- ethers.js - stabil CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;700;900&display=swap');
 
-        canvas { background: #000; border: 5px solid var(--base-color); border-radius: 2.5rem; display: block; margin: 0 auto; box-shadow: 0 20px 80px rgba(0,82,255,0.3); }
-        
-        /* Cüzdan ve Dropdown */
-        .wallet-btn { background: var(--base-color); transition: 0.4s; box-shadow: 0 10px 30px rgba(0,82,255,0.4); }
-        .wallet-btn:hover { background: #0042cc; transform: scale(1.05); box-shadow: 0 15px 40px rgba(0,82,255,0.6); }
-        #wallet-dropdown { animation: slideDown 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); border-radius: 2rem; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+    :root {
+      --base-color: #0052FF;
+      --purple-glow: #7c3aed;
+      --bg-dark: #00050a;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    .orbitron { font-family: 'Orbitron', sans-serif; }
+    .base-blue { color: var(--base-color); }
+
+    /* Glassmorphism */
+    .glass {
+      background: rgba(0, 82, 255, 0.05);
+      border: 1px solid rgba(0, 82, 255, 0.2);
+      border-radius: 2.5rem;
+      backdrop-filter: blur(15px);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .glass:hover {
+      border-color: var(--base-color);
+      box-shadow: 0 0 40px rgba(0,82,255,0.15);
+      transform: translateY(-5px);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.98);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 25px;
+    }
+    .modal.active {
+      display: flex;
+      animation: modalReveal 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    @keyframes modalReveal {
+      from { opacity: 0; transform: scale(0.9) translateY(50px); filter: blur(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+    }
+
+    /* Form */
+    input {
+      background: rgba(255,255,255,0.03);
+      border: 2px solid #1e293b;
+      color: white;
+      padding: 18px;
+      border-radius: 18px;
+      width: 100%;
+      outline: none;
+      transition: 0.4s;
+      font-weight: 700;
+    }
+    input:focus {
+      border-color: var(--base-color);
+      background: rgba(0,82,255,0.05);
+      box-shadow: 0 0 20px rgba(0,82,255,0.2);
+    }
+
+    /* Deploy Cards */
+    .deploy-card {
+      height: 240px;
+      border-radius: 3rem;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 2px solid transparent;
+    }
+    .deploy-card:hover {
+      transform: scale(1.03);
+      border-color: var(--base-color);
+      box-shadow: 0 30px 100px rgba(0,82,255,0.4);
+    }
+    .deploy-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.9));
+      z-index: 2;
+      transition: 0.4s;
+    }
+    .deploy-card:hover::before {
+      opacity: 0.6;
+    }
+    .deploy-card span {
+      position: relative;
+      z-index: 5;
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    }
+
+    .bg-token { background-image: url('https://images.unsplash.com/photo-1639762681485-8b8c3d7e8b1c?auto=format&fit=crop&w=1200&q=80'); background-size: cover; }
+    .bg-nft { background-image: url('https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&w=1200&q=80'); background-size: cover; }
+
+    canvas {
+      background: #000;
+      border: 5px solid var(--base-color);
+      border-radius: 2.5rem;
+      display: block;
+      margin: 0 auto;
+      box-shadow: 0 20px 80px rgba(0,82,255,0.3);
+    }
+
+    /* Wallet Button */
+    .wallet-btn {
+      background: var(--base-color);
+      transition: 0.4s;
+      box-shadow: 0 10px 30px rgba(0,82,255,0.4);
+    }
+    .wallet-btn:hover {
+      background: #0042cc;
+      transform: scale(1.05);
+      box-shadow: 0 15px 40px rgba(0,82,255,0.6);
+    }
+  </style>
 </head>
 <body class="p-8">
 
-    <nav class="max-w-7xl mx-auto flex justify-between items-center mb-16 sticky top-0 bg-[#00050a]/95 backdrop-blur-2xl z-[5000] py-6 border-b border-white/5">
-        <div class="flex items-center gap-12">
-            <h1 class="text-3xl font-black orbitron italic tracking-tighter uppercase" id="logo">BASEKIT<span class="base-blue">.ONLINE</span></h1>
-            <div id="lang-switcher" class="hidden 2xl:flex gap-3">
-                <button onclick="updateLang('en', this)" class="lang-btn lang-active bg-white/5 px-4 py-2 rounded-xl text-[10px] font-black transition">🇺🇸 EN</button>
-                <button onclick="updateLang('tr', this)" class="lang-btn bg-white/5 px-4 py-2 rounded-xl text-[10px] font-black transition">🇹🇷 TR</button>
-                <button onclick="updateLang('zh', this)" class="lang-btn bg-white/5 px-4 py-2 rounded-xl text-[10px] font-black transition">🇨🇳 ZH</button>
-                <button onclick="updateLang('ko', this)" class="lang-btn bg-white/5 px-4 py-2 rounded-xl text-[10px] font-black transition">🇰🇷 KO</button>
-                <button onclick="updateLang('de', this)" class="lang-btn bg-white/5 px-4 py-2 rounded-xl text-[10px] font-black transition">🇩🇪 DE</button>
-                <button onclick="updateLang('fr', this)" class="lang-btn bg-white/5 px-4 py-2 rounded-xl text-[10px] font-black transition">🇫🇷 FR</button>
-            </div>
+  <nav class="max-w-7xl mx-auto flex justify-between items-center mb-16 sticky top-0 bg-[#00050a]/95 backdrop-blur-2xl z-[5000] py-6 border-b border-white/5">
+    <div class="flex items-center gap-12">
+      <h1 class="text-3xl font-black orbitron italic tracking-tighter uppercase" id="logo">BASEKIT<span class="base-blue">.ONLINE</span></h1>
+      <div id="lang-switcher" class="hidden 2xl:flex gap-3">
+        <button onclick="updateLang('en', this)" class="lang-btn lang-active bg-white/5 px-4 py-2 rounded-xl text-[10px] font-black transition">🇺🇸 EN</button>
+        <button onclick="updateLang('tr', this)" class="lang-btn bg-white/5 px-4 py-2 rounded-xl text-[10px] font-black transition">🇹🇷 TR</button>
+        <button onclick="updateLang('zh', this)" class="lang-btn bg-white/5 px-4 py-2 rounded-xl text-[10px] font-black transition">🇨🇳 ZH</button>
+        <button onclick="updateLang('ko', this)" class="lang-btn bg-white/5 px-4 py-2 rounded-xl text-[10px] font-black transition">🇰🇷 KO</button>
+        <button onclick="updateLang('de', this)" class="lang-btn bg-white/5 px-4 py-2 rounded-xl text-[10px] font-black transition">🇩🇪 DE</button>
+        <button onclick="updateLang('fr', this)" class="lang-btn bg-white/5 px-4 py-2 rounded-xl text-[10px] font-black transition">🇫🇷 FR</button>
+      </div>
+    </div>
+    <div class="flex items-center gap-6">
+      <div class="hidden lg:flex items-center gap-3 bg-blue-600/10 px-5 py-2 rounded-2xl border border-blue-600/20">
+        <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Builder Code</span>
+        <code class="text-xs font-bold text-white">bc_h8ua8gs9</code>
+      </div>
+      <button onclick="handleWalletUI()" id="main-wallet-btn" class="wallet-btn px-10 py-3.5 rounded-full font-black text-xs flex items-center gap-3">
+        <i class="fas fa-bolt"></i> <span id="btn-text-content">CONNECT HUB</span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-14">
+    <div class="lg:col-span-7 space-y-14">
+      <div class="glass h-[650px] overflow-hidden border-b-[12px] border-blue-600 shadow-2xl relative">
+        <iframe src="https://app.uniswap.org/#/swap?theme=dark&chain=base" width="100%" height="100%" style="border: none;"></iframe>
+      </div>
+
+      <div class="glass p-14 border-t-[10px] border-yellow-500 shadow-[0_0_60px_rgba(234,179,8,0.1)]">
+        <div class="flex justify-between items-center mb-14">
+          <h3 id="arcade-h" class="text-3xl font-black orbitron italic text-yellow-500 uppercase flex items-center gap-5">
+            <i class="fas fa-gamepad text-5xl"></i> Base Arcade Hub
+          </h3>
+          <div id="score-container" class="hidden bg-yellow-500/10 border border-yellow-500/30 px-8 py-3 rounded-2xl">
+            <span class="text-yellow-500 font-black font-mono text-2xl" id="score-val">SCORE: 0000</span>
+          </div>
         </div>
-        
-        <div class="flex items-center gap-6">
-            <div class="hidden lg:flex items-center gap-3 bg-blue-600/10 px-5 py-2 rounded-2xl border border-blue-600/20">
-                <span class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Builder Code</span>
-                <code class="text-xs font-bold text-white">bc_b7k3p9da</code>
-            </div>
-            <div id="wallet-root" class="relative">
-                <button onclick="handleWalletUI()" id="main-wallet-btn" class="wallet-btn px-10 py-3.5 rounded-full font-black text-xs flex items-center gap-3">
-                    <i class="fas fa-bolt"></i> <span id="btn-text-content">CONNECT HUB</span>
-                </button>
-                <div id="wallet-dropdown" class="hidden absolute right-0 mt-6 w-72 bg-[#000d1a] border-2 border-blue-600 p-5 shadow-2xl z-[6000]">
-                    <div class="px-2 py-4 border-b border-white/10 mb-4 text-center">
-                        <div class="w-12 h-12 bg-blue-600 rounded-full mx-auto mb-3 flex items-center justify-center shadow-lg">
-                            <i class="fas fa-user-shield text-xl"></i>
-                        </div>
-                        <p class="text-[10px] text-gray-500 uppercase font-black mb-1">Authenticated Builder</p>
-                        <p id="profile-address" class="text-blue-400 font-black truncate text-xs">temhem.base.eth</p>
-                    </div>
-                    <button onclick="exitSession()" class="w-full text-left px-5 py-4 text-red-500 hover:bg-red-500/10 rounded-2xl font-black text-xs transition uppercase flex items-center gap-3">
-                        <i class="fas fa-power-off"></i> Terminate Session
-                    </button>
-                </div>
-            </div>
+        <div class="grid grid-cols-3 gap-10 mb-14">
+          <div onclick="invokeGame('Miner')" class="arcade-btn glass p-12 text-center group cursor-pointer border-none">
+            <i class="fas fa-hammer text-blue-400 text-5xl mb-6 transition-transform group-hover:rotate-[-20deg]"></i>
+            <p class="font-black uppercase text-sm tracking-widest" id="m-t">Miner</p>
+          </div>
+          <div onclick="invokeGame('Quiz')" class="arcade-btn glass p-12 text-center group cursor-pointer border-none">
+            <i class="fas fa-brain text-yellow-400 text-5xl mb-6 transition-transform group-hover:scale-110"></i>
+            <p class="font-black uppercase text-sm tracking-widest" id="q-t">Quiz</p>
+          </div>
+          <div onclick="startSnakeEngine()" class="arcade-btn glass p-12 text-center group cursor-pointer border-none">
+            <i class="fas fa-dragon text-green-400 text-5xl mb-6 transition-transform group-hover:translate-y-[-5px]"></i>
+            <p class="font-black uppercase text-sm tracking-widest" id="s-t">Snake</p>
+          </div>
         </div>
-    </nav>
-
-    <main class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-14">
-        <div class="lg:col-span-7 space-y-14">
-            <div class="glass h-[650px] overflow-hidden border-b-[12px] border-blue-600 shadow-2xl relative">
-                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent"></div>
-                <iframe src="https://app.uniswap.org/#/swap?theme=dark&chain=base" width="100%" height="100%" style="border: none;"></iframe>
-            </div>
-
-            <div class="glass p-14 border-t-[10px] border-yellow-500 shadow-[0_0_60px_rgba(234,179,8,0.1)]">
-                <div class="flex justify-between items-center mb-14">
-                    <h3 id="arcade-h" class="text-3xl font-black orbitron italic text-yellow-500 uppercase flex items-center gap-5">
-                        <i class="fas fa-gamepad text-5xl"></i> Base Arcade Hub
-                    </h3>
-                    <div id="score-container" class="hidden bg-yellow-500/10 border border-yellow-500/30 px-8 py-3 rounded-2xl">
-                        <span class="text-yellow-500 font-black font-mono text-2xl" id="score-val">SCORE: 0000</span>
-                    </div>
-                </div>
-                <div class="grid grid-cols-3 gap-10 mb-14">
-                    <div onclick="invokeGame('Miner')" class="arcade-btn glass p-12 text-center group cursor-pointer border-none">
-                        <i class="fas fa-hammer text-blue-400 text-5xl mb-6 transition-transform group-hover:rotate-[-20deg]"></i>
-                        <p class="font-black uppercase text-sm tracking-widest" id="m-t">Miner</p>
-                    </div>
-                    <div onclick="invokeGame('Quiz')" class="arcade-btn glass p-12 text-center group cursor-pointer border-none">
-                        <i class="fas fa-brain text-yellow-400 text-5xl mb-6 transition-transform group-hover:scale-110"></i>
-                        <p class="font-black uppercase text-sm tracking-widest" id="q-t">Quiz</p>
-                    </div>
-                    <div onclick="startSnakeEngine()" class="arcade-btn glass p-12 text-center group cursor-pointer border-none">
-                        <i class="fas fa-dragon text-green-400 text-5xl mb-6 transition-transform group-hover:translate-y-[-5px]"></i>
-                        <p class="font-black uppercase text-sm tracking-widest" id="s-t">Snake</p>
-                    </div>
-                </div>
-                <div id="game-viewport" class="hidden">
-                    <canvas id="snakeCanvas" width="400" height="400"></canvas>
-                    <div class="mt-10 text-center">
-                        <button onclick="stopSnake()" class="text-[12px] font-black text-gray-600 uppercase border-b-2 border-gray-900 hover:text-white transition tracking-[0.3em]">End Arcade Session</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass p-14 border-l-[10px] border-purple-600 shadow-2xl">
-                <div class="flex justify-between items-center mb-10">
-                    <h3 class="text-2xl font-black orbitron italic flex items-center gap-5 uppercase">
-                        <i class="fab fa-ethereum text-purple-400 text-3xl"></i> Farcaster Feed
-                    </h3>
-                    <div class="neynar_signin" data-client_id="a8b7c178-8d87-4ace-840a-4bc908166c29" data-theme="dark"></div>
-                </div>
-                <div class="p-12 bg-purple-500/5 rounded-[3rem] border border-purple-500/10 text-center relative overflow-hidden">
-                    <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
-                    <p class="text-sm text-gray-500 italic uppercase font-black tracking-widest relative z-10">Waiting for protocol handshake...</p>
-                </div>
-            </div>
+        <div id="game-viewport" class="hidden">
+          <canvas id="snakeCanvas" width="400" height="400"></canvas>
+          <div class="mt-10 text-center">
+            <button onclick="stopSnake()" class="text-[12px] font-black text-gray-600 uppercase border-b-2 border-gray-900 hover:text-white transition tracking-[0.3em]">End Arcade Session</button>
+          </div>
         </div>
+      </div>
 
-        <div class="lg:col-span-5 space-y-12">
-            <div class="glass p-16 border-l-[12px] border-blue-600 shadow-2xl relative overflow-hidden">
-                <div class="absolute -right-20 -top-20 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl"></div>
-                <h3 id="factory-h" class="text-4xl font-black orbitron mb-16 italic base-blue uppercase tracking-tighter text-center">Factory</h3>
-                <div class="space-y-12">
-                    <div onclick="openFact('Token')" class="deploy-card bg-token">
-                        <span><i class="fas fa-rocket mr-5"></i> ERC-20</span>
-                    </div>
-                    <div onclick="openFact('NFT')" class="deploy-card bg-nft">
-                        <span><i class="fas fa-palette mr-5"></i> ERC-721</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass p-12 border-l-[10px] border-green-500 shadow-2xl">
-                <h3 id="pulse-h" class="text-2xl font-black mb-12 italic text-green-400 uppercase tracking-widest flex justify-between items-center">
-                    <span>Base Pulse</span>
-                    <span class="text-[11px] bg-green-500/20 px-5 py-2 rounded-full text-green-500 font-black animate-pulse shadow-lg shadow-green-500/20">LIVE</span>
-                </h3>
-                <div class="grid grid-cols-2 gap-8 mb-12">
-                    <div class="bg-black/80 p-10 rounded-[2.5rem] border border-white/5 shadow-inner group transition-all hover:border-green-500/30">
-                        <p class="text-[11px] text-gray-500 uppercase font-black mb-4 tracking-widest" id="g-t">Gas Price</p>
-                        <p id="gas-val-ui" class="text-3xl font-black text-white orbitron">... Gwei</p>
-                    </div>
-                    <div class="bg-black/80 p-10 rounded-[2.5rem] border border-white/5 shadow-inner group transition-all hover:border-green-500/30">
-                        <p class="text-[11px] text-gray-500 uppercase font-black mb-4 tracking-widest" id="b-t">Latest Block</p>
-                        <p id="block-val-ui" class="text-3xl font-black text-white orbitron">#-------</p>
-                    </div>
-                </div>
-                <div id="ticker-stream" class="bg-blue-600/5 p-8 rounded-3xl border border-blue-500/10 text-[11px] font-black uppercase text-blue-400 tracking-tighter overflow-hidden">
-                    <div class="animate-pulse">Handshaking with Base Mainnet Nodes via RPC-v2 Protocol...</div>
-                </div>
-            </div>
+      <div class="glass p-14 border-l-[10px] border-purple-600 shadow-2xl">
+        <div class="flex justify-between items-center mb-10">
+          <h3 class="text-2xl font-black orbitron italic flex items-center gap-5 uppercase">
+            <i class="fab fa-ethereum text-purple-400 text-3xl"></i> Farcaster Feed
+          </h3>
+          <div class="neynar_signin" data-client_id="a8b7c178-8d87-4ace-840a-4bc908166c29" data-theme="dark"></div>
         </div>
-    </main>
-
-    <div id="builder-modal" class="modal">
-        <div class="bg-[#000d1a] border-[6px] border-blue-600 p-16 rounded-[4.5rem] w-full max-w-2xl text-white shadow-[0_0_150px_rgba(0,82,255,0.5)] relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600"></div>
-            <h3 id="modal-title" class="text-4xl font-black orbitron base-blue italic uppercase mb-12">Deploy Hub</h3>
-            <div class="grid md:grid-cols-2 gap-8 mb-12">
-                <div class="space-y-2">
-                    <p class="text-[10px] font-black uppercase text-gray-500 ml-4">Project Name</p>
-                    <input type="text" id="inp-name" placeholder="E.g. Base Winner">
-                </div>
-                <div class="space-y-2">
-                    <p class="text-[10px] font-black uppercase text-gray-500 ml-4">Symbol</p>
-                    <input type="text" id="inp-sym" placeholder="E.g. WIN">
-                </div>
-                <div class="md:col-span-2 bg-blue-600/10 p-8 rounded-[2rem] border-2 border-blue-600/30 flex justify-between items-center group transition-all hover:bg-blue-600/20">
-                    <div>
-                        <p class="text-[11px] text-blue-400 font-black uppercase mb-2 tracking-[0.2em]">Builder Attribution Code</p>
-                        <code class="text-lg font-bold text-white tracking-widest">bc_b7k3p9da</code>
-                    </div>
-                    <i class="fas fa-fingerprint text-blue-500 text-5xl opacity-40 group-hover:opacity-100 transition"></i>
-                </div>
-            </div>
-            <button onclick="commitOnChain()" class="w-full bg-[#0052FF] py-8 rounded-[2.5rem] font-black text-2xl shadow-2xl hover:bg-blue-600 transition-all hover:-translate-y-2 orbitron">
-                EXECUTE DEPLOYMENT
-            </button>
-            <button onclick="closeFact()" class="w-full mt-12 text-[12px] text-gray-600 font-black uppercase tracking-[0.4em] underline hover:text-white transition">Cancel Operation</button>
+        <div class="p-12 bg-purple-500/5 rounded-[3rem] border border-purple-500/10 text-center relative overflow-hidden">
+          <p class="text-sm text-gray-500 italic uppercase font-black tracking-widest relative z-10">Waiting for protocol handshake...</p>
         </div>
+      </div>
     </div>
 
-    <footer class="max-w-7xl mx-auto py-40 border-t border-white/5 text-center mt-32">
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-16 mb-24 opacity-40 font-black uppercase text-[12px] tracking-widest">
-            <a href="#" class="hover:text-blue-500">Docs</a><a href="#" class="hover:text-blue-500">Audit</a><a href="#" class="hover:text-blue-500">Security</a><a href="#" class="hover:text-blue-500">Base.org</a><a href="#" class="hover:text-blue-500">Contact</a>
+    <div class="lg:col-span-5 space-y-12">
+      <div class="glass p-16 border-l-[12px] border-blue-600 shadow-2xl relative overflow-hidden">
+        <h3 id="factory-h" class="text-4xl font-black orbitron mb-16 italic base-blue uppercase tracking-tighter text-center">Factory</h3>
+        <div class="space-y-12">
+          <div onclick="openFact('Token')" class="deploy-card bg-token">
+            <span><i class="fas fa-rocket mr-5"></i> ERC-20</span>
+          </div>
+          <div onclick="openFact('NFT')" class="deploy-card bg-nft">
+            <span><i class="fas fa-palette mr-5"></i> ERC-721</span>
+          </div>
         </div>
-        <p class="text-[14px] uppercase tracking-[0.8em] mb-12 font-black text-white opacity-30">© 2024 BASEKIT.ONLINE | ONCHAIN PROTOCOL HUB</p>
-        <div class="max-w-5xl mx-auto p-16 glass border-none opacity-40">
-            <h4 class="text-[12px] font-black mb-8 uppercase tracking-[0.3em]">Protocol Disclosure & Legal Compliance</h4>
-            <p class="text-[11px] italic uppercase font-bold leading-relaxed text-gray-400 mb-8">
-                The BaseKit.online interface (the "Portal") is a decentralized, non-custodial front-end that allows users to interact with smart contracts deployed on the Base Blockchain Network. By utilizing this Portal, you acknowledge that all blockchain-based activities are experimental and carry inherent financial and technical risks. The Builder Attribution Code (bc_b7k3p9da) is a cryptographic identifier used to track ecosystem contributions as defined by the base.dev protocol standards. 
-            </p>
-            <p class="text-[11px] italic uppercase font-bold leading-relaxed text-gray-400">
-                BaseKit does not control, operate, or maintain any underlying blockchain protocol or liquidity pool. Any tokens deployed or smart contracts interacted with through this Portal are the sole responsibility of the user. We do not provide financial, legal, or tax advice. Users are encouraged to conduct their own due diligence before initiating any onchain transaction. All transactions are final and irreversible once confirmed by the network nodes.
-            </p>
+      </div>
+
+      <div class="glass p-12 border-l-[10px] border-green-500 shadow-2xl">
+        <h3 id="pulse-h" class="text-2xl font-black mb-12 italic text-green-400 uppercase tracking-widest flex justify-between items-center">
+          <span>Base Pulse</span>
+          <span class="text-[11px] bg-green-500/20 px-5 py-2 rounded-full text-green-500 font-black animate-pulse shadow-lg shadow-green-500/20">LIVE</span>
+        </h3>
+        <div class="grid grid-cols-2 gap-8 mb-12">
+          <div class="bg-black/80 p-10 rounded-[2.5rem] border border-white/5 shadow-inner group transition-all hover:border-green-500/30">
+            <p class="text-[11px] text-gray-500 uppercase font-black mb-4 tracking-widest" id="g-t">Gas Price</p>
+            <p id="gas-val-ui" class="text-3xl font-black text-white orbitron">... Gwei</p>
+          </div>
+          <div class="bg-black/80 p-10 rounded-[2.5rem] border border-white/5 shadow-inner group transition-all hover:border-green-500/30">
+            <p class="text-[11px] text-gray-500 uppercase font-black mb-4 tracking-widest" id="b-t">Latest Block</p>
+            <p id="block-val-ui" class="text-3xl font-black text-white orbitron">#-------</p>
+          </div>
         </div>
-    </footer>
+        <div id="ticker-stream" class="bg-blue-600/5 p-8 rounded-3xl border border-blue-500/10 text-[11px] font-black uppercase text-blue-400 tracking-tighter overflow-hidden">
+          <div class="animate-pulse">Handshaking with Base Mainnet Nodes via RPC-v2 Protocol...</div>
+        </div>
+      </div>
+    </div>
+  </main>
 
-    <script>
-        const BUILDER_CODE = "bc_b7k3p9da";
-        const RPC_BASE = "https://mainnet.base.org";
-        const LANGS = {
-            en: { welcome: "Welcome to BaseKit", sub: '"Converting Information to Onchain Value"', arcade: "Base Arcade Hub", miner: "Miner", quiz: "Quiz", snake: "Snake", factory: "Factory Hub", pulse: "Network Pulse", gas: "Gas Price", block: "Latest Block", connect: "CONNECT HUB" },
-            tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: '"Bilgiyi Onchain Değere Dönüştürüyoruz"', arcade: "Base Arcade Merkezi", miner: "Madenci", quiz: "Yarışma", snake: "Yılan", factory: "Yapıcı Fabrikası", pulse: "Ağ Nabzı", gas: "Gas Ücreti", block: "Son Blok", connect: "SİSTEME BAĞLAN" },
-            zh: { welcome: "欢迎来到 BaseKit", sub: '"将信息转化为链上价值"', arcade: "游戏中心", miner: "矿工", quiz: "测验", snake: "贪吃蛇", factory: "建设者工厂", pulse: "网络脉搏", gas: "燃料费", block: "最新区块", connect: "连接中心" },
-            ko: { welcome: "BaseKit에 오신 것을 환영합니다", sub: '"정보를 온체인 가치로 전환"', arcade: "아케이드 허브", miner: "광부", quiz: "퀴즈", snake: "스네이크", factory: "빌더 팩토리", pulse: "네트워크 상태", gas: "가스 가격", block: "최신 블록", connect: "지갑 연결" },
-            de: { welcome: "Willkommen bei BaseKit", sub: '"Informationen umwandeln"', arcade: "Arcade-Zentrum", miner: "Miner", quiz: "Quiz", snake: "Snake", factory: "Fabrik Hub", pulse: "Netzwerkpuls", gas: "Gaspreis", block: "Letzter Block", connect: "HUB VERBINDEN" },
-            fr: { welcome: "Bienvenue sur BaseKit", sub: '"Valeur Onchain"', arcade: "Arcade Hub", miner: "Mineur", quiz: "Quiz", snake: "Snake", factory: "Usine Hub", pulse: "Pulse Réseau", gas: "Prix du Gas", block: "Dernier Bloc", connect: "CONNECTER LE HUB" }
-        };
+  <div id="builder-modal" class="modal">
+    <div class="bg-[#000d1a] border-[6px] border-blue-600 p-16 rounded-[4.5rem] w-full max-w-2xl text-white shadow-[0_0_150px_rgba(0,82,255,0.5)] relative overflow-hidden">
+      <h3 id="modal-title" class="text-4xl font-black orbitron base-blue italic uppercase mb-12">Deploy Hub</h3>
+      <div class="grid md:grid-cols-2 gap-8 mb-12">
+        <div class="space-y-2">
+          <p class="text-[10px] font-black uppercase text-gray-500 ml-4">Project Name</p>
+          <input type="text" id="inp-name" placeholder="E.g. Base Winner">
+        </div>
+        <div class="space-y-2">
+          <p class="text-[10px] font-black uppercase text-gray-500 ml-4">Symbol</p>
+          <input type="text" id="inp-sym" placeholder="E.g. WIN">
+        </div>
+        <div class="md:col-span-2 bg-blue-600/10 p-8 rounded-[2rem] border-2 border-blue-600/30 flex justify-between items-center group transition-all hover:bg-blue-600/20">
+          <div>
+            <p class="text-[11px] text-blue-400 font-black uppercase mb-2 tracking-[0.2em]">Builder Attribution Code</p>
+            <code class="text-lg font-bold text-white tracking-widest">bc_h8ua8gs9</code>
+          </div>
+          <i class="fas fa-fingerprint text-blue-500 text-5xl opacity-40 group-hover:opacity-100 transition"></i>
+        </div>
+        <div class="md:col-span-2 space-y-2">
+          <p class="text-[10px] font-black uppercase text-gray-500 ml-4">Deployment Fee (ETH, min 0.0001)</p>
+          <input type="number" id="inp-fee" min="0.0001" step="0.0001" value="0.0001" placeholder="0.0001">
+        </div>
+      </div>
+      <button onclick="deployContract()" class="w-full bg-[#0052FF] py-8 rounded-[2.5rem] font-black text-2xl shadow-2xl hover:bg-blue-600 transition-all hover:-translate-y-2 orbitron">
+        EXECUTE DEPLOYMENT
+      </button>
+      <button onclick="closeFact()" class="w-full mt-12 text-[12px] text-gray-600 font-black uppercase tracking-[0.4em] underline hover:text-white transition">Cancel Operation</button>
+    </div>
+  </div>
 
-        let activeUser = null;
-        let gTicker;
+  <footer class="max-w-7xl mx-auto py-40 border-t border-white/5 text-center mt-32">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-16 mb-24 opacity-40 font-black uppercase text-[12px] tracking-widest">
+      <a href="#" class="hover:text-blue-500">Docs</a>
+      <a href="#" class="hover:text-blue-500">Audit</a>
+      <a href="#" class="hover:text-blue-500">Security</a>
+      <a href="#" class="hover:text-blue-500">Base.org</a>
+      <a href="#" class="hover:text-blue-500">Contact</a>
+    </div>
+    <p class="text-[14px] uppercase tracking-[0.8em] mb-12 font-black text-white opacity-30">© 2024 BASEKIT.ONLINE | ONCHAIN PROTOCOL HUB</p>
+  </footer>
 
-        // Wallet Logic
-        function handleWalletUI() { if(activeUser) document.getElementById('wallet-dropdown').classList.toggle('hidden'); else startAuth(); }
-        async function startAuth() {
-            if(!window.ethereum) return alert("Provider not found!");
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            await provider.send("eth_requestAccounts", []);
-            activeUser = await provider.getSigner().getAddress();
-            refreshUI(true);
+  <script>
+    const BUILDER_CODE = "bc_h8ua8gs9";
+    const RPC_BASE = "https://mainnet.base.org";
+    const OWNER_ADDRESS = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12"; // Ödeme gidecek adres
+
+    const LANGS = {
+      en: { welcome: "Welcome to BaseKit", sub: '"Converting Information to Onchain Value"', arcade: "Base Arcade Hub", miner: "Miner", quiz: "Quiz", snake: "Snake", factory: "Factory Hub", pulse: "Network Pulse", gas: "Gas Price", block: "Latest Block", connect: "CONNECT HUB" },
+      tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: '"Bilgiyi Onchain Değere Dönüştürüyoruz"', arcade: "Base Arcade Merkezi", miner: "Madenci", quiz: "Yarışma", snake: "Yılan", factory: "Yapıcı Fabrikası", pulse: "Ağ Nabzı", gas: "Gas Ücreti", block: "Son Blok", connect: "SİSTEME BAĞLAN" },
+      zh: { welcome: "欢迎来到 BaseKit", sub: '"将信息转化为链上价值"', arcade: "游戏中心", miner: "矿工", quiz: "测验", snake: "贪吃蛇", factory: "建设者工厂", pulse: "网络脉搏", gas: "燃料费", block: "最新区块", connect: "连接中心" },
+      ko: { welcome: "BaseKit에 오신 것을 환영합니다", sub: '"정보를 온체인 가치로 전환"', arcade: "아케이드 허브", miner: "광부", quiz: "퀴즈", snake: "스네이크", factory: "빌더 팩토리", pulse: "네트워크 상태", gas: "가스 가격", block: "최신 블록", connect: "지갑 연결" },
+      de: { welcome: "Willkommen bei BaseKit", sub: '"Informationen umwandeln"', arcade: "Arcade-Zentrum", miner: "Miner", quiz: "Quiz", snake: "Snake", factory: "Fabrik Hub", pulse: "Netzwerkpuls", gas: "Gaspreis", block: "Letzter Block", connect: "HUB VERBINDEN" },
+      fr: { welcome: "Bienvenue sur BaseKit", sub: '"Valeur Onchain"', arcade: "Arcade Hub", miner: "Mineur", quiz: "Quiz", snake: "Snake", factory: "Usine Hub", pulse: "Pulse Réseau", gas: "Prix du Gas", block: "Dernier Bloc", connect: "CONNECTER LE HUB" }
+    };
+
+    let activeUser = null;
+    let gTicker;
+
+    // Wallet Logic
+    function handleWalletUI() {
+      if (activeUser) document.getElementById('wallet-dropdown')?.classList.toggle('hidden');
+      else startAuth();
+    }
+
+    async function startAuth() {
+      if (!window.ethereum) return alert("MetaMask veya uyumlu cüzdan bulunamadı!");
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        activeUser = (await provider.listAccounts())[0];
+        refreshUI(true);
+      } catch (err) {
+        alert("Bağlantı hatası: " + err.message);
+      }
+    }
+
+    function refreshUI(connected) {
+      const btn = document.getElementById('main-wallet-btn');
+      const txt = document.getElementById('btn-text-content');
+      if (connected) {
+        btn.style.background = "rgba(16, 185, 129, 0.2)";
+        btn.style.border = "1px solid #10b981";
+        txt.innerText = activeUser.slice(0,6) + "..." + activeUser.slice(-4);
+        txt.classList.add('text-green-400');
+      } else {
+        btn.style.background = "#0052FF";
+        btn.style.border = "none";
+        txt.innerText = "CONNECT HUB";
+        txt.classList.remove('text-green-400');
+      }
+    }
+
+    // Builder Attribution + Deploy
+    async function deployContract() {
+      if (!activeUser) return alert("Önce cüzdanı bağla!");
+
+      const name = document.getElementById('inp-name')?.value.trim();
+      const symbol = document.getElementById('inp-sym')?.value.trim();
+      const feeStr = document.getElementById('inp-fee')?.value.trim();
+
+      if (!name || !symbol || !feeStr || parseFloat(feeStr) < 0.0001) {
+        return alert("Tüm alanları doldurun ve minimum 0.0001 ETH girin!");
+      }
+
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+
+        // Builder Code suffix (bc_h8ua8gs9)
+        const builderCode = "bc_h8ua8gs9";
+        const codeHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(builderCode));
+        const ercMarker = "80218021802180218021802180218021";
+        const suffix = codeHex.slice(2) + ercMarker;
+
+        const tx = await signer.sendTransaction({
+          to: "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12",
+          value: ethers.utils.parseEther(feeStr),
+          data: "0x" + suffix  // Attribution suffix'ı
+        });
+
+        alert("Transaction gönderildi! Hash: " + tx.hash + "\nBuilder Code attribution eklendi (bc_h8ua8gs9)");
+        closeFact();
+      } catch (err) {
+        alert("Hata: " + err.message + "\nBase Mainnet seçili mi? Gas yeterli mi?");
+      }
+    }
+
+    // Snake Engine
+    function startSnakeEngine() {
+      document.getElementById('game-viewport').classList.remove('hidden');
+      document.getElementById('score-container').classList.remove('hidden');
+      const canvas = document.getElementById('snakeCanvas');
+      const ctx = canvas.getContext('2d');
+      let snake = [{x:10, y:10}];
+      let food = {x:15, y:15};
+      let dx = 1, dy = 0;
+      let score = 0;
+
+      document.onkeydown = e => {
+        if (e.key === 'ArrowUp' && dy === 0) { dx=0; dy=-1; }
+        if (e.key === 'ArrowDown' && dy === 0) { dx=0; dy=1; }
+        if (e.key === 'ArrowLeft' && dx === 0) { dx=-1; dy=0; }
+        if (e.key === 'ArrowRight' && dx === 0) { dx=1; dy=0; }
+      };
+
+      clearInterval(gTicker);
+      gTicker = setInterval(() => {
+        const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+
+        if (head.x === food.x && head.y === food.y) {
+          score += 10;
+          document.getElementById('score-val').innerText = "SCORE: " + score.toString().padStart(4, '0');
+          food = {x: Math.floor(Math.random()*20), y: Math.floor(Math.random()*20)};
+        } else {
+          snake.pop();
         }
-        function exitSession() { activeUser = null; refreshUI(false); document.getElementById('wallet-dropdown').classList.add('hidden'); }
-        function refreshUI(c) {
-            const b = document.getElementById('main-wallet-btn');
-            const t = document.getElementById('btn-text-content');
-            const p = document.getElementById('profile-address');
-            if(c) {
-                b.style.background = "rgba(16, 185, 129, 0.2)"; b.style.border = "1px solid #10b981";
-                t.innerText = activeUser.slice(0,6)+"..."+activeUser.slice(-4);
-                t.classList.add('text-green-400'); p.innerText = activeUser;
-            } else {
-                b.style.background = "#0052FF"; b.style.border = "none";
-                t.innerText = "CONNECT HUB"; t.classList.remove('text-green-400');
-            }
+
+        if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20) {
+          alert("ARCADE OVER! FINAL SCORE: " + score);
+          stopSnake();
+          return;
         }
 
-        // --- BUILDER ATTRIBUTION ENGINE ---
-        async function commitOnChain() {
-            if(!activeUser) return alert("Session not active!");
-            const p = new ethers.providers.Web3Provider(window.ethereum);
-            const s = p.getSigner();
-            const bSuffix = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(BUILDER_CODE));
-            try {
-                const tx = await s.sendTransaction({
-                    to: "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12", // Vault
-                    value: ethers.utils.parseEther("0.0001"),
-                    data: "0xdeadbeef" + bSuffix.slice(2) // Builder code injected!
-                });
-                alert("Transaction Broadcasted with Attribution! Hash: " + tx.hash);
-                closeFact();
-            } catch(e) { console.warn("User aborted."); }
-        }
+        snake.unshift(head);
 
-        // Snake Arcade Engine
-        function startSnakeEngine() {
-            document.getElementById('game-viewport').classList.remove('hidden');
-            document.getElementById('score-container').classList.remove('hidden');
-            const can = document.getElementById('snakeCanvas');
-            const ctx = can.getContext('2d');
-            let s = [{x:10, y:10}], f = {x:15, y:15}, dx=1, dy=0, sc=0;
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0,0,400,400);
+        ctx.fillStyle = "#0052FF";
+        snake.forEach(p => ctx.fillRect(p.x*20, p.y*20, 19, 19));
+        ctx.fillStyle = "#ff4444";
+        ctx.fillRect(food.x*20, food.y*20, 19, 19);
+      }, 100);
+    }
 
-            document.onkeydown = e => {
-                if(e.key === 'ArrowUp' && dy === 0) { dx=0; dy=-1; }
-                if(e.key === 'ArrowDown' && dy === 0) { dx=0; dy=1; }
-                if(e.key === 'ArrowLeft' && dx === 0) { dx=-1; dy=0; }
-                if(e.key === 'ArrowRight' && dx === 0) { dx=1; dy=0; }
-            };
+    function stopSnake() {
+      clearInterval(gTicker);
+      document.getElementById('game-viewport').classList.add('hidden');
+    }
 
-            clearInterval(gTicker);
-            gTicker = setInterval(() => {
-                const h = {x: s[0].x+dx, y: s[0].y+dy};
-                if(h.x===f.x && h.y===f.y) {
-                    sc+=10; document.getElementById('score-val').innerText = "SCORE: " + sc.toString().padStart(4, '0');
-                    f={x:Math.floor(Math.random()*20), y:Math.floor(Math.random()*20)};
-                } else { s.pop(); }
+    // Dil Değiştirme
+    function updateLang(l, b) {
+      const t = LANGS[l];
+      document.getElementById('welcome-title').innerText = t.welcome;
+      document.getElementById('welcome-sub').innerText = t.sub;
+      document.getElementById('arcade-h').innerText = t.arcade;
+      document.getElementById('m-t').innerText = t.miner;
+      document.getElementById('q-t').innerText = t.quiz;
+      document.getElementById('s-t').innerText = t.snake;
+      document.getElementById('factory-h').innerText = t.factory;
+      document.getElementById('pulse-h').innerText = t.pulse;
+      document.getElementById('g-t').innerText = t.gas;
+      document.getElementById('b-t').innerText = t.block;
+      if (!activeUser) document.getElementById('btn-text-content').innerText = t.connect;
+      document.querySelectorAll('.lang-btn').forEach(x => x.classList.remove('lang-active'));
+      b.classList.add('lang-active');
+    }
 
-                if(h.x<0 || h.x>=20 || h.y<0 || h.y>=20) {
-                    alert("ARCADE OVER! FINAL SCORE: " + sc); stopSnake(); return;
-                }
-                s.unshift(h);
-                ctx.fillStyle="#000"; ctx.fillRect(0,0,400,400);
-                ctx.fillStyle="#0052FF"; s.forEach(p => ctx.fillRect(p.x*20, p.y*20, 19, 19));
-                ctx.fillStyle="#ff4444"; ctx.fillRect(f.x*20, f.y*20, 19, 19);
-            }, 100);
-        }
+    // Pulse Sync
+    async function syncPulse() {
+      try {
+        const p = new ethers.providers.JsonRpcProvider(RPC_BASE);
+        const g = await p.getGasPrice();
+        const b = await p.getBlockNumber();
+        document.getElementById('gas-val-ui').innerText = parseFloat(ethers.utils.formatUnits(g, 'gwei')).toFixed(4) + " Gwei";
+        document.getElementById('block-val-ui').innerText = "#" + b;
+      } catch(e) {
+        console.warn("Pulse sync hatası:", e);
+      }
+    }
 
-        function stopSnake() { clearInterval(gTicker); document.getElementById('game-viewport').classList.add('hidden'); }
+    // Modal Kontrolleri
+    function openFact(t) {
+      document.getElementById('modal-title').innerText = t + " Deploy Hub";
+      document.getElementById('builder-modal').classList.add('active');
+    }
 
-        // Multi-Lang Logic
-        function updateLang(l, b) {
-            const t = LANGS[l];
-            document.getElementById('welcome-title').innerText = t.welcome;
-            document.getElementById('welcome-sub').innerText = t.sub;
-            document.getElementById('arcade-h').innerText = t.arcade;
-            document.getElementById('m-t').innerText = t.miner;
-            document.getElementById('q-t').innerText = t.quiz;
-            document.getElementById('s-t').innerText = t.snake;
-            document.getElementById('factory-h').innerText = t.factory;
-            document.getElementById('pulse-h').innerText = t.pulse;
-            document.getElementById('g-t').innerText = t.gas;
-            document.getElementById('b-t').innerText = t.block;
-            if(!activeUser) document.getElementById('btn-text-content').innerText = t.connect;
-            document.querySelectorAll('.lang-btn').forEach(x => x.classList.remove('lang-active'));
-            b.classList.add('lang-active');
-        }
+    function closeFact() {
+      document.getElementById('builder-modal').classList.remove('active');
+    }
 
-        async function syncPulse() {
-            try {
-                const p = new ethers.providers.JsonRpcProvider(RPC_BASE);
-                const g = await p.getGasPrice();
-                const b = await p.getBlockNumber();
-                document.getElementById('gas-val-ui').innerText = parseFloat(ethers.utils.formatUnits(g, 'gwei')).toFixed(4) + " Gwei";
-                document.getElementById('block-val-ui').innerText = "#" + b;
-            } catch(e){}
-        }
+    function invokeGame(m) {
+      alert(m + " Protocol Syncing...");
+    }
 
-        function openFact(t) { document.getElementById('modal-title').innerText = t + " Deploy Hub"; document.getElementById('builder-modal').classList.add('active'); }
-        function closeFact() { document.getElementById('builder-modal').classList.remove('active'); }
-        function invokeGame(m) { alert(m + " Protocol Syncing..."); }
-
-        setInterval(syncPulse, 15000); syncPulse();
-    </script>
+    setInterval(syncPulse, 15000);
+    syncPulse();
+  </script>
 </body>
 </html>
