@@ -156,7 +156,7 @@
   <main class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-14">
     <div class="lg:col-span-7 space-y-14">
       <div class="glass h-[650px] overflow-hidden border-b-[12px] border-blue-600 shadow-2xl relative">
-        <iframe src="https://app.uniswap.org/#/swap?theme=dark&chain=base" width="100%" height="100%" style="border: none;" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+        <iframe src="https://app.uniswap.org/#/swap?theme=dark&chain=base" width="100%" height="100%" style="border: none;" sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-popups-to-escape-sandbox"></iframe>
       </div>
 
       <div class="glass p-14 border-t-[10px] border-yellow-500 shadow-[0_0_60px_rgba(234,179,8,0.1)]">
@@ -297,7 +297,7 @@
     let activeUser = null;
     let gTicker;
 
-    // Wallet Logic – Cüzdan seçimi zorla
+    // Wallet Logic – Cüzdan seçimi
     function handleWalletUI() {
       if (activeUser) {
         alert("Zaten bağlı: " + activeUser.slice(0,6) + "..." + activeUser.slice(-4));
@@ -309,7 +309,7 @@
     async function startAuth() {
       if (!window.ethereum) return alert("MetaMask, Coinbase Wallet veya uyumlu cüzdan bulunamadı!");
       try {
-        // Cüzdan seçme ekranını zorla
+        // Cüzdan seçme ekranını zorla (çoğu EVM wallet destekler)
         await window.ethereum.request({
           method: 'wallet_requestPermissions',
           params: [{ eth_accounts: {} }]
@@ -318,7 +318,7 @@
         activeUser = accounts[0];
         document.getElementById('btn-text-content').innerText = activeUser.slice(0,6) + "..." + activeUser.slice(-4);
       } catch (err) {
-        alert("Bağlantı iptal edildi veya hata: " + err.message);
+        alert("Bağlantı iptal edildi veya hata: " + err.message + "\nLütfen cüzdan eklentisini kontrol edin.");
       }
     }
 
@@ -338,7 +338,7 @@
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
 
-        // Attribution suffix (bc_h8ua8gs9 + ERC-8021 marker)
+        // Builder Code suffix (bc_h8ua8gs9 + ERC-8021 marker)
         const codeHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(BUILDER_CODE));
         const suffix = codeHex.slice(2) + "80218021802180218021802180218021";
 
@@ -356,7 +356,7 @@
       }
     }
 
-    // Snake Engine (duvardan geçiyor)
+    // Snake Engine – Duvardan geçiyor
     function startSnakeEngine() {
       document.getElementById('game-viewport').classList.remove('hidden');
       document.getElementById('score-container').classList.remove('hidden');
@@ -368,17 +368,17 @@
       let score = 0;
 
       document.onkeydown = e => {
-        if (e.key === 'ArrowUp' && dy === 0) { dx=0; dy=-1; }
-        if (e.key === 'ArrowDown' && dy === 0) { dx=0; dy=1; }
-        if (e.key === 'ArrowLeft' && dx === 0) { dx=-1; dy=0; }
-        if (e.key === 'ArrowRight' && dx === 0) { dx=1; dy=0; }
+        if (e.key === 'ArrowUp' && dy === 0) { dx = 0; dy = -1; }
+        if (e.key === 'ArrowDown' && dy === 0) { dx = 0; dy = 1; }
+        if (e.key === 'ArrowLeft' && dx === 0) { dx = -1; dy = 0; }
+        if (e.key === 'ArrowRight' && dx === 0) { dx = 1; dy = 0; }
       };
 
       clearInterval(gTicker);
       gTicker = setInterval(() => {
         let head = {x: snake[0].x + dx, y: snake[0].y + dy};
 
-        // Duvardan geçme
+        // Duvardan geçme (wrap-around)
         head.x = (head.x + 20) % 20;
         head.y = (head.y + 20) % 20;
 
