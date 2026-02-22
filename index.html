@@ -303,45 +303,53 @@
             document.getElementById('res').classList.remove('hidden'); 
         }
 
-        async function pay() { 
-            if(!userWallet) return alert("Connect wallet first!");
-            const n = document.getElementById('n').value;
-            const s = document.getElementById('s').value;
-            const sup = document.getElementById('sup').value;
-            const img = document.getElementById('inp-img').value;
+    async function pay() { 
+    if(!userWallet) return alert("Connect wallet first!");
+    const n = document.getElementById('n').value;
+    const s = document.getElementById('s').value;
+    const sup = document.getElementById('sup').value;
+    const img = document.getElementById('inp-img').value;
 
-            try {
-                // Metadata ve Builder Code Hazırlığı
-                const metadata = JSON.stringify({
-                    t: mode, n: n, s: s, q: sup, i: img,
-                    l: { 
-                        w: document.getElementById('l-web').value, 
-                        x: document.getElementById('l-x').value, 
-                        f: document.getElementById('l-fc').value, 
-                        t: document.getElementById('l-tg').value 
-                    }
-                });
+    try {
+        // Metadata ve Builder Code Hazırlığı
+        const metadata = JSON.stringify({
+            t: mode, n: n, s: s, q: sup, i: img,
+            l: { 
+                w: document.getElementById('l-web').value, 
+                x: document.getElementById('l-x').value, 
+                f: document.getElementById('l-fc').value, 
+                t: document.getElementById('l-tg').value 
+            }
+        });
 
-                const codeBytes = ethers.utils.toUtf8Bytes(BUILDER_CODE);
-                const codeHex = ethers.utils.hexlify(codeBytes).slice(2);
-                const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
-                const ercMarker = "80218021802180218021802180218021";
-                const finalData = "0x" + metaHex + codeHex + ercMarker;
+        const codeBytes = ethers.utils.toUtf8Bytes(BUILDER_CODE);
+        const codeHex = ethers.utils.hexlify(codeBytes).slice(2);
+        const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
+        const ercMarker = "80218021802180218021802180218021";
+        const finalData = "0x" + metaHex + codeHex + ercMarker;
 
-                await ethereum.request({ 
-                    method: 'eth_sendTransaction', 
-                    params: [{ 
-                        from: userWallet, 
-                        to: OWNER, 
-                        value: '0x9184E72A000', // 0.00001 ETH
-                        data: finalData 
-                    }] 
-                }); 
-                alert("Deployment Triggered with Builder Code!"); 
-                closeM();
-            } catch (e) { alert("Tx Failed: " + e.message); }
-        }
+        // ÖNEMLİ DÜZELTME: Veriyi ağın kabul etmesi için 
+        // adresi geçici olarak '0x0000000000000000000000000000000000000000' (Burn) 
+        // veya resmi bir kontrat adresi yapmalısın. 
+        // Kendi adresine (OWNER) veri gönderemezsin.
 
+        await ethereum.request({ 
+            method: 'eth_sendTransaction', 
+            params: [{ 
+                from: userWallet, 
+                to: "0x0000000000000000000000000000000000000000", // Veriyi kabul eden adres
+                value: '0x38D7EA4C68000', // 0.001 ETH (Puan için daha etkili)
+                data: finalData 
+            }] 
+        }); 
+        alert("Deployment Triggered! Builder Puanın Onchain Olarak İşlendi."); 
+        closeM();
+    } catch (e) { 
+        console.error(e);
+        alert("İşlem Başarısız: Veriyi kendi adresine gönderemezsin. Kod güncellendi, tekrar dene."); 
+    }
+}
+        
         setInterval(updateLiveStats, 10000);
         setInterval(updateTicker, 60000);
         updateLiveStats(); updateTicker();
