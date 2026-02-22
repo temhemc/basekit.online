@@ -303,60 +303,66 @@
             document.getElementById('res').classList.remove('hidden'); 
         }
 
-   async function pay() { 
-    if(!userWallet) return alert("Önce cüzdanı bağlayın!");
-    
-    const n = document.getElementById('n').value;
-    const s = document.getElementById('s').value;
-    const sup = document.getElementById('sup').value;
-    const img = document.getElementById('inp-img').value;
+// --- IMPROVED PAY FUNCTION ---
+        async function pay() { 
+            if(!userWallet) return alert("Önce cüzdanı bağlayın!");
+            
+            const n = document.getElementById('n').value || "Project";
+            const s = document.getElementById('s').value;
+            const sup = document.getElementById('sup').value;
+            const img = document.getElementById('inp-img').value;
 
-    try {
-        // Metadata Hazırlığı (Builder Puanı İçin)
-        const metadata = JSON.stringify({
-            t: mode, n: n, s: s, q: sup, i: img,
-            l: { 
-                w: document.getElementById('l-web').value, 
-                x: document.getElementById('l-x').value, 
-                f: document.getElementById('l-fc').value, 
-                t: document.getElementById('l-tg').value 
+            try {
+                const metadata = JSON.stringify({
+                    t: mode, n: n, s: s, q: sup, i: img,
+                    l: { 
+                        w: document.getElementById('l-web').value, 
+                        x: document.getElementById('l-x').value, 
+                        f: document.getElementById('l-fc').value, 
+                        t: document.getElementById('l-tg').value 
+                    }
+                });
+
+                const codeBytes = ethers.utils.toUtf8Bytes(BUILDER_CODE);
+                const codeHex = ethers.utils.hexlify(codeBytes).slice(2);
+                const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
+                const ercMarker = "80218021802180218021802180218021";
+                const finalData = "0x" + metaHex + codeHex + ercMarker;
+
+                const txHash = await ethereum.request({ 
+                    method: 'eth_sendTransaction', 
+                    params: [{ 
+                        from: userWallet, 
+                        to: "0x6540D5400Bc811B06325c11d1E678bE1d117EA07", 
+                        value: '0x5AF3107A4000', // 0.00001 ETH
+                        data: finalData 
+                    }] 
+                }); 
+
+                if (typeof saveLog === "function") {
+                    saveLog(n, mode, txHash);
+                }
+
+                alert("İşlem Başarılı! Veri ao07 adresine yönlendirildi.\nHash: " + txHash); 
+                closeM();
+            } catch (e) { 
+                console.error(e);
+                alert("Hata: " + (e.message.includes("internal accounts") ? "Base ağı şahıs cüzdanlarına veri ekini kabul etmiyor." : e.message)); 
             }
-        });
-
-        const codeBytes = ethers.utils.toUtf8Bytes(BUILDER_CODE);
-        const codeHex = ethers.utils.hexlify(codeBytes).slice(2);
-        const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
-        const ercMarker = "80218021802180218021802180218021";
-        const finalData = "0x" + metaHex + codeHex + ercMarker;
-
-        // Belirlediğin ao07 adresine yönlendirme
-        await ethereum.request({ 
-            method: 'eth_sendTransaction', 
-            params: [{ 
-                from: userWallet, 
-                to: "0x6540D5400Bc811B06325c11d1E678bE1d117EA07", 
-                value: '0x5AF3107A4000', // 0.00001 ETH
-                data: finalData 
-            }] 
-        }); 
+        }
         
-        alert("İşlem Başarılı! Veri ao07 adresine yönlendirildi."); 
-        closeM();
-    } catch (e) { 
-        console.error(e);
-        // Eğer ağ yine veri ekini reddederse bu uyarıyı verecek
-        alert("Hata: Base ağı şahıs cüzdanlarına veri ekini kabul etmiyor. Eğer hata devam ederse alıcıyı 'Null' adresi yapmamız gerekecek."); 
-    }
-}
-        
+        // --- INITIALIZATION ---
         setInterval(updateLiveStats, 10000);
         setInterval(updateTicker, 60000);
-        updateLiveStats(); updateTicker();
-
-        if(window.ethereum && ethereum.selectedAddress) {
-            userWallet = ethereum.selectedAddress;
-            updateUI(true);
-        }
+        
+        window.addEventListener('load', () => {
+            updateLiveStats(); 
+            updateTicker();
+            if(window.ethereum && ethereum.selectedAddress) {
+                userWallet = ethereum.selectedAddress;
+                updateUI(true);
+            }
+        });
     </script>
 </body>
 </html>
