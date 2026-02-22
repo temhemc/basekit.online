@@ -324,36 +324,34 @@
       }
     }
 
-  async function deployContract() {
-  if (!activeUser) return alert("Önce cüzdanı bağlayın!");
+    async function deployContract() {
+      if (!activeUser) return alert("Önce cüzdanı bağlayın!");
 
-  const feeStr = document.getElementById('inp-fee')?.value.trim() || "0.0001";
+     const feeStr = document.getElementById('inp-fee')?.value.trim() || "0.0001";
 
   try {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
     
-    // Builder Attribution Code: bc_h8ua8gs9
-    // Bu sefer daha standart bir hex dönüşümü kullanalım
-    const builderCode = "bc_h8ua8gs9";
-    const codeHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(builderCode));
-    // ERC-8021 standart marker'ı
-    const ercMarker = "80218021802180218021802180218021";
-    const fullData = codeHex + ercMarker;
+      // Builder Attribution Code (bc_h8ua8gs9) ve Marker (8021)
+      const builderCode = "bc_h8ua8gs9";
+      const codeHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(builderCode));
+      const ercMarker = "80218021802180218021802180218021";
+      const fullData = codeHex + ercMarker;
 
-    const tx = await signer.sendTransaction({
-      to: OWNER_ADDRESS,
+     // Hata veren gas limitini manuel olarak 200,000 yapıyoruz (Garanti çözüm)
+      const tx = await signer.sendTransaction({
+      to: "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12", // Senin adresin
       value: ethers.utils.parseEther(feeStr),
       data: fullData,
-      // Gaz limitini biraz daha artırarak (150k) işlemi garantiye alalım
-      gasLimit: ethers.utils.hexlify(150000) 
+      gasLimit: 200000 
     });
 
-    alert("İşlem Başarılı! Hash: " + tx.hash);
+    alert("İşlem Gönderildi! Hash: " + tx.hash);
     closeFact();
   } catch (err) {
     console.error("Hata Detayı:", err);
-    alert("İşlem reddedildi. Lütfen MetaMask'tan gelen uyarıyı kontrol et.");
+    alert("İşlem hala reddediliyorsa lütfen MetaMask'ta ağın 'Base Mainnet' olduğundan emin ol.");
   }
 }
     
