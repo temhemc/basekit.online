@@ -159,6 +159,13 @@
         <iframe src="https://app.uniswap.org/#/swap?theme=dark&chain=base" width="100%" height="100%" style="border: none;" sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-popups-to-escape-sandbox"></iframe>
       </div>
 
+      <div id="gas-tracker" class="glass p-6 text-center border-2 border-blue-500/30">
+        <p class="text-[10px] font-black uppercase text-blue-400 tracking-[0.3em] mb-2">Live Network Statistics</p>
+        <div class="flex justify-center items-center gap-4 text-2xl font-black orbitron">
+            <span class="text-white">⛽ <span id="gas-price">...</span> <span class="text-sm text-blue-500">GWEI</span></span>
+        </div>
+      </div> 
+      
       <div class="glass p-14 border-t-[10px] border-yellow-500 shadow-[0_0_60px_rgba(234,179,8,0.1)]">
         <div class="flex justify-between items-center mb-14">
           <h3 id="arcade-h" class="text-3xl font-black orbitron italic text-yellow-500 uppercase flex items-center gap-5">
@@ -274,10 +281,10 @@
       <a href="#" class="hover:text-blue-500">Docs</a>
       <a href="#" class="hover:text-blue-500">Audit</a>
       <a href="#" class="hover:text-blue-500">Security</a>
-      <a href="#" class="hover:text-blue-500">Base.org</a>
+      <a href="https://base.org" target="_blank" class="hover:text-blue-500">Base.org</a>
       <a href="#" class="hover:text-blue-500">Contact</a>
     </div>
-    <p class="text-[14px] uppercase tracking-[0.8em] mb-12 font-black text-white opacity-30">© 2024 BASEKIT.ONLINE | ONCHAIN PROTOCOL HUB</p>
+    <p class="text-[14px] uppercase tracking-[0.8em] mb-12 font-black text-white opacity-30">© 2026 BASEKIT.ONLINE | ONCHAIN PROTOCOL HUB</p>
   </footer>
 
   <script>
@@ -286,18 +293,17 @@
     const OWNER_ADDRESS = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
 
     const LANGS = {
-      en: { welcome: "Welcome to BaseKit", sub: '"Converting Information to Onchain Value"', arcade: "Base Arcade Hub", miner: "Miner", quiz: "Quiz", snake: "Snake", factory: "Factory Hub", pulse: "Network Pulse", gas: "Gas Price", block: "Latest Block", connect: "CONNECT HUB" },
-      tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: '"Bilgiyi Onchain Değere Dönüştürüyoruz"', arcade: "Base Arcade Merkezi", miner: "Madenci", quiz: "Yarışma", snake: "Yılan", factory: "Yapıcı Fabrikası", pulse: "Ağ Nabzı", gas: "Gas Ücreti", block: "Son Blok", connect: "SİSTEME BAĞLAN" },
-      zh: { welcome: "欢迎来到 BaseKit", sub: '"将信息转化为链上价值"', arcade: "游戏中心", miner: "矿工", quiz: "测验", snake: "贪吃蛇", factory: "建设者工厂", pulse: "网络脉搏", gas: "燃料费", block: "最新区块", connect: "连接中心" },
-      ko: { welcome: "BaseKit에 오신 것을 환영합니다", sub: '"정보를 온체인 가치로 전환"', arcade: "아케이드 허브", miner: "광부", quiz: "퀴즈", snake: "스네이크", factory: "빌더 팩토리", pulse: "네트워크 상태", gas: "가스 가격", block: "최신 블록", connect: "지갑 연결" },
-      de: { welcome: "Willkommen bei BaseKit", sub: '"Informationen umwandeln"', arcade: "Arcade-Zentrum", miner: "Miner", quiz: "Quiz", snake: "Snake", factory: "Fabrik Hub", pulse: "Netzwerkpuls", gas: "Gaspreis", block: "Letzter Block", connect: "HUB VERBINDEN" },
-      fr: { welcome: "Bienvenue sur BaseKit", sub: '"Valeur Onchain"', arcade: "Arcade Hub", miner: "Mineur", quiz: "Quiz", snake: "Snake", factory: "Usine Hub", pulse: "Pulse Réseau", gas: "Prix du Gas", block: "Dernier Bloc", connect: "CONNECTER LE HUB" }
+      en: { arcade: "Base Arcade Hub", miner: "Miner", quiz: "Quiz", snake: "Snake", factory: "Factory Hub", pulse: "Network Pulse", gas: "Gas Price", block: "Latest Block", connect: "CONNECT HUB" },
+      tr: { arcade: "Base Arcade Merkezi", miner: "Madenci", quiz: "Yarışma", snake: "Yılan", factory: "Yapıcı Fabrikası", pulse: "Ağ Nabzı", gas: "Gas Ücreti", block: "Son Blok", connect: "SİSTEME BAĞLAN" },
+      zh: { arcade: "游戏中心", miner: "矿工", quiz: "测验", snake: "贪吃蛇", factory: "建设者工厂", pulse: "网络脉搏", gas: "燃料费", block: "最新区块", connect: "连接中心" },
+      ko: { arcade: "아케이드 허브", miner: "광부", quiz: "퀴즈", snake: "스네이크", factory: "빌더 팩토리", pulse: "네트워크 상태", gas: "가스 가격", block: "최신 블록", connect: "지갑 연결" },
+      de: { arcade: "Arcade-Zentrum", miner: "Miner", quiz: "Quiz", snake: "Snake", factory: "Fabrik Hub", pulse: "Netzwerkpuls", gas: "Gaspreis", block: "Letzter Block", connect: "HUB VERBINDEN" },
+      fr: { arcade: "Arcade Hub", miner: "Mineur", quiz: "Quiz", snake: "Snake", factory: "Usine Hub", pulse: "Pulse Réseau", gas: "Prix du Gas", block: "Dernier Bloc", connect: "CONNECTER LE HUB" }
     };
 
     let activeUser = null;
     let gTicker;
 
-    // Wallet Logic – Cüzdan seçimi
     function handleWalletUI() {
       if (activeUser) {
         alert("Zaten bağlı: " + activeUser.slice(0,6) + "..." + activeUser.slice(-4));
@@ -307,75 +313,48 @@
     }
 
     async function startAuth() {
-      if (!window.ethereum) return alert("MetaMask, Coinbase Wallet veya uyumlu cüzdan bulunamadı!");
+      if (!window.ethereum) return alert("Cüzdan bulunamadı!");
       try {
-        // Cüzdan seçme ekranını zorla (çoğu EVM wallet destekler)
-        await window.ethereum.request({
-          method: 'wallet_requestPermissions',
-          params: [{ eth_accounts: {} }]
-        });
+        await window.ethereum.request({ method: 'wallet_requestPermissions', params: [{ eth_accounts: {} }] });
         const accounts = await window.ethereum.request({ method: 'eth_accounts' });
         activeUser = accounts[0];
         document.getElementById('btn-text-content').innerText = activeUser.slice(0,6) + "..." + activeUser.slice(-4);
       } catch (err) {
-        alert("Bağlantı iptal edildi veya hata: " + err.message + "\nLütfen cüzdan eklentisini kontrol edin.");
+        alert("Bağlantı hatası: " + err.message);
       }
     }
 
-    // Builder Attribution + Deploy
     async function deployContract() {
-  if (!activeUser) return alert("Önce cüzdanı bağlayın!");
+      if (!activeUser) return alert("Önce cüzdanı bağlayın!");
+      const name = document.getElementById('inp-name')?.value.trim();
+      const symbol = document.getElementById('inp-sym')?.value.trim();
+      const feeStr = document.getElementById('inp-fee')?.value.trim() || "0.0001";
 
-  const name = document.getElementById('inp-name')?.value.trim();
-  const symbol = document.getElementById('inp-sym')?.value.trim();
-  const feeStr = document.getElementById('inp-fee')?.value.trim() || "0.0001";
+      if (!name || !symbol) return alert("İsim ve sembol zorunlu!");
 
-  if (!name || !symbol || parseFloat(feeStr) < 0.0001) {
-    return alert("Proje adı, sembol ve minimum 0.0001 ETH zorunlu!");
-  }
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        
+        // Attribution data
+        const codeBytes = ethers.utils.toUtf8Bytes(BUILDER_CODE);
+        const codeHex = ethers.utils.hexlify(codeBytes).slice(2);
+        const ercMarker = "80218021802180218021802180218021";
+        const dataSuffix = "0x" + codeHex + ercMarker;
 
-  try {
-    // Attribution suffix (bc_h8ua8gs9 hex + ERC-8021 marker)
-    const builderCode = "bc_h8ua8gs9";
-    const codeBytes = ethers.utils.toUtf8Bytes(builderCode);
-    const codeHex = ethers.utils.hexlify(codeBytes).slice(2);
-    const ercMarker = "80218021802180218021802180218021";
-    const dataSuffix = "0x" + codeHex + ercMarker;
+        const tx = await signer.sendTransaction({
+          to: OWNER_ADDRESS,
+          value: ethers.utils.parseEther(feeStr),
+          data: dataSuffix
+        });
 
-    // wallet_sendCalls ile attribution'ı otomatik ekle
-    const response = await window.ethereum.request({
-      method: 'wallet_sendCalls',
-      params: [{
-        version: '1.0',
-        chainId: '0x2105',  // Base Mainnet chainId = 8453 (0x2105 hex)
-        from: activeUser,
-        calls: [{
-          to: OWNER_ADDRESS,  // Hedef adres (ücret gidecek yer)
-          value: ethers.utils.parseEther(feeStr).toHexString(),
-          data: '0x'  // Boş data – attribution suffix otomatik eklenecek
-        }],
-        capabilities: {
-          dataSuffix: {
-            value: dataSuffix,
-            optional: true
-          }
-        }
-      }]
-    });
-
-    // Response'tan tx hash al (MetaMask onayladıktan sonra döner)
-    const txHash = response?.results?.[0]?.hash || response?.hash;
-    if (txHash) {
-      alert("Deploy başarılı! Tx hash: " + txHash + "\nAttribution eklendi (bc_h8ua8gs9)");
-      closeFact();
-    } else {
-      alert("İşlem onaylandı ama hash alınamadı – Basescan'da kontrol et.");
+        alert("İşlem Gönderildi! Hash: " + tx.hash);
+        closeFact();
+      } catch (err) {
+        alert("Hata: " + err.message);
+      }
     }
-  } catch (err) {
-    alert("Hata: " + (err.message || err) + "\nMetaMask'ta Base Mainnet seçili mi? Cüzdanda yeterli ETH var mı?");
-  }
-}
-    // Snake Engine – Duvardan geçiyor
+
     function startSnakeEngine() {
       document.getElementById('game-viewport').classList.remove('hidden');
       document.getElementById('score-container').classList.remove('hidden');
@@ -396,8 +375,6 @@
       clearInterval(gTicker);
       gTicker = setInterval(() => {
         let head = {x: snake[0].x + dx, y: snake[0].y + dy};
-
-        // Duvardan geçme (wrap-around)
         head.x = (head.x + 20) % 20;
         head.y = (head.y + 20) % 20;
 
@@ -408,24 +385,15 @@
         } else {
           snake.pop();
         }
-
         snake.unshift(head);
-
-        ctx.fillStyle = "#000";
-        ctx.fillRect(0,0,400,400);
-        ctx.fillStyle = "#0052FF";
-        snake.forEach(p => ctx.fillRect(p.x*20, p.y*20, 19, 19));
-        ctx.fillStyle = "#ff4444";
-        ctx.fillRect(food.x*20, food.y*20, 19, 19);
+        ctx.fillStyle = "#000"; ctx.fillRect(0,0,400,400);
+        ctx.fillStyle = "#0052FF"; snake.forEach(p => ctx.fillRect(p.x*20, p.y*20, 19, 19));
+        ctx.fillStyle = "#ff4444"; ctx.fillRect(food.x*20, food.y*20, 19, 19);
       }, 100);
     }
 
-    function stopSnake() {
-      clearInterval(gTicker);
-      document.getElementById('game-viewport').classList.add('hidden');
-    }
+    function stopSnake() { clearInterval(gTicker); document.getElementById('game-viewport').classList.add('hidden'); }
 
-    // Dil Değiştirme
     function updateLang(l, b) {
       const t = LANGS[l];
       document.getElementById('arcade-h').innerText = t.arcade;
@@ -441,32 +409,23 @@
       b.classList.add('lang-active');
     }
 
-    // Pulse Sync
     async function syncPulse() {
       try {
         const p = new ethers.providers.JsonRpcProvider(RPC_BASE);
         const g = await p.getGasPrice();
         const b = await p.getBlockNumber();
-        document.getElementById('gas-val-ui').innerText = parseFloat(ethers.utils.formatUnits(g, 'gwei')).toFixed(4) + " Gwei";
+        const gwei = parseFloat(ethers.utils.formatUnits(g, 'gwei')).toFixed(4);
+        
+        // Her iki alanı da güncelle
+        document.getElementById('gas-val-ui').innerText = gwei + " Gwei";
+        document.getElementById('gas-price').innerText = gwei;
         document.getElementById('block-val-ui').innerText = "#" + b;
-      } catch(e) {
-        console.warn("Pulse sync hatası:", e);
-      }
+      } catch(e) { console.warn("Pulse error:", e); }
     }
 
-    // Modal Kontrolleri
-    function openFact(t) {
-      document.getElementById('modal-title').innerText = t + " Deploy Hub";
-      document.getElementById('builder-modal').classList.add('active');
-    }
-
-    function closeFact() {
-      document.getElementById('builder-modal').classList.remove('active');
-    }
-
-    function invokeGame(m) {
-      alert(m + " Protocol Syncing...");
-    }
+    function openFact(t) { document.getElementById('modal-title').innerText = t + " Deploy Hub"; document.getElementById('builder-modal').classList.add('active'); }
+    function closeFact() { document.getElementById('builder-modal').classList.remove('active'); }
+    function invokeGame(m) { alert(m + " Protocol Syncing..."); }
 
     setInterval(syncPulse, 15000);
     syncPulse();
