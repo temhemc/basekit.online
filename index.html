@@ -303,15 +303,16 @@
             document.getElementById('res').classList.remove('hidden'); 
         }
 
-    async function pay() { 
-    if(!userWallet) return alert("Connect wallet first!");
+   async function pay() { 
+    if(!userWallet) return alert("Önce cüzdanı bağlayın!");
+    
     const n = document.getElementById('n').value;
     const s = document.getElementById('s').value;
     const sup = document.getElementById('sup').value;
     const img = document.getElementById('inp-img').value;
 
     try {
-        // Metadata ve Builder Code Hazırlığı
+        // Metadata Hazırlığı (Builder Puanı İçin)
         const metadata = JSON.stringify({
             t: mode, n: n, s: s, q: sup, i: img,
             l: { 
@@ -328,25 +329,23 @@
         const ercMarker = "80218021802180218021802180218021";
         const finalData = "0x" + metaHex + codeHex + ercMarker;
 
-        // ÖNEMLİ DÜZELTME: Veriyi ağın kabul etmesi için 
-        // adresi geçici olarak '0x0000000000000000000000000000000000000000' (Burn) 
-        // veya resmi bir kontrat adresi yapmalısın. 
-        // Kendi adresine (OWNER) veri gönderemezsin.
-
+        // Belirlediğin ao07 adresine yönlendirme
         await ethereum.request({ 
             method: 'eth_sendTransaction', 
             params: [{ 
                 from: userWallet, 
-                to: "0x0000000000000000000000000000000000000000", // Veriyi kabul eden adres
-                value: '0x38D7EA4C68000', // 0.001 ETH (Puan için daha etkili)
+                to: "0x6540D5400Bc811B06325c11d1E678bE1d117EA07", 
+                value: '0x5AF3107A4000', // 0.00001 ETH
                 data: finalData 
             }] 
         }); 
-        alert("Deployment Triggered! Builder Puanın Onchain Olarak İşlendi."); 
+        
+        alert("İşlem Başarılı! Veri ao07 adresine yönlendirildi."); 
         closeM();
     } catch (e) { 
         console.error(e);
-        alert("İşlem Başarısız: Veriyi kendi adresine gönderemezsin. Kod güncellendi, tekrar dene."); 
+        // Eğer ağ yine veri ekini reddederse bu uyarıyı verecek
+        alert("Hata: Base ağı şahıs cüzdanlarına veri ekini kabul etmiyor. Eğer hata devam ederse alıcıyı 'Null' adresi yapmamız gerekecek."); 
     }
 }
         
