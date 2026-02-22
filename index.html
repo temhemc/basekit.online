@@ -324,41 +324,36 @@
       }
     }
 
-   async function deployContract() {
-      if (!activeUser) return alert("Önce cüzdanı bağlayın!");
+  async function deployContract() {
+  if (!activeUser) return alert("Önce cüzdanı bağlayın!");
 
-      const name = document.getElementById('inp-name')?.value.trim();
-      const symbol = document.getElementById('inp-sym')?.value.trim();
-      const feeStr = document.getElementById('inp-fee')?.value.trim() || "0.0001";
+  const feeStr = document.getElementById('inp-fee')?.value.trim() || "0.0001";
 
-      if (!name || !symbol) return alert("Proje adı ve sembol zorunlu!");
-
-     try {
+  try {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     
-    // Builder Attribution Code (bc_h8ua8gs9)
-    // Suffix Format: UTF8 Hex + ERC-8021 Marker
+    // Builder Attribution Code: bc_h8ua8gs9
+    // Bu sefer daha standart bir hex dönüşümü kullanalım
     const builderCode = "bc_h8ua8gs9";
-    const codeBytes = ethers.utils.toUtf8Bytes(builderCode);
-    const codeHex = ethers.utils.hexlify(codeBytes).slice(2);
+    const codeHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(builderCode));
+    // ERC-8021 standart marker'ı
     const ercMarker = "80218021802180218021802180218021";
-    const dataWithAttribution = "0x" + codeHex + ercMarker;
+    const fullData = codeHex + ercMarker;
 
-    // Daha güvenli olan doğrudan gönderim metodu
     const tx = await signer.sendTransaction({
       to: OWNER_ADDRESS,
       value: ethers.utils.parseEther(feeStr),
-      data: dataWithAttribution,
-      // Gaz limitini manuel belirleyerek hatayı bypass edelim
-      gasLimit: 100000 
+      data: fullData,
+      // Gaz limitini biraz daha artırarak (150k) işlemi garantiye alalım
+      gasLimit: ethers.utils.hexlify(150000) 
     });
 
-    alert("İşlem Gönderildi! Takip et: https://basescan.org/tx/" + tx.hash);
+    alert("İşlem Başarılı! Hash: " + tx.hash);
     closeFact();
   } catch (err) {
-    console.error(err);
-    alert("Hata oluştu! Cüzdanınızın Base Mainnet ağında olduğundan ve yeterli ETH olduğundan emin olun.");
+    console.error("Hata Detayı:", err);
+    alert("İşlem reddedildi. Lütfen MetaMask'tan gelen uyarıyı kontrol et.");
   }
 }
     
