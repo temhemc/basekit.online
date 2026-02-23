@@ -6,7 +6,7 @@
     
     <meta property="fc:frame" content="vNext" />
     <meta property="fc:frame:image" content="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" />
-    <meta property="fc:frame:button:1" content="⚡ Analyze & Mint Badge" />
+    <meta property="fc:frame:button:1" content="⚡ Analyze & Mint" />
     <meta property="fc:frame:button:1:action" content="tx" />
     <meta property="fc:frame:button:1:target" content="https://basekit.online/api/tx-builder" />
     <meta property="fc:frame:post_url" content="https://basekit.online/api/confirm" />
@@ -26,36 +26,26 @@
     </div>
 
     <script>
-        // SDK'nın hazır olduğunu bildiren ve mavi ekranı kapatan fonksiyon
         const initApp = async () => {
             let attempts = 0;
             const checkSDK = setInterval(async () => {
                 attempts++;
-                // window.frameSDK nesnesinin ve actions metodunun varlığını kontrol et
                 if (window.frameSDK && window.frameSDK.actions) {
                     clearInterval(checkSDK);
                     try {
-                        // "Ready not called" hatasını çözen kritik komut
+                        // Mavi "Ready not called" ekranını kapatan kritik komut
                         await window.frameSDK.actions.ready();
                         console.log("BaseKit Live on Base!");
                     } catch (e) { 
                         console.error("SDK Ready Error:", e); 
                     }
                 }
-                // 5 saniye (50 deneme) sonra hala hazır değilse dur
-                if (attempts > 50) {
-                    clearInterval(checkSDK);
-                    console.log("SDK Load Timeout");
-                }
+                if (attempts > 50) clearInterval(checkSDK); // 5 saniye sonra dur
             }, 100);
         };
 
-        // Sayfa tamamen yüklendiğinde başlat
-        if (document.readyState === "complete") { 
-            initApp(); 
-        } else { 
-            window.addEventListener("load", initApp); 
-        }
+        if (document.readyState === "complete") { initApp(); } 
+        else { window.addEventListener("load", initApp); }
     </script>
 </body>
 </html>
