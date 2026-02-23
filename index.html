@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@farcaster/miniapp-sdk@latest/dist/index.min.js"></script>
     <title>BaseKit.online | Farcaster & Base Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -364,5 +365,33 @@
             }
         });
     </script>
+   
+    <script>
+    // ... senin mevcut kodların (updateLiveStats, updateTicker, window.addEventListener('load') vs.) devamı ...
+
+    // Mini App desteği ekle (en alta koy)
+    (async function initFarcasterMiniApp() {
+        // Sadece Farcaster / Warpcast Mini App içinde çalışsın
+        if (typeof window.MiniAppSDK !== 'undefined') {
+            try {
+                const sdk = window.MiniAppSDK;
+                // Bu satır mavi ekranı (splash screen) gizler – zorunlu!
+                await sdk.actions.ready();
+                console.log('Mini App ready – splash gizlendi, içerik yüklendi');
+                
+                // İstersen ekstra bir şey yap (örneğin arka planı değiştir)
+                // document.body.style.background = '#000';
+                
+            } catch (error) {
+                console.error('Mini App ready hatası:', error);
+            }
+        } else {
+            // Normal browser/site modu – hiçbir şey yapma
+            console.log('Normal mod – MiniAppSDK yok');
+        }
+    })();
+</script>
+
 </body>
 </html>
+
