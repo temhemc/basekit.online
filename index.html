@@ -376,7 +376,7 @@
             try {
                 const sdk = window.MiniAppSDK;
                 // Bu satır mavi ekranı (splash screen) gizler – zorunlu!
-                await sdk.actions.ready();
+                await sdk.actions.ready({ disableNativeGestures: true });
                 console.log('Mini App ready – splash gizlendi, içerik yüklendi');
                 
                 // İstersen ekstra bir şey yap (örneğin arka planı değiştir)
