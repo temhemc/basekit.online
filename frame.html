@@ -11,39 +11,39 @@
     <meta property="fc:frame:button:1:target" content="https://basekit.online/api/tx-builder" />
     <meta property="fc:frame:post_url" content="https://basekit.online/api/confirm" />
     
-    <title>BaseKit Supporter Frame</title>
+    <meta name="fc:miniapp" content='{"version":"1","type":"launch_miniapp","name":"BaseKit Supporter","imageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg"}' />
 
+    <title>BaseKit Supporter</title>
     <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk/dist/bundle.min.js"></script>
 </head>
-<body style="background:#000; color:#0052FF; font-family:sans-serif; text-align:center; padding-top:100px; margin:0;">
+<body style="background:#000; color:#0052FF; font-family:sans-serif; text-align:center; margin:0; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;">
     
-    <div id="content">
-        <img src="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" alt="BaseKit Logo" style="width:200px; border-radius:20px; border: 2px solid #0052FF;">
-        <h1 style="margin-top:20px;">BaseKit Mini App is LIVE!</h1>
-        <p style="color:#fff;">Check your Supporter Rank on Warpcast.</p>
+    <div id="app-content" style="padding: 20px;">
+        <img src="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" style="width:150px; border-radius:15px; border: 2px solid #0052FF; box-shadow: 0 0 20px rgba(0,82,255,0.5);">
+        <h1 style="font-size: 24px; margin: 20px 0;">BaseKit is Ready!</h1>
+        <p style="color:#fff;">Analyze your activity on <b>Base</b> network.</p>
+        <button onclick="window.close()" style="background:#0052FF; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">Close App</button>
     </div>
 
     <script>
-        async function init() {
-            // SDK'nın yüklenmesini bekleyen döngü (Zamanlama hatasını önler)
-            const waitForSDK = setInterval(async () => {
-                if (window.frameSDK) {
-                    clearInterval(waitForSDK);
+        // SDK'yı zorla ve döngüye sok
+        const initApp = async () => {
+            let attempts = 0;
+            const checkSDK = setInterval(async () => {
+                attempts++;
+                if (window.frameSDK && window.frameSDK.actions) {
+                    clearInterval(checkSDK);
                     try {
-                        // Mavi ekranı kapatan kritik komut
                         await window.frameSDK.actions.ready();
-                        console.log("BaseKit Mini App Ready!");
-                    } catch (error) {
-                        console.error("SDK Initialization failed", error);
-                    }
+                        console.log("BaseKit Live on Base!");
+                    } catch (e) { console.error(e); }
                 }
+                if (attempts > 50) clearInterval(checkSDK); // 5 saniye sonra dur
             }, 100);
-            
-            // 5 saniye sonra hala yüklenmediyse döngüyü temizle
-            setTimeout(() => clearInterval(waitForSDK), 5000);
-        }
+        };
 
-        init();
+        if (document.readyState === "complete") { initApp(); } 
+        else { window.addEventListener("load", initApp); }
     </script>
 </body>
 </html>
