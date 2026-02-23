@@ -4,40 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <meta property="fc:frame" content="vNext" />
-    <meta property="fc:frame:image" content="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" />
-    <meta property="fc:frame:button:1" content="⚡ Analyze & Mint" />
-    <meta property="fc:frame:button:1:action" content="tx" />
-    <meta property="fc:frame:button:1:target" content="https://basekit.online/api/tx-builder" />
-    <meta property="fc:frame:post_url" content="https://basekit.online/api/confirm" />
+    <!-- Mini Apps için doğru meta tag (fc:frame legacy, bunu kullan) -->
+    <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","button":{"title":"BaseKit Supporter","action":{"type":"launch_frame","name":"BaseKit Supporter","url":"https://basekit.online","splashImageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","splashBackgroundColor":"#0052FF"}}}'>
     
-    <meta name="fc:miniapp" content='{"version":"1","type":"launch_miniapp","name":"BaseKit Supporter","imageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg"}' />
+    <!-- Eski fc:frame'i kaldırabilirsin veya backward compat için tut, ama öncelik fc:miniapp -->
+    <!-- <meta property="fc:frame" content="vNext" /> ... eski tag'leri kaldır veya yorum satırı yap -->
 
     <title>BaseKit Supporter</title>
     
-    <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk/dist/bundle.min.js"></script>
+    <!-- Doğru SDK: Mini Apps için @farcaster/miniapp-sdk -->
+    <script src="https://cdn.jsdelivr.net/npm/@farcaster/miniapp-sdk/dist/index.min.js"></script>
 </head>
 <body style="background:#000; color:#0052FF; font-family:sans-serif; text-align:center; margin:0; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;">
     
-    <div id="app-container" style="display:none; padding: 20px;">
+    <!-- Splash gizlenene kadar gizli tut -->
+    <div id="app-container" style="display:none; padding: 20px; max-width: 90%;">
         <img src="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" style="width:150px; border-radius:20px; border: 2px solid #0052FF;">
         <h1 style="font-size: 24px; margin: 20px 0;">BaseKit Supporter</h1>
         <p style="color:#fff;">Analyze activity on <b>Base</b> network.</p>
+        
+        <!-- Buraya gerçek app içeriğini ekle, örneğin loading spinner, wallet connect vs. -->
+        <div id="status">Loading Base data...</div>
+        
+        <!-- Örnek: SDK ile bir action dene -->
+        <button onclick="sdk.actions.composeCast({text: 'I minted on BaseKit! 🚀'})">Share Cast</button>
     </div>
 
     <script>
-        // SDK yüklenmesini bekle ve hazır olunca içeriği aç
-        async function run() {
-            for (let i = 0; i < 50; i++) {
-                if (window.frameSDK && window.frameSDK.actions) {
-                    await window.frameSDK.actions.ready();
+        // SDK hazır olunca ready çağır (en iyi pratik: event veya poll yerine direkt await)
+        (async function init() {
+            if (!window.MiniAppSDK) {  // SDK global olarak window.MiniAppSDK veya sdk olabilir, docs'ta sdk
+                console.error('MiniApp SDK not loaded');
+                // Fallback: timeout sonrası göster veya error göster
+                setTimeout(() => {
                     document.getElementById('app-container').style.display = 'block';
-                    return;
-                }
-                await new Promise(resolve => setTimeout(resolve, 100));
+                }, 5000);
+                return;
             }
-        }
-        run();
+
+            const sdk = window.MiniAppSDK;  // CDN'de genelde window.MiniAppSDK veya import gibi sdk
+
+            try {
+                // App'in hazır olduğunu bildir (splash'i gizler)
+                await sdk.actions.ready();  // Bu satır zorunlu! Çağrılmazsa infinite mavi ekran
+                
+                // Ready sonrası içeriği göster
+                document.getElementById('app-container').style.display = 'block';
+                
+                console.log('Mini App ready!');
+                
+                // Opsiyonel: Context al (user FID vs.)
+                const context = await sdk.context();
+                console.log('User context:', context);
+                
+            } catch (err) {
+                console.error('SDK ready failed:', err);
+                // Fallback: yine de göster
+                document.getElementById('app-container').style.display = 'block';
+            }
+        })();
     </script>
 </body>
 </html>
