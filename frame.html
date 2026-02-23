@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <meta property="fc:frame" content="vNext" />
     <meta property="fc:frame:image" content="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" />
     <meta property="fc:frame:button:1" content="⚡ Analyze & Mint Badge" />
@@ -11,24 +13,34 @@
     
     <title>BaseKit Supporter Frame</title>
 
-   <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk/dist/bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk/dist/bundle.min.js"></script>
 </head>
-<body style="background:#000; color:#0052FF; font-family:sans-serif; text-align:center; padding-top:100px;">
-    <h1>BaseKit Mini App is LIVE!</h1>
-    <p>Check your Supporter Rank on Warpcast.</p>
+<body style="background:#000; color:#0052FF; font-family:sans-serif; text-align:center; padding-top:100px; margin:0;">
+    
+    <div id="content">
+        <img src="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" alt="BaseKit Logo" style="width:200px; border-radius:20px; border: 2px solid #0052FF;">
+        <h1 style="margin-top:20px;">BaseKit Mini App is LIVE!</h1>
+        <p style="color:#fff;">Check your Supporter Rank on Warpcast.</p>
+    </div>
 
     <script>
-        // 2. SDK'yı Başlat ve "Hazırım" Komutunu Gönder
         async function init() {
-            try {
-                // SDK'nın yüklenmesini bekle ve hazır olduğunu bildir
+            // SDK'nın yüklenmesini bekleyen döngü (Zamanlama hatasını önler)
+            const waitForSDK = setInterval(async () => {
                 if (window.frameSDK) {
-                    await window.frameSDK.actions.ready();
-                    console.log("BaseKit Mini App Ready!");
+                    clearInterval(waitForSDK);
+                    try {
+                        // Mavi ekranı kapatan kritik komut
+                        await window.frameSDK.actions.ready();
+                        console.log("BaseKit Mini App Ready!");
+                    } catch (error) {
+                        console.error("SDK Initialization failed", error);
+                    }
                 }
-            } catch (error) {
-                console.error("SDK Initialization failed", error);
-            }
+            }, 100);
+            
+            // 5 saniye sonra hala yüklenmediyse döngüyü temizle
+            setTimeout(() => clearInterval(waitForSDK), 5000);
         }
 
         init();
