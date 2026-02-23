@@ -364,14 +364,26 @@
         setInterval(updateLiveStats, 10000);
         setInterval(updateTicker, 60000);
         
-        window.addEventListener('load', () => {
-            updateLiveStats(); 
-            updateTicker();
-            if(window.ethereum && ethereum.selectedAddress) {
-                userWallet = ethereum.selectedAddress;
-                updateUI(true);
+      window.addEventListener('load', async () => {
+        if (typeof window.MiniAppSDK !== 'undefined') {
+            try {
+                const sdk = window.MiniAppSDK;
+                // Ready çağrısı – splash'i gizler
+                await sdk.actions.ready({ disableNativeGestures: true });
+                console.log('Mini App READY çağrıldı – splash gizlendi!');
+                
+                // Opsiyonel: Context al (user FID vs.) ve test log
+                const context = await sdk.context();
+                console.log('User context:', context);
+            } catch (error) {
+                console.error('SDK ready hatası:', error);
+                // Fallback: Hata olsa bile içeriği göster (güvenlik için)
+                document.body.style.display = 'block'; // Eğer gizliyse
             }
-        });
+        } else {
+            console.log('Mini App SDK yüklenmedi – normal mod');
+        }
+    });
     </script>
    
     <script>
