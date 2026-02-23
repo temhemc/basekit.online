@@ -19,33 +19,25 @@
 </head>
 <body style="background:#000; color:#0052FF; font-family:sans-serif; text-align:center; margin:0; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;">
     
-    <div id="app-content" style="padding: 20px;">
-        <img src="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" style="width:150px; border-radius:15px; border: 2px solid #0052FF; box-shadow: 0 0 20px rgba(0,82,255,0.5);">
-        <h1 style="font-size: 24px; margin: 20px 0;">BaseKit is Ready!</h1>
-        <p style="color:#fff;">Analyze your activity on <b>Base</b> network.</p>
+    <div id="app-container" style="display:none; padding: 20px;">
+        <img src="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" style="width:150px; border-radius:20px; border: 2px solid #0052FF;">
+        <h1 style="font-size: 24px; margin: 20px 0;">BaseKit Supporter</h1>
+        <p style="color:#fff;">Analyze activity on <b>Base</b> network.</p>
     </div>
 
     <script>
-        const initApp = async () => {
-            let attempts = 0;
-            const checkSDK = setInterval(async () => {
-                attempts++;
+        // SDK yüklenmesini bekle ve hazır olunca içeriği aç
+        async function run() {
+            for (let i = 0; i < 50; i++) {
                 if (window.frameSDK && window.frameSDK.actions) {
-                    clearInterval(checkSDK);
-                    try {
-                        // Mavi "Ready not called" ekranını kapatan kritik komut
-                        await window.frameSDK.actions.ready();
-                        console.log("BaseKit Live on Base!");
-                    } catch (e) { 
-                        console.error("SDK Ready Error:", e); 
-                    }
+                    await window.frameSDK.actions.ready();
+                    document.getElementById('app-container').style.display = 'block';
+                    return;
                 }
-                if (attempts > 50) clearInterval(checkSDK); // 5 saniye sonra dur
-            }, 100);
-        };
-
-        if (document.readyState === "complete") { initApp(); } 
-        else { window.addEventListener("load", initApp); }
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+        }
+        run();
     </script>
 </body>
 </html>
