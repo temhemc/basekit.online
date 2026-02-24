@@ -2,9 +2,19 @@
   "chainId": "eip155:8453",
   "method": "eth_sendTransaction",
   "params": {
-    "abi": [],
+    "abi": [
+      {
+        "name": "mint",
+        "type": "function",
+        "inputs": [
+          { "name": "to", "type": "address" }
+        ],
+        "outputs": [],
+        "stateMutability": "payable"
+      }
+    ],
     "to": "0x6540D5400Bc811B06325c11d1E678bE1d117EA07",
-    "data": "0x",
-    "value": "100000000000000"
+    "data": "0x40c10f190000000000000000000000004604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12",
+    "value": "1000000000000000"
   }
 }
