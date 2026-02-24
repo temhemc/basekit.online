@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://explorer-api.walletconnect.com https://*.base.org https://*.wrpcd.net;">
-    <script src="https://cdn.jsdelivr.net/npm/@farcaster/miniapp-sdk@latest/dist/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk/dist/bundle.min.js"></script>
     <title>BaseKit.online | Farcaster & Base Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -372,77 +372,42 @@
         setInterval(updateLiveStats, 10000);
         setInterval(updateTicker, 60000);
         
-      window.addEventListener('load', async () => {
-        if (typeof window.MiniAppSDK !== 'undefined') {
-            try {
-                const sdk = window.MiniAppSDK;
-                // Ready çağrısı – splash'i gizler
-                await sdk.actions.ready({ disableNativeGestures: true });
-                console.log('Mini App READY çağrıldı – splash gizlendi!');
-                
-                // Opsiyonel: Context al (user FID vs.) ve test log
-                const context = await sdk.context();
-                console.log('User context:', context);
-            } catch (error) {
-                console.error('SDK ready hatası:', error);
-                // Fallback: Hata olsa bile içeriği göster (güvenlik için)
-                document.body.style.display = 'block'; // Eğer gizliyse
-            }
-        } else {
-            console.log('Mini App SDK yüklenmedi – normal mod');
-        }
-    });
-    </script>
-   
-    <script>
-    // ... senin mevcut kodların (updateLiveStats, updateTicker, window.addEventListener('load') vs.) devamı ...
+     window.addEventListener('load', async () => {
+    // Mevcut istatistiklerini başlat
+    updateLiveStats();
+    updateTicker();
 
-    // Mini App desteği ekle (en alta koy)
-    (async function initFarcasterMiniApp() {
-        // Sadece Farcaster / Warpcast Mini App içinde çalışsın
-        if (typeof window.MiniAppSDK !== 'undefined') {
-            try {
-                const sdk = window.MiniAppSDK;
-                // Bu satır mavi ekranı (splash screen) gizler – zorunlu!
-                await sdk.actions.ready({ disableNativeGestures: true });
-                console.log('Mini App ready – splash gizlendi, içerik yüklendi');
-                
-                // İstersen ekstra bir şey yap (örneğin arka planı değiştir)
-                // document.body.style.background = '#000';
-                
-            } catch (error) {
-                console.error('Mini App ready hatası:', error);
-            }
-        } else {
-            // Normal browser/site modu – hiçbir şey yapma
-            console.log('Normal mod – MiniAppSDK yok');
-        }
-    })();
-</script>
-<script type="module">
-    import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk'
-
-    // Uygulamayı hazır hale getir (Mavi ekranı kapatır)
-    const init = async () => {
+    // Farcaster SDK'yı Güvenli Başlatma
+    const sdk = window.frameSDK;
+    if (sdk) {
         try {
             await sdk.actions.ready();
-        } catch (e) { console.error(e); }
-    };
-    init();
+            console.log('Farcaster Mini App Ready!');
 
-    // Butona basıldığında cüzdanı tetikle
-    document.getElementById('analyzeMintBtn')?.addEventListener('click', async () => {
-        try {
-            await sdk.actions.sendTransaction({
-                chainId: 8453,
-                to: "0x6540D5400Bc811B06325c11d1E678bE1d117EA07",
-                value: "100000000000000", 
-                data: "0x"
-            });
-        } catch (err) {
-            console.error("İşlem hatası:", err);
+            // Analyze & Mint Butonuna Tıklandığında
+            mintBtn.addEventListener('click', async () => {
+                    try {
+                        const result = await sdk.actions.sendTransaction({
+                            chainId: 8453,
+                            method: "eth_sendTransaction",
+                            params: {
+                                abi: [{"name":"mint","type":"function","inputs":[{"name":"to","type":"address"}],"outputs":[],"stateMutability":"payable"}],
+                                to: "0x6540D5400Bc811B06325c11d1E678bE1d117EA07",
+                                data: "0x40c10f190000000000000000000000004604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12",
+                                value: "100000000000000" // 0.0001 ETH - Tırnak içinde olmalı
+                            }
+                        });
+                        console.log("İşlem Başarılı! Hash:", result.hash);
+                    } catch (err) {
+                        console.error("Mint hatası:", err);
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('SDK Başlatılamadı:', error);
         }
-    });
+    }
+});
 </script>
     
 </body>
