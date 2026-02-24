@@ -6,9 +6,7 @@
       {
         "name": "mint",
         "type": "function",
-        "inputs": [
-          { "name": "to", "type": "address" }
-        ],
+        "inputs": [{ "name": "to", "type": "address" }],
         "outputs": [],
         "stateMutability": "payable"
       }
