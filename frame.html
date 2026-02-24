@@ -4,65 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- Mini Apps için doğru meta tag (fc:frame legacy, bunu kullan) -->
-    <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","button":{"title":"BaseKit Supporter","action":{"type":"launch_frame","name":"BaseKit Supporter","url":"https://basekit.online","splashImageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","splashBackgroundColor":"#0052FF"}}}'>
-    
-    <!-- Eski fc:frame'i kaldırabilirsin veya backward compat için tut, ama öncelik fc:miniapp -->
-    <!-- <meta property="fc:frame" content="vNext" /> ... eski tag'leri kaldır veya yorum satırı yap -->
+    <meta name="fc:frame" content='{"version":"next","imageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","button":{"title":"⚡ Analyze & Mint","action":{"type":"launch_frame","name":"BaseKit Supporter","url":"https://basekit.online","splashImageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","splashBackgroundColor":"#0052FF"}}}'>
 
     <title>BaseKit Supporter</title>
     
-    <!-- Doğru SDK: Mini Apps için @farcaster/miniapp-sdk -->
-    <script src="https://cdn.jsdelivr.net/npm/@farcaster/miniapp-sdk/dist/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk/dist/bundle.min.js"></script>
 </head>
 <body style="background:#000; color:#0052FF; font-family:sans-serif; text-align:center; margin:0; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;">
     
-    <!-- Splash gizlenene kadar gizli tut -->
     <div id="app-container" style="display:none; padding: 20px; max-width: 90%;">
-        <img src="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" style="width:150px; border-radius:20px; border: 2px solid #0052FF;">
-        <h1 style="font-size: 24px; margin: 20px 0;">BaseKit Supporter</h1>
-        <p style="color:#fff;">Analyze activity on <b>Base</b> network.</p>
+        <img src="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" style="width:150px; border-radius:20px; border: 2px solid #0052FF; box-shadow: 0 0 20px rgba(0,82,255,0.4);">
+        <h1 style="font-size: 24px; margin: 20px 0;">BaseKit is LIVE!</h1>
+        <p style="color:#fff;">Analyzing activity on <b>Base</b> network...</p>
         
-        <!-- Buraya gerçek app içeriğini ekle, örneğin loading spinner, wallet connect vs. -->
-        <div id="status">Loading Base data...</div>
+        <div id="status" style="margin: 15px 0; color: #00ff00;">Connected to Base</div>
         
-        <!-- Örnek: SDK ile bir action dene -->
-        <button onclick="sdk.actions.composeCast({text: 'I minted on BaseKit! 🚀'})">Share Cast</button>
+        <button id="mint-btn" style="background:#0052FF; color:#fff; border:none; padding:15px 30px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:16px;">⚡ Analyze & Mint Badge</button>
     </div>
 
     <script>
-        // SDK hazır olunca ready çağır (en iyi pratik: event veya poll yerine direkt await)
-        (async function init() {
-            if (!window.MiniAppSDK) {  // SDK global olarak window.MiniAppSDK veya sdk olabilir, docs'ta sdk
-                console.error('MiniApp SDK not loaded');
-                // Fallback: timeout sonrası göster veya error göster
-                setTimeout(() => {
+        const init = async () => {
+            // SDK'nın tarayıcıda tanımlanma ismini düzelttik: window.frameSDK
+            const sdk = window.frameSDK;
+
+            if (sdk) {
+                try {
+                    // Mavi ekranı kapatan kritik komut
+                    await sdk.actions.ready();
                     document.getElementById('app-container').style.display = 'block';
-                }, 5000);
-                return;
-            }
 
-            const sdk = window.MiniAppSDK;  // CDN'de genelde window.MiniAppSDK veya import gibi sdk
+                    // Buton Tıklama İşlemi
+                    document.getElementById('mint-btn').addEventListener('click', async () => {
+                        try {
+                            // Farcaster'a işlemi başlatması için sinyal gönderir
+                            await sdk.actions.sendTransaction({
+                                // target: Senin hazırladığın JSON dosyasının tam adresi
+                                url: "https://basekit.online/api/tx-data.json"
+                            });
+                        } catch (e) {
+                            console.error("Mint Error:", e);
+                            alert("Transaction failed. Make sure you are on Base network.");
+                        }
+                    });
 
-            try {
-                // App'in hazır olduğunu bildir (splash'i gizler)
-                await sdk.actions.ready();  // Bu satır zorunlu! Çağrılmazsa infinite mavi ekran
-                
-                // Ready sonrası içeriği göster
+                } catch (err) {
+                    console.error("SDK Initialization failed:", err);
+                    document.getElementById('app-container').style.display = 'block';
+                }
+            } else {
+                // SDK bulunamazsa (normal tarayıcıda açılıyorsa)
                 document.getElementById('app-container').style.display = 'block';
-                
-                console.log('Mini App ready!');
-                
-                // Opsiyonel: Context al (user FID vs.)
-                const context = await sdk.context();
-                console.log('User context:', context);
-                
-            } catch (err) {
-                console.error('SDK ready failed:', err);
-                // Fallback: yine de göster
-                document.getElementById('app-container').style.display = 'block';
+                document.getElementById('status').innerText = "Please open in Warpcast";
             }
-        })();
+        };
+
+        // Sayfa yüklenince başlat
+        if (document.readyState === "complete") { init(); } 
+        else { window.addEventListener("load", init); }
     </script>
 </body>
 </html>
