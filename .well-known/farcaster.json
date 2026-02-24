@@ -1,17 +1,17 @@
 {
   "accountAssociation": {
-    "header": "eyJmaWQiOjkyNDY0NSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDVGQzliOGI5OEI2NTNjMGEwRWNEZDQ2ZDEwYzc0NzFBQTFFMkExMEMifQ",
-    "payload": "eyJkb21haW4iOiJiYXNla2l0Lm9ubGluZSJ9",
-    "signature": "TZj+6bjGmTLR+wbcfERvOCaSP7xAZKhXHjdniLDUT94O+qCIpB19a7L5azSGen4tzfr/AFBgn/qpk/mzFOlhmBs="
+    "header": "eyJmaWQiOiA4ODU0NDIsICJ0eXBlIjogImN1c3RvdyIsICJrZXkiOiAweDY1NDBENTQwMEJjODExQjA2MzI1YzExZDFFNjc4YkUxZDExN0VBMDcifQ",
+    "payload": "eyJkb21haW4iOiAiYmFzZWtpdC5vbmxpbmUifQ",
+    "signature": "MHhkMDY0ZDM1ZDEyZjY0ZTIyMDI1YjA0MzE5YWM1ZDMxMmM3YmFhZmYwNjkxZWMwMjgxZGRlZWFkYWI4ZDM1YmUzNmUyZjY4MTYyZjM5MDYwZDM5ZDRmYTA2MmM5NmU5NDAxYzU2ZDE2YWEyN2ExOTU4MjliMzA4ZDFhZTE4NDUxMzFj"
   },
   "frame": {
     "version": "1",
     "name": "BaseKit Supporter",
     "iconUrl": "https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
     "homeUrl": "https://basekit.online",
-    "imageUrl": "https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
-    "buttonTitle": "⚡ Analyze & Mint",
     "splashImageUrl": "https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
-    "splashBackgroundColor": "#0000FF"
+    "splashBackgroundColor": "#0000FF",
+    "primaryCategory": "utility",
+    "tags": ["base", "toolkit", "nft", "mint"]
   }
 }
