@@ -12,53 +12,52 @@
 </head>
 <body style="background:#000; color:#0052FF; font-family:sans-serif; text-align:center; margin:0; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;">
     
-    <div id="app-container" style="display:none; padding: 20px; max-width: 90%;">
-        <img src="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" style="width:150px; border-radius:20px; border: 2px solid #0052FF; box-shadow: 0 0 20px rgba(0,82,255,0.4);">
+    <div id="app-container" style="display:none; padding: 20px;">
+        <img src="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" style="width:150px; border-radius:20px; border: 2px solid #0052FF;">
         <h1 style="font-size: 24px; margin: 20px 0;">BaseKit is LIVE!</h1>
-        <p style="color:#fff;">Analyzing activity on <b>Base</b> network...</p>
+        <p style="color:#fff;">Analyze your activity on <b>Base</b>.</p>
         
-        <div id="status" style="margin: 15px 0; color: #00ff00;">Connected to Base</div>
+        <div id="pulse-data" style="margin: 10px 0; color: #00ff00; font-family: monospace;">
+            Base Pulse: <span id="pulse-value">84.53</span> TPS
+        </div>
         
-        <button id="mint-btn" style="background:#0052FF; color:#fff; border:none; padding:15px 30px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:16px;">⚡ Analyze & Mint Badge</button>
+        <button id="mint-action-btn" style="background:#0052FF; color:#fff; border:none; padding:15px 30px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:16px; margin-top: 10px;">⚡ Analyze & Mint Badge</button>
     </div>
 
     <script>
         const init = async () => {
-            // SDK'nın tarayıcıda tanımlanma ismini düzelttik: window.frameSDK
             const sdk = window.frameSDK;
-
             if (sdk) {
                 try {
-                    // Mavi ekranı kapatan kritik komut
                     await sdk.actions.ready();
                     document.getElementById('app-container').style.display = 'block';
 
-                    // Buton Tıklama İşlemi
-                    document.getElementById('mint-btn').addEventListener('click', async () => {
+                    // Mint Butonu Tetikleyicisi
+                    document.getElementById('mint-action-btn').addEventListener('click', async () => {
                         try {
-                            // Farcaster'a işlemi başlatması için sinyal gönderir
+                            // JSON Dosyasından Veriyi Çek ve İşlemi Başlat
+                            const response = await fetch("https://basekit.online/api/tx-data.json");
+                            const txData = await response.json();
+                            
                             await sdk.actions.sendTransaction({
-                                // target: Senin hazırladığın JSON dosyasının tam adresi
-                                url: "https://basekit.online/api/tx-data.json"
+                                chainId: 8453, // Base Mainnet
+                                method: "eth_sendTransaction",
+                                params: txData.params
                             });
                         } catch (e) {
-                            console.error("Mint Error:", e);
-                            alert("Transaction failed. Make sure you are on Base network.");
+                            console.error("Mint Hatası:", e);
                         }
                     });
 
                 } catch (err) {
-                    console.error("SDK Initialization failed:", err);
+                    console.error("SDK Hatası:", err);
                     document.getElementById('app-container').style.display = 'block';
                 }
             } else {
-                // SDK bulunamazsa (normal tarayıcıda açılıyorsa)
                 document.getElementById('app-container').style.display = 'block';
-                document.getElementById('status').innerText = "Please open in Warpcast";
             }
         };
 
-        // Sayfa yüklenince başlat
         if (document.readyState === "complete") { init(); } 
         else { window.addEventListener("load", init); }
     </script>
