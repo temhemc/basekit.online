@@ -413,7 +413,23 @@
         }
     })();
 </script>
+<script type="module">
+  import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk'
 
+  // Uygulama yüklendiğinde Splash Screen'i kapatır ve butonları gösterir
+  const initializeApp = async () => {
+    try {
+      console.log("SDK başlatılıyor...");
+      await sdk.actions.ready(); 
+      console.log("SDK hazır sinyali gönderildi!");
+    } catch (error) {
+      console.error("SDK başlatılamadı:", error);
+    }
+  };
+
+  initializeApp();
+</script>
+    
 </body>
 </html>
 
