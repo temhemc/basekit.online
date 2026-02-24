@@ -4,65 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BaseKit Supporter</title>
-
-    <meta name="fc:frame" content='{"version":"next","imageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","button":{"title":"⚡ Analyze & Mint","action":{"type":"launch_frame","name":"BaseKit Supporter","url":"https://basekit.online","splashImageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","splashBackgroundColor":"#0000FF"}}}'>
-    <meta name="keywords" content="base, toolkit, nft, mint, supporter">
     
+    <meta name="fc:frame" content='{"version":"next","imageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","button":{"title":"Launch BaseKit","action":{"type":"launch_frame","name":"BaseKit","url":"https://basekit.online","splashImageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","splashBackgroundColor":"#0000FF"}}}'>
+
     <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk/dist/bundle.min.js"></script>
 </head>
 <body style="background:#000; color:#0052FF; font-family:sans-serif; text-align:center; margin:0; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;">
     
     <div id="app-container" style="display:none; padding: 20px;">
         <img src="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" style="width:120px; border-radius:15px; border: 2px solid #0052FF; box-shadow: 0 0 20px rgba(0,82,255,0.4);">
-        <h1 style="font-size: 24px; margin: 15px 0;">BaseKit Hub</h1>
+        <h1 style="font-size: 24px; margin: 15px 0;">BaseKit LIVE</h1>
         
-        <div style="background: #111; border: 1px solid #0052FF; padding: 12px; border-radius: 12px; margin-bottom: 20px;">
-            <p style="color: #00ff00; font-family: monospace; margin: 5px 0;">Base Pulse: <span id="tps-val">76.42</span> TPS</p>
-            <p style="color: #555; font-size: 10px; margin: 0;">FID: 924645 | Value: 0.0001 ETH</p>
+        <div id="pulse-box" style="border: 1px solid #0052FF; padding: 15px; border-radius: 12px; margin-bottom: 20px; background: #050505;">
+            <p style="color: #00ff00; font-family: monospace; margin: 0;">Base Pulse: <span id="tps-val">76.42</span> TPS</p>
+            <p style="color: #fff; font-size: 11px; margin-top: 5px;">Status: <span id="sync-status" style="color: #0052FF;">Connected</span></p>
         </div>
 
-        <button id="mint-btn" style="background:#0052FF; color:#fff; border:none; padding:18px 30px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:16px; width: 100%; box-shadow: 0 4px 15px rgba(0,82,255,0.3);">⚡ Analyze & Mint Badge</button>
-        <p id="status-msg" style="font-size: 12px; margin-top: 15px; color: #888;"></p>
+        <button id="mint-btn" style="background:#0052FF; color:#fff; border:none; padding:18px 30px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:16px; width: 100%;">⚡ Analyze & Mint Badge</button>
+        <p id="debug-info" style="font-size: 11px; margin-top: 15px; color: #444;"></p>
     </div>
 
     <script>
-        async function init() {
+        // SDK'nın hazır olup olmadığını kontrol eden fonksiyon
+        async function startApp() {
             const sdk = window.frameSDK;
-            if (!sdk) return;
+            const debug = document.getElementById('debug-info');
+            const btn = document.getElementById('mint-btn');
+
+            if (!sdk) {
+                debug.innerText = "Error: SDK not found. Please open in Warpcast.";
+                document.getElementById('app-container').style.display = 'block';
+                return;
+            }
 
             try {
+                // Splash ekranını kapat ve uygulamayı hazırla
                 await sdk.actions.ready();
                 document.getElementById('app-container').style.display = 'block';
 
-                document.getElementById('mint-btn').onclick = async () => {
-                    const msg = document.getElementById('status-msg');
-                    msg.innerText = "Requesting Base Transaction...";
-                    msg.style.color = "#888";
-                    
+                btn.addEventListener('click', async () => {
+                    debug.innerText = "Requesting transaction...";
+                    debug.style.color = "#888";
+
                     try {
-                        await sdk.actions.sendTransaction({
+                        // sendTransaction'ın bir fonksiyon olup olmadığını son kez kontrol et
+                        if (typeof sdk.actions.sendTransaction !== 'function') {
+                            throw new Error("sendTransaction is not supported in this environment");
+                        }
+
+                        const result = await sdk.actions.sendTransaction({
                             chainId: 8453,
                             method: "eth_sendTransaction",
                             params: {
                                 abi: [{"name":"mint","type":"function","inputs":[{"name":"to","type":"address"}],"outputs":[],"stateMutability":"payable"}],
                                 to: "0x6540D5400Bc811B06325c11d1E678bE1d117EA07",
                                 data: "0x40c10f190000000000000000000000004604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12",
-                                value: "100000000000000" // 0.0001 ETH (14 Sıfır)
+                                value: "100000000000000" // 0.0001 ETH
                             }
                         });
-                        msg.innerText = "Success! Transaction sent.";
-                        msg.style.color = "#00ff00";
-                    } catch (e) {
-                        msg.innerText = "Error: " + (e.message || "User rejected");
-                        msg.style.color = "red";
+
+                        debug.innerText = "Transaction sent!";
+                        debug.style.color = "#00ff00";
+                    } catch (txError) {
+                        debug.innerText = "Error: " + (txError.message || "User rejected");
+                        debug.style.color = "red";
                     }
-                };
-            } catch (err) {
-                console.error("SDK Error:", err);
-                document.getElementById('app-container').style.display = 'block';
+                });
+
+            } catch (initError) {
+                debug.innerText = "Init Error: " + initError.message;
             }
         }
-        init();
+
+        // Sayfa yüklenince başlat
+        if (document.readyState === "complete") {
+            startApp();
+        } else {
+            window.addEventListener("load", startApp);
+        }
     </script>
 </body>
 </html>
