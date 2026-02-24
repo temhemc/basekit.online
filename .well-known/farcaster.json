@@ -1,9 +1,9 @@
 {
   "accountAssociation": {
-    "header": "eyJmaWQiOiA4ODU0NDIsICJ0eXBlIjogImN1c3RvdyIsICJrZXkiOiAweDY1NDBENTQwMEJjODExQjA2MzI1YzExZDFFNjc4YkUxZDExN0VBMDcifQ",
-    "payload": "eyJkb21haW4iOiAiYmFzZWtpdC5vbmxpbmUifQ",
-    "signature": "TZj+6bjGmTLR+wbcFErVOcASp7xAZKhXHjdniLDUT940+qCIPB19a7L5azSGen4tzfr/AFBgn/qpk/mzFOlhmBs="
-  },
+    "header": "eyJmaWQiOjkyNDY0NSwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDVEMDkzMTYwNzM1NzJjRWM4MTNERjYyMjVCOTE2QjFFZThlNzU5MzEifQ",
+    "payload": "eyJkb21haW4iOiJiYXNla2l0Lm9ubGluZSJ9",
+    "signature": "tVZxybeEklXd5GF4INT4M287uhVEF9CYLFu73dj5+tU/AChCZ5hYURy2el0nA7rpWfzohML9wJPDaciohaMsjxw="
+  }
   "frame": {
     "version": "1",
     "name": "BaseKit Supporter",
