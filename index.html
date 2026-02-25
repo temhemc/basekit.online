@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://explorer-api.walletconnect.com https://*.base.org https://*.wrpcd.net;">
+    <script src="https://cdn.jsdelivr.net/npm/@farcaster/miniapp-sdk@latest/dist/index.min.js"></script>
     <title>BaseKit.online | Farcaster & Base Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <style>
         body { background-color: #00050a; color: #fff; font-family: sans-serif; }
         .base-blue { color: #0052FF; }
@@ -16,10 +19,18 @@
         .lang-btn { cursor: pointer; padding: 6px 12px; border-radius: 8px; font-size: 11px; border: 1px solid rgba(255,255,255,0.1); }
         .lang-active { background: #0052FF !important; color: white !important; }
         .farcaster-card { background: rgba(133, 93, 205, 0.1); border: 1px solid rgba(133, 93, 205, 0.3); border-radius: 1.5rem; }
-        .brightness-125 { filter: brightness(1.25); }
-        .contrast-110   { filter: contrast(1.10); }
+        .preview-box { width: 100%; height: 120px; border: 2px dashed #1a2a4a; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; overflow: hidden; background: #000; }
     </style>
-</head>
+    <!-- Farcaster Frame / Mini App embed meta tag'leri -->
+    <meta property="fc:frame" content="vNext" />
+    <meta property="fc:frame:image" content="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" />
+    <meta property="fc:frame:button:1" content="Analyze & Mint" />
+    <meta property="fc:frame:button:1:target" content="https://basekit.online/api/tx-data.json" />
+    <meta property="fc:frame:button:1:action" content="tx" />
+    <meta property="fc:frame:post_url" content="https://basekit.online/" />
+    <!-- Mini App spesifik embed meta -->
+    <meta name="fc:miniapp" content='{"version":"1","type":"launch_miniapp","name":"BaseKit Supporter","imageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg"}' />
+ </head>
 <body class="p-4">
 
     <nav class="max-w-7xl mx-auto flex justify-between items-center mb-8 sticky top-0 bg-[#00050a]/90 backdrop-blur-md z-50 py-3">
@@ -35,6 +46,9 @@
             </div>
         </div>
         <div class="flex gap-2">
+            <div id="builder-tag" class="hidden md:flex items-center px-4 bg-blue-600/10 border border-blue-600/30 rounded-full text-[10px] font-bold text-blue-400">
+                BC: bc_h8ua8gs9
+            </div>
             <button onclick="handleWallet()" id="wallet-btn" class="bg-[#0052FF] px-6 py-2 rounded-full font-bold text-sm shadow-lg flex items-center gap-2 transition hover:bg-blue-600">
                 <i class="fas fa-wallet"></i> <span>Connect Wallet</span>
             </button>
@@ -49,12 +63,11 @@
             <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
             <div class="relative bg-black rounded-[3rem] ring-1 ring-white/10 shadow-2xl overflow-hidden">
                 <img src="https://i.postimg.cc/7YcT3jhc/Gemini_Generated_Image_b6cp2gb6cp2gb6cp.png"
-                     class="w-full h-[380px] sm:h-[450px] md:h-[520px] object-cover object-center brightness-125 contrast-110 transition duration-500"
+                     class="w-full h-[380px] sm:h-[450px] md:h-[520px] object-cover object-center transition duration-500"
                      alt="BaseKit Ecosystem">
-                <div class="absolute inset-0 bg-white/10 mix-blend-screen pointer-events-none"></div>
                 <div class="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent pointer-events-none"></div>
                 <div class="absolute bottom-8 sm:bottom-10 left-1/2 -translate-x-1/2 w-full px-4 sm:px-6">
-                    <div class="bg-black/65 backdrop-blur-xl border border-white/15 inline-block px-8 sm:px-10 py-5 sm:py-6 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl">
+                    <div class="bg-black/65 backdrop-blur-xl border border-white/15 inline-block px-8 sm:px-10 py-5 sm:py-6 rounded-[2rem] shadow-2xl">
                         <h2 id="welcome-title" class="text-2xl sm:text-3xl md:text-4xl font-black uppercase italic tracking-widest text-white mb-2">
                             Welcome to <span class="text-[#0052FF]">BaseKit</span>
                         </h2>
@@ -67,6 +80,12 @@
         </div>
     </div>
 
+    <div class="text-center mt-8">
+    <button id="analyzeMintBtn" class="bg-[#0052FF] hover:bg-blue-600 text-white font-black py-4 px-10 rounded-full shadow-[0_0_20px_rgba(0,82,255,0.4)] transition-all transform hover:scale-105 uppercase italic tracking-tighter">
+        <i class="fas fa-bolt mr-2"></i> Analyze & Mint
+    </button>
+    </div>
+    
     <main class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8">
         <div class="lg:col-span-7 space-y-8">
             <div class="glass h-[500px] overflow-hidden">
@@ -132,28 +151,57 @@
     </main>
 
     <div id="m" class="modal">
-        <div class="bg-[#000814] border border-blue-600 p-10 rounded-[3rem] w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <h3 id="m-title" class="text-2xl font-bold mb-8 base-blue italic uppercase"></h3>
+        <div class="bg-[#000814] border border-blue-600 p-10 rounded-[3rem] w-full max-w-2xl max-h-[95vh] overflow-y-auto shadow-[0_0_50px_rgba(0,82,255,0.2)]">
+            <h3 id="m-title" class="text-2xl font-bold mb-6 base-blue italic uppercase"></h3>
+            
+            <div id="preview-area" class="preview-box">
+                <p id="preview-text" class="text-[10px] text-gray-600 uppercase">Görsel Önizleme Bekleniyor</p>
+                <img id="asset-preview" src="" style="display:none; max-height:100%;">
+            </div>
+
             <div class="grid md:grid-cols-2 gap-4">
                 <input id="n" type="text" placeholder="Project Name *">
                 <input id="s" type="text" placeholder="Symbol *">
-                <input id="sup" type="number" placeholder="Total Supply">
+                <div id="supply-wrapper" class="w-full">
+                    <input id="sup" type="number" placeholder="Total Supply (For Tokens)">
+                </div>
+                <input id="inp-img" type="text" placeholder="Görsel URL (NFT İçin Zorunlu)" oninput="updatePreview(this.value)">
             </div>
-            <textarea id="desc" placeholder="Project Description..." class="mt-4 h-24"></textarea>
-            <button onclick="gen()" class="w-full bg-[#0052FF] py-5 mt-6 rounded-2xl font-bold shadow-lg">GENERATE CONTRACT</button>
-            <div id="res" class="hidden mt-8">
-                <pre id="out" class="text-[10px] text-green-400 bg-black p-4 rounded-xl border border-green-900 overflow-x-auto"></pre>
-                <button onclick="pay()" class="w-full border-2 border-blue-600 py-3 mt-4 rounded-xl font-bold">PAY 0.00001 ETH</button>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                <input id="l-web" class="text-[10px]" placeholder="Website">
+                <input id="l-x" class="text-[10px]" placeholder="X/Twitter">
+                <input id="l-fc" class="text-[10px]" placeholder="Farcaster">
+                <input id="l-tg" class="text-[10px]" placeholder="Telegram/Discord">
             </div>
-            <button onclick="closeM()" class="w-full text-gray-600 text-[10px] mt-8 uppercase font-bold">Back</button>
+
+            <textarea id="desc" placeholder="Project Description..." class="mt-4 h-20 text-sm"></textarea>
+            
+            <button onclick="gen()" class="w-full bg-[#0052FF] py-5 mt-4 rounded-2xl font-bold shadow-lg uppercase tracking-tighter">Generate Onchain Contract</button>
+            
+            <div id="res" class="hidden mt-6">
+                <pre id="out" class="text-[9px] text-green-400 bg-black p-4 rounded-xl border border-green-900 overflow-x-auto"></pre>
+                <div class="bg-blue-600/10 p-4 rounded-xl border border-blue-600/30 mb-4 flex justify-between items-center">
+                    <span class="text-[10px] font-bold">BUILDER CODE: bc_h8ua8gs9</span>
+                    <i class="fas fa-fingerprint text-blue-500"></i>
+                </div>
+                <button onclick="pay()" class="w-full border-2 border-blue-600 py-4 rounded-xl font-black text-xl hover:bg-blue-600 transition uppercase italic">Execute Deployment (0.00001 ETH)</button>
+            </div>
+            <button onclick="closeM()" class="w-full text-gray-600 text-[10px] mt-6 uppercase font-bold">Back to Ecosystem</button>
         </div>
     </div>
+
+    <footer class="text-center py-20 opacity-30 text-[10px] uppercase font-bold tracking-[0.5em]">
+        © 2026 BaseKit.online • Powered by Base Network
+    </footer>
 
     <script src="https://neynarxyz.github.io/siwn/raw/1.2.0/index.js" async></script>
     <script>
         const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
         const ALCHEMY_URL = "https://base-mainnet.g.alchemy.com/v2/pWkTLY-IkShGLhJuPOC0e";
+        const BUILDER_CODE = "bc_h8ua8gs9";
         let userWallet = null;
+        let mode = "";
         
         const dict = {
             en: { welcome: "Welcome to BaseKit", sub: "\"Converting Information to Onchain Value\"", factory: "Builder Factory", token: "🚀 Deploy New Token (ERC-20)", nft: "🖼️ Launch NFT Collection (ERC-721)" },
@@ -172,24 +220,26 @@
                     userWallet = acc[0];
                     updateUI(true);
                 } catch (e) { alert("Connection rejected."); }
-            } else { alert("Please install MetaMask or Coinbase Wallet!"); }
+            } else { alert("Please install MetaMask!"); }
         }
 
         function disconnect() {
             userWallet = null;
             updateUI(false);
-            alert("Disconnected from BaseKit.");
         }
 
         function updateUI(connected) {
             const btn = document.getElementById('wallet-btn');
             const logout = document.getElementById('disconnect-btn');
+            const bTag = document.getElementById('builder-tag');
             if (connected) {
                 btn.innerHTML = `<i class="fas fa-check-circle text-green-400"></i> ${userWallet.slice(0,6)}...${userWallet.slice(-4)}`;
                 logout.classList.remove('hidden');
+                bTag.classList.remove('hidden');
             } else {
                 btn.innerHTML = `<i class="fas fa-wallet"></i> Connect Wallet`;
                 logout.classList.add('hidden');
+                bTag.classList.add('hidden');
             }
         }
 
@@ -232,6 +282,7 @@
             document.querySelector('.neynar_signin').style.display = 'none';
             document.getElementById('user-info').innerHTML = `<img src="${user.pfp_url}" class="w-12 h-12 rounded-full border-2 border-purple-500 shadow-lg"><div><p class="text-white font-bold text-base">@${user.username}</p><p class="text-purple-400 text-[10px] font-mono italic">FID: ${user.fid} • Connected</p></div>`;
         }
+
         function changeLang(lang, btn) {
             const t = dict[lang]; if(!t) return;
             document.getElementById('welcome-title').innerText = t.welcome;
@@ -242,29 +293,157 @@
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('lang-active'));
             btn.classList.add('lang-active');
         }
-        function openM(t) { mode = t; document.getElementById('m-title').innerText = t; document.getElementById('m').classList.add('active'); }
+
+        // --- FACTORY ENHANCEMENTS ---
+        function openM(t) { 
+            mode = t; 
+            document.getElementById('m-title').innerText = t; 
+            document.getElementById('supply-wrapper').style.display = t === 'Token Lab' ? 'block' : 'none';
+            document.getElementById('m').classList.add('active'); 
+        }
+
         function closeM() { document.getElementById('m').classList.remove('active'); }
+
+        function updatePreview(url) {
+            const img = document.getElementById('asset-preview');
+            const txt = document.getElementById('preview-text');
+            if(url.startsWith('http')) { 
+                img.src = url; img.style.display = 'block'; txt.style.display = 'none'; 
+            } else { img.style.display = 'none'; txt.style.display = 'block'; }
+        }
+
         function gen() { 
             const n = document.getElementById('n').value || "Project"; 
-            document.getElementById('out').innerText = `// Built via BaseKit\ncontract ${n.replace(/\s/g,'')} { ... }`; 
+            const s = document.getElementById('s').value || "SYM";
+            const sup = document.getElementById('sup').value || "0";
+            document.getElementById('out').innerText = `// BaseKit Protocol v2\ncontract ${n.replace(/\s/g,'')} {\n  string public name = "${n}";\n  string public symbol = "${s}";\n  uint256 public supply = ${sup};\n  // bc_h8ua8gs9 linked\n}`; 
             document.getElementById('res').classList.remove('hidden'); 
         }
-        async function pay() { 
-            if(!userWallet) return alert("Please connect wallet first!");
-            await ethereum.request({ method: 'eth_sendTransaction', params: [{ from: userWallet, to: OWNER, value: '0x9184E72A000' }] }); 
-            alert("Success!"); closeM(); 
-        }
 
+// --- IMPROVED PAY FUNCTION ---
+        async function pay() { 
+            if(!userWallet) return alert("Önce cüzdanı bağlayın!");
+            
+            const n = document.getElementById('n').value || "Project";
+            const s = document.getElementById('s').value;
+            const sup = document.getElementById('sup').value;
+            const img = document.getElementById('inp-img').value;
+
+            try {
+                const metadata = JSON.stringify({
+                    t: mode, n: n, s: s, q: sup, i: img,
+                    l: { 
+                        w: document.getElementById('l-web').value, 
+                        x: document.getElementById('l-x').value, 
+                        f: document.getElementById('l-fc').value, 
+                        t: document.getElementById('l-tg').value 
+                    }
+                });
+
+                const codeBytes = ethers.utils.toUtf8Bytes(BUILDER_CODE);
+                const codeHex = ethers.utils.hexlify(codeBytes).slice(2);
+                const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
+                const ercMarker = "80218021802180218021802180218021";
+                const finalData = "0x" + metaHex + codeHex + ercMarker;
+
+                const txHash = await ethereum.request({ 
+                    method: 'eth_sendTransaction', 
+                    params: [{ 
+                        from: userWallet, 
+                        to: "0x6540D5400Bc811B06325c11d1E678bE1d117EA07", 
+                        value: '0x5AF3107A4000', // 0.00001 ETH
+                        data: finalData 
+                    }] 
+                }); 
+
+                if (typeof saveLog === "function") {
+                    saveLog(n, mode, txHash);
+                }
+
+                alert("İşlem Başarılı! Veri ao07 adresine yönlendirildi.\nHash: " + txHash); 
+                closeM();
+            } catch (e) { 
+                console.error(e);
+                alert("Hata: " + (e.message.includes("internal accounts") ? "Base ağı şahıs cüzdanlarına veri ekini kabul etmiyor." : e.message)); 
+            }
+        }
+        
+        // --- INITIALIZATION ---
         setInterval(updateLiveStats, 10000);
         setInterval(updateTicker, 60000);
-        updateLiveStats();
-        updateTicker();
-
-        // Sayfa yüklendiğinde otomatik cüzdan kontrolü
-        if(window.ethereum && ethereum.selectedAddress) {
-            userWallet = ethereum.selectedAddress;
-            updateUI(true);
+        
+      window.addEventListener('load', async () => {
+        if (typeof window.MiniAppSDK !== 'undefined') {
+            try {
+                const sdk = window.MiniAppSDK;
+                // Ready çağrısı – splash'i gizler
+                await sdk.actions.ready({ disableNativeGestures: true });
+                console.log('Mini App READY çağrıldı – splash gizlendi!');
+                
+                // Opsiyonel: Context al (user FID vs.) ve test log
+                const context = await sdk.context();
+                console.log('User context:', context);
+            } catch (error) {
+                console.error('SDK ready hatası:', error);
+                // Fallback: Hata olsa bile içeriği göster (güvenlik için)
+                document.body.style.display = 'block'; // Eğer gizliyse
+            }
+        } else {
+            console.log('Mini App SDK yüklenmedi – normal mod');
         }
+    });
     </script>
+   
+    <script>
+    // ... senin mevcut kodların (updateLiveStats, updateTicker, window.addEventListener('load') vs.) devamı ...
+
+    // Mini App desteği ekle (en alta koy)
+    (async function initFarcasterMiniApp() {
+        // Sadece Farcaster / Warpcast Mini App içinde çalışsın
+        if (typeof window.MiniAppSDK !== 'undefined') {
+            try {
+                const sdk = window.MiniAppSDK;
+                // Bu satır mavi ekranı (splash screen) gizler – zorunlu!
+                await sdk.actions.ready({ disableNativeGestures: true });
+                console.log('Mini App ready – splash gizlendi, içerik yüklendi');
+                
+                // İstersen ekstra bir şey yap (örneğin arka planı değiştir)
+                // document.body.style.background = '#000';
+                
+            } catch (error) {
+                console.error('Mini App ready hatası:', error);
+            }
+        } else {
+            // Normal browser/site modu – hiçbir şey yapma
+            console.log('Normal mod – MiniAppSDK yok');
+        }
+    })();
+</script>
+<script type="module">
+    import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk'
+
+    // Uygulamayı hazır hale getir (Mavi ekranı kapatır)
+    const init = async () => {
+        try {
+            await sdk.actions.ready();
+        } catch (e) { console.error(e); }
+    };
+    init();
+
+    // Butona basıldığında cüzdanı tetikle
+    document.getElementById('analyzeMintBtn')?.addEventListener('click', async () => {
+        try {
+            await sdk.actions.sendTransaction({
+                chainId: 8453,
+                to: "0x6540D5400Bc811B06325c11d1E678bE1d117EA07",
+                value: "100000000000000", 
+                data: "0x"
+            });
+        } catch (err) {
+            console.error("İşlem hatası:", err);
+        }
+    });
+</script>
+    
 </body>
 </html>
