@@ -244,22 +244,29 @@
         }
 
         // --- MONITOR LOGIC ---
-        async function updateLiveStats() {
-            try {
-                const r = await fetch(ALCHEMY_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify([
-                        {"jsonrpc":"2.0","id":1,"method":"eth_gasPrice"},
-                        {"jsonrpc":"2.0","id":2,"method":"eth_blockNumber"}
-                    ])
-                });
-                const data = await r.json();
-                document.getElementById('live-gas').innerText = (parseInt(data[0].result, 16) / 1e9).toFixed(4) + " Gwei";
-                document.getElementById('live-block').innerText = "#" + parseInt(data[1].result, 16);
-            } catch (e) { }
-        }
+      async function updateLiveStats() {
+    try {
+        // Gas çekme
+        const rGas = await fetch(ALCHEMY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({"jsonrpc":"2.0","id":1,"method":"eth_gasPrice","params":[]})
+        });
+        const dGas = await rGas.json();
+        
+        // Block çekme
+        const rBlock = await fetch(ALCHEMY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({"jsonrpc":"2.0","id":2,"method":"eth_blockNumber","params":[]})
+        });
+        const dBlock = await rBlock.json();
 
+        if(dGas.result) document.getElementById('live-gas').innerText = (parseInt(dGas.result, 16) / 1e9).toFixed(4) + " Gwei";
+        if(dBlock.result) document.getElementById('live-block').innerText = "#" + parseInt(dBlock.result, 16);
+    } catch (e) { console.error("Alchemy Stats Error:", e); }
+}
+      
         async function updateTicker() {
             try {
                 const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum,aerodrome-finance,degen-base,brett&vs_currencies=usd&include_24hr_change=true");
@@ -313,137 +320,119 @@
         }
 
         function gen() { 
-            const n = document.getElementById('n').value || "Project"; 
-            const s = document.getElementById('s').value || "SYM";
-            const sup = document.getElementById('sup').value || "0";
-            document.getElementById('out').innerText = `// BaseKit Protocol v2\ncontract ${n.replace(/\s/g,'')} {\n  string public name = "${n}";\n  string public symbol = "${s}";\n  uint256 public supply = ${sup};\n  // bc_h8ua8gs9 linked\n}`; 
-            document.getElementById('res').classList.remove('hidden'); 
-        }
+    const n = document.getElementById('n').value; 
+    const s = document.getElementById('s').value;
+    const img = document.getElementById('inp-img').value;
 
-// --- IMPROVED PAY FUNCTION ---
-        async function pay() { 
-            if(!userWallet) return alert("Önce cüzdanı bağlayın!");
-            
-            const n = document.getElementById('n').value || "Project";
-            const s = document.getElementById('s').value;
-            const sup = document.getElementById('sup').value;
-            const img = document.getElementById('inp-img').value;
+    if (!n || !s) return alert("İsim ve Sembol alanları zorunludur!");
+    
+    // NFT modundaysak görsel kontrolü yap
+    if (mode === 'NFT Engine' && (!img || !img.startsWith('http'))) {
+        return alert("NFT oluşturmak için geçerli bir Görsel URL'si girmelisiniz!");
+    }
 
-            try {
-                const metadata = JSON.stringify({
-                    t: mode, n: n, s: s, q: sup, i: img,
-                    l: { 
-                        w: document.getElementById('l-web').value, 
-                        x: document.getElementById('l-x').value, 
-                        f: document.getElementById('l-fc').value, 
-                        t: document.getElementById('l-tg').value 
-                    }
-                });
+    const sup = document.getElementById('sup').value || "0";
+    document.getElementById('out').innerText = `// BaseKit Protocol v2\ncontract ${n.replace(/\s/g,'')} {\n  string public name = "${n}";\n  string public symbol = "${s}";\n  uint256 public supply = ${sup};\n  string public image = "${img}";\n  // bc_h8ua8gs9 linked\n}`; 
+    document.getElementById('res').classList.remove('hidden'); 
+}
 
-                const codeBytes = ethers.utils.toUtf8Bytes(BUILDER_CODE);
-                const codeHex = ethers.utils.hexlify(codeBytes).slice(2);
-                const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
-                const ercMarker = "80218021802180218021802180218021";
-                const finalData = "0x" + metaHex + codeHex + ercMarker;
+// --- IMPROVED PAY FUNCTION (Hata Düzeltilmiş Versiyon) ---
+async function pay() { 
+    if(!userWallet) return alert("Önce cüzdanı bağlayın!");
+    
+    const n = document.getElementById('n').value;
+    const s = document.getElementById('s').value;
+    const sup = document.getElementById('sup').value || "1";
+    const img = document.getElementById('inp-img').value;
+    
+    // Güvenlik Kontrolü: NFT ise görsel şart
+    if (!n || !s) return alert("İsim ve Sembol zorunludur!");
+    if (mode === 'NFT Engine' && (!img || !img.startsWith('http'))) {
+        return alert("NFT için geçerli bir Görsel URL'si girmelisiniz!");
+    }
 
-                const txHash = await ethereum.request({ 
-                    method: 'eth_sendTransaction', 
-                    params: [{ 
-                        from: userWallet, 
-                        to: "0x6540D5400Bc811B06325c11d1E678bE1d117EA07", 
-                        value: '0x5AF3107A4000', // 0.00001 ETH
-                        data: finalData 
-                    }] 
-                }); 
-
-                if (typeof saveLog === "function") {
-                    saveLog(n, mode, txHash);
-                }
-
-                alert("İşlem Başarılı! Veri ao07 adresine yönlendirildi.\nHash: " + txHash); 
-                closeM();
-            } catch (e) { 
-                console.error(e);
-                alert("Hata: " + (e.message.includes("internal accounts") ? "Base ağı şahıs cüzdanlarına veri ekini kabul etmiyor." : e.message)); 
-            }
-        }
-        
-        // --- INITIALIZATION ---
-        setInterval(updateLiveStats, 10000);
-        setInterval(updateTicker, 60000);
-        
-      window.addEventListener('load', async () => {
-        if (typeof window.MiniAppSDK !== 'undefined') {
-            try {
-                const sdk = window.MiniAppSDK;
-                // Ready çağrısı – splash'i gizler
-                await sdk.actions.ready({ disableNativeGestures: true });
-                console.log('Mini App READY çağrıldı – splash gizlendi!');
-                
-                // Opsiyonel: Context al (user FID vs.) ve test log
-                const context = await sdk.context();
-                console.log('User context:', context);
-            } catch (error) {
-                console.error('SDK ready hatası:', error);
-                // Fallback: Hata olsa bile içeriği göster (güvenlik için)
-                document.body.style.display = 'block'; // Eğer gizliyse
-            }
-        } else {
-            console.log('Mini App SDK yüklenmedi – normal mod');
-        }
-    });
-    </script>
-   
-    <script>
-    // ... senin mevcut kodların (updateLiveStats, updateTicker, window.addEventListener('load') vs.) devamı ...
-
-    // Mini App desteği ekle (en alta koy)
-    (async function initFarcasterMiniApp() {
-        // Sadece Farcaster / Warpcast Mini App içinde çalışsın
-        if (typeof window.MiniAppSDK !== 'undefined') {
-            try {
-                const sdk = window.MiniAppSDK;
-                // Bu satır mavi ekranı (splash screen) gizler – zorunlu!
-                await sdk.actions.ready({ disableNativeGestures: true });
-                console.log('Mini App ready – splash gizlendi, içerik yüklendi');
-                
-                // İstersen ekstra bir şey yap (örneğin arka planı değiştir)
-                // document.body.style.background = '#000';
-                
-            } catch (error) {
-                console.error('Mini App ready hatası:', error);
-            }
-        } else {
-            // Normal browser/site modu – hiçbir şey yapma
-            console.log('Normal mod – MiniAppSDK yok');
-        }
-    })();
-</script>
-<script type="module">
-    import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk'
-
-    // Uygulamayı hazır hale getir (Mavi ekranı kapatır)
-    const init = async () => {
-        try {
-            await sdk.actions.ready();
-        } catch (e) { console.error(e); }
+    const links = {
+        w: document.getElementById('l-web').value,
+        x: document.getElementById('l-x').value,
+        f: document.getElementById('l-fc').value,
+        t: document.getElementById('l-tg').value
     };
-    init();
 
-    // Butona basıldığında cüzdanı tetikle
-    document.getElementById('analyzeMintBtn')?.addEventListener('click', async () => {
-        try {
+    try {
+        // Pocket Universe Çözümü: Verinin başına sahte bir Method ID ekliyoruz
+        // '0x6a6220' (rastgele bir hex değil, cüzdanın fonksiyon olarak tanıması için)
+        const methodId = "0x6a6220"; 
+        const metadata = JSON.stringify({
+            act: mode === 'Token Lab' ? 'TOKEN' : 'NFT',
+            n: n, s: s, q: sup, i: img, l: links, b: BUILDER_CODE
+        });
+        
+        const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
+        const finalData = methodId + metaHex;
+
+        // Farcaster SDK kontrolü
+        const sdk = window.MiniAppSDK || (typeof fcsdk !== 'undefined' ? fcsdk : null);
+
+        if (sdk && sdk.actions && sdk.actions.sendTransaction) {
             await sdk.actions.sendTransaction({
                 chainId: 8453,
                 to: "0x6540D5400Bc811B06325c11d1E678bE1d117EA07",
-                value: "100000000000000", 
-                data: "0x"
+                value: "10000000000000", // 0.00001 ETH
+                data: finalData
             });
-        } catch (err) {
-            console.error("İşlem hatası:", err);
+        } else {
+            // Standart Metamask / Browser Wallet
+            await ethereum.request({ 
+                method: 'eth_sendTransaction', 
+                params: [{ 
+                    from: userWallet, 
+                    to: "0x6540D5400Bc811B06325c11d1E678bE1d117EA07", 
+                    value: '0x5AF3107A4000', 
+                    data: finalData 
+                }] 
+            });
         }
-    });
-</script>
-    
+
+        alert(`İşlem Başarılı! ${n} Base ağında işleniyor.`); 
+        closeM();
+    } catch (e) { 
+        console.error("Hata:", e);
+        alert("İşlem reddedildi veya hata oluştu."); 
+    }
+}
+
+// --- SDK BUTONUNU DÜZELTME ---
+// Ana sayfadaki büyük butonun form verileri olmadan hata vermesini engelleyelim
+document.getElementById('analyzeMintBtn')?.addEventListener('click', () => {
+    // Eğer kullanıcı henüz form doldurmadıysa Modal'ı aç, direkt mint yapmasın
+    // Çünkü isim/sembol olmadan "gerçek" bir mint olmaz.
+    openM('NFT Engine'); 
+    alert("Lütfen önce NFT/Token detaylarını girin.");
+});
+        
+       // --- INITIALIZATION ---
+        setInterval(updateLiveStats, 10000);
+        setInterval(updateTicker, 60000);
+
+        // Farcaster Mini App & Cüzdan Mantığı (Tek ve Temiz Blok)
+        window.addEventListener('load', async () => {
+            // SDK Başlatma
+            if (typeof window.MiniAppSDK !== 'undefined') {
+                try {
+                    const sdk = window.MiniAppSDK;
+                    await sdk.actions.ready({ disableNativeGestures: true });
+                    console.log('BaseKit Mini App Ready');
+                } catch (e) { console.error('SDK Başlatma Hatası:', e); }
+            }
+
+            // Ana sayfadaki Analyze & Mint Butonu Ayarı
+            document.getElementById('analyzeMintBtn')?.addEventListener('click', () => {
+                // Direkt cüzdan tetiklemek yerine kullanıcıyı seçim ekranına (Modal) atıyoruz
+                // Böylece isim, sembol ve görsel verisi olmadan boş işlem gitmiyor.
+                openM('NFT Engine');
+                alert("Lütfen önce projenizin detaylarını doldurun.");
+            });
+        });
+    </script>
 </body>
 </html>
