@@ -402,31 +402,27 @@ function onSignInSuccess(data) {
     document.getElementById('user-info').innerHTML = `<img src="${user.pfp_url}" class="w-12 h-12 rounded-full border-2 border-purple-500"><div><p class="text-white font-bold">@${user.username}</p><p class="text-purple-400 text-[10px]">FID: ${user.fid}</p></div>`;
 }
 
-// --- BAŞLATMA ---
-setInterval(updateLiveStats, 10000);
-setInterval(updateTicker, 60000);
-window.addEventListener('load', () => {
-    updateLiveStats(); updateTicker();
-    document.getElementById('analyzeMintBtn')?.addEventListener('click', () => openM('NFT Engine'));
-});
-           
-        // SDK Başlatma
-            if (typeof window.MiniAppSDK !== 'undefined') {
-                try {
-                    const sdk = window.MiniAppSDK;
-                    await sdk.actions.ready({ disableNativeGestures: true });
-                    console.log('BaseKit Mini App Ready');
-                } catch (e) { console.error('SDK Başlatma Hatası:', e); }
-            }
+// --- BAŞLATMA (TEMİZLENMİŞ VERSİYON) ---
+window.addEventListener('load', async () => {
+    updateLiveStats(); 
+    updateTicker();
+    setInterval(updateLiveStats, 10000);
+    setInterval(updateTicker, 60000);
 
-            // Ana sayfadaki Analyze & Mint Butonu Ayarı
-            document.getElementById('analyzeMintBtn')?.addEventListener('click', () => {
-                // Direkt cüzdan tetiklemek yerine kullanıcıyı seçim ekranına (Modal) atıyoruz
-                // Böylece isim, sembol ve görsel verisi olmadan boş işlem gitmiyor.
-                openM('NFT Engine');
-                alert("Lütfen önce projenizin detaylarını doldurun.");
-            });
-    
-    </script>
+    // Analyze & Mint Buton Ayarı
+    document.getElementById('analyzeMintBtn')?.addEventListener('click', () => {
+        openM('NFT Engine');
+        alert("Lütfen önce projenizin detaylarını doldurun.");
+    });
+
+    // SDK Başlatma
+    if (typeof window.MiniAppSDK !== 'undefined') {
+        try {
+            await window.MiniAppSDK.actions.ready({ disableNativeGestures: true });
+            console.log('BaseKit Mini App Ready');
+        } catch (e) { console.error('SDK Başlatma Hatası:', e); }
+    }
+});
+</script>
 </body>
 </html>
