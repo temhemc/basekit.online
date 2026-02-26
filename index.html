@@ -222,7 +222,9 @@
        const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
        const BUILDER_CODE = "bc_h8ua8gs9";
        const CDP_API_KEY = "68b320ce-b10d-4e8a-b514-c507184767a3"; // Senin anahtarın
-
+       let userWallet = null; // Cüzdan değişkenini buraya ekledik
+       let mode = "NFT Engine"; // Varsayılan mod
+        
     // OnchainKit'i aktif et
     if (window.OnchainKit) {
     window.OnchainKit.configure({ 
@@ -378,37 +380,46 @@
 
         // --- GÜNCEL PAY FONKSİYONU (Hata Giderilmiş) ---
    async function pay() {
-    if(!userWallet) return alert("Lütfen cüzdanı bağlayın!");
-    
-    try {
-        // BURAYA REMIX'TEN ALDIĞIN YENİ KONTRAT ADRESİNİ YAZ (9c12 değil, yeni kontrat!)
-        const CONTRACT_ADDRESS = "0xCc5681E33eaecCBF024F45a52Be4a295d02Fe951"; 
+        if(!userWallet) return alert("Lütfen önce cüzdanı bağlayın!");
         
-        // Bu selector kontratındaki 'mint' fonksiyonunu temsil eder
-        const mintSelector = "0x3697e375"; 
-        
-        const metadata = JSON.stringify({ 
-            act: mode, 
-            n: document.getElementById('n').value, 
-            s: document.getElementById('s').value, 
-            i: document.getElementById('inp-img').value,
-            b: "bc_h8ua8gs9" 
-        });
-        
-        const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
+        try {
+            // Remix'ten aldığın kontrat adresi (Doğru görünüyor)
+            const CONTRACT_ADDRESS = "0xCc5681E33eaecCBF024F45a52Be4a295d02Fe951"; 
+            
+            // Pocket Universe simülasyonu için 'mint' fonksiyonunu açıkça tanımlayalım
+            const mintSelector = "0x3697e375"; 
+            
+            const metadata = JSON.stringify({ 
+                act: mode, 
+                n: document.getElementById('n').value, 
+                s: document.getElementById('s').value, 
+                i: document.getElementById('inp-img').value,
+                b: BUILDER_CODE 
+            });
+            
+            // Ethers kütüphanesinin yüklü olduğundan emin olarak veriyi çevirelim
+            const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
 
-        const txHash = await window.ethereum.request({
-            method: 'eth_sendTransaction',
-            params: [{
+            const txParams = {
                 from: userWallet,
-                to: CONTRACT_ADDRESS, // Para artık kontrata gidiyor
+                to: CONTRACT_ADDRESS,
                 value: '0x5AF3107A4000', // 0.00001 ETH
-                data: mintSelector + metaHex // Pocket Universe bunu artık sevecek!
-            }]
-        });
-        alert("Harika! v1.0 resmen yayında. Hash: " + txHash);
-    } catch (e) { alert("Hata: " + e.message); }
-}
+                data: mintSelector + metaHex,
+                gas: "0x186A0" // Manuel Gaz Limiti (100,000) - Pocket Universe'i ikna eder
+            };
+
+            const txHash = await window.ethereum.request({
+                method: 'eth_sendTransaction',
+                params: [txParams]
+            });
+
+            alert("Harika! v1.0 resmen yayında.\nHash: " + txHash);
+            closeM();
+        } catch (e) { 
+            console.error(e);
+            alert("İşlem Hatası: " + (e.message || "Bilinmeyen hata")); 
+        }
+    }
 
 // --- SDK BUTONUNU DÜZELTME ---
 // Ana sayfadaki büyük butonun form verileri olmadan hata vermesini engelleyelim
