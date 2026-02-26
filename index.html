@@ -394,7 +394,7 @@
                 n: document.getElementById('n').value, 
                 s: document.getElementById('s').value, 
                 i: document.getElementById('inp-img').value,
-                b: BUILDER_CODE 
+                b: "bc_h8ua8gs9"
             });
             
             // Ethers kütüphanesinin yüklü olduğundan emin olarak veriyi çevirelim
@@ -422,37 +422,28 @@
     }
 
 // --- SDK BUTONUNU DÜZELTME ---
-// Ana sayfadaki büyük butonun form verileri olmadan hata vermesini engelleyelim
+// Sadece bir tane EventListener bırakıyoruz
 document.getElementById('analyzeMintBtn')?.addEventListener('click', () => {
-    // Eğer kullanıcı henüz form doldurmadıysa Modal'ı aç, direkt mint yapmasın
-    // Çünkü isim/sembol olmadan "gerçek" bir mint olmaz.
     openM('NFT Engine'); 
     alert("Lütfen önce NFT/Token detaylarını girin.");
 });
         
-       // --- INITIALIZATION ---
-        setInterval(updateLiveStats, 10000);
-        setInterval(updateTicker, 60000);
+// --- INITIALIZATION ---
+setInterval(updateLiveStats, 10000);
+setInterval(updateTicker, 60000);
 
-        // Farcaster Mini App & Cüzdan Mantığı (Tek ve Temiz Blok)
-        window.addEventListener('load', async () => {
-            // SDK Başlatma
-            if (typeof window.MiniAppSDK !== 'undefined') {
-                try {
-                    const sdk = window.MiniAppSDK;
-                    await sdk.actions.ready({ disableNativeGestures: true });
-                    console.log('BaseKit Mini App Ready');
-                } catch (e) { console.error('SDK Başlatma Hatası:', e); }
-            }
-
-            // Ana sayfadaki Analyze & Mint Butonu Ayarı
-            document.getElementById('analyzeMintBtn')?.addEventListener('click', () => {
-                // Direkt cüzdan tetiklemek yerine kullanıcıyı seçim ekranına (Modal) atıyoruz
-                // Böylece isim, sembol ve görsel verisi olmadan boş işlem gitmiyor.
-                openM('NFT Engine');
-                alert("Lütfen önce projenizin detaylarını doldurun.");
-            });
-        });
+// Sayfa yüklendiğinde istatistikleri bir kez çalıştır
+window.addEventListener('load', async () => {
+    updateLiveStats();
+    updateTicker();
+    
+    // SDK Başlatma
+    if (window.farcaster?.miniapp) { // SDK kontrolü güncellendi
+        try {
+            console.log('BaseKit Mini App Ready');
+        } catch (e) { console.error('SDK Başlatma Hatası:', e); }
+    }
+});
     </script>
 </body>
 </html>
