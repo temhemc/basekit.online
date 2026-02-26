@@ -379,54 +379,47 @@
 }
 
         // --- GÜNCEL PAY FONKSİYONU (Hata Giderilmiş) ---
-  async function pay() {
+ async function pay() {
     if(!userWallet) return alert("Lütfen önce cüzdanı bağlayın!");
     
     try {
         const CONTRACT_ADDRESS = "0xCc5681E33eaecCBF024F45a52Be4a295d02Fe951"; 
-        const mintSelector = "0x3697e375"; // mint(string) selector
+        const mintSelector = "0x3697e375"; 
         
-        // Form verilerini alıyoruz
-        const name = document.getElementById('n').value;
-        const symbol = document.getElementById('s').value;
-        const supply = document.getElementById('sup').value || "0";
-        const img = document.getElementById('inp-img').value;
-
-        // Metadata paketini oluştur
         const metadata = JSON.stringify({ 
             act: mode, 
-            n: name, 
-            s: symbol, 
-            sup: supply,
-            i: img,
+            n: document.getElementById('n').value, 
+            s: document.getElementById('s').value, 
+            sup: document.getElementById('sup').value || "0",
+            i: document.getElementById('inp-img').value,
             b: "bc_h8ua8gs9" 
         });
 
-        // Ethers.js bağımlılığını azaltmak için veriyi manuel hex'e çevirelim (Hata riskini sıfırlar)
-        const encoder = new TextEncoder();
-        const dataBuffer = encoder.encode(metadata);
-        const metaHex = Array.from(dataBuffer).map(b => b.toString(16).padStart(2, '0')).join('');
+        // Veriyi güvenli hex formatına çevir
+        const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
 
+        // Parametreleri MetaMask'ın istediği "Strict Hex" formatına sokuyoruz
         const txParams = {
             from: userWallet,
             to: CONTRACT_ADDRESS,
-            value: '0x5AF3107A4000', // 0.00001 ETH
+            value: ethers.utils.parseEther("0.00001").toHexString(), // 0.00001 ETH
             data: mintSelector + metaHex,
-            gas: "0x30D40" // 200,000 gaz (Yeterli miktar)
+            gasLimit: ethers.utils.hexlify(250000) // Gaz limitini garantiye aldık
         };
 
-        console.log("İşlem gönderiliyor...", txParams);
+        console.log("Gönderilen Parametreler:", txParams);
 
         const txHash = await window.ethereum.request({
             method: 'eth_sendTransaction',
-            params: [txParams]
+            params: [txParams],
         });
 
-        alert("VE GOOOL! İşlem Başarılı.\nHash: " + txHash);
+        alert("VE İŞTE BU! İşlem Başarılı.\nHash: " + txHash);
         closeM();
     } catch (e) { 
-        console.error("Detaylı Hata:", e);
-        alert("Hata Oluştu: " + (e.data?.message || e.message)); 
+        console.error("Hata Detayı:", e);
+        // Eğer hala hata verirse tam mesajı buraya yansıtır
+        alert("Hata: " + (e.message || "Parametre hatası")); 
     }
 }
 
