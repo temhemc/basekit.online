@@ -166,52 +166,58 @@
         </div>
     </main>
 
-    <div id="m" class="modal">
-        <div class="bg-[#000814] border border-blue-600 p-10 rounded-[3rem] w-full max-w-2xl max-h-[95vh] overflow-y-auto shadow-[0_0_50px_rgba(0,82,255,0.2)]">
-            <h3 id="m-title" class="text-2xl font-bold mb-6 base-blue italic uppercase"></h3>
+<div id="m" class="modal">
+    <div class="bg-[#000814] border border-blue-600 p-10 rounded-[3rem] w-full max-w-2xl max-h-[95vh] overflow-y-auto shadow-[0_0_50px_rgba(0,82,255,0.2)]">
+        <h3 id="m-title" class="text-2xl font-bold mb-6 base-blue italic uppercase"></h3>
+        
+        <div id="preview-area" class="preview-box" 
+             style="cursor: pointer; position: relative; border: 2px dashed #0052FF; min-height: 150px; display: flex; align-items: center; justify-content: center;"
+             ondrop="dropHandler(event)" 
+             ondragover="dragOverHandler(event)"
+             onclick="document.getElementById('file-upload').click()">
             
-            <div id="preview-area" class="preview-box">
-                <p id="preview-text" class="text-[10px] text-gray-600 uppercase">Görsel Önizleme Bekleniyor</p>
-                <img id="asset-preview" src="" style="display:none; max-height:100%;">
+            <div id="upload-hint" class="text-center p-4">
+                <i class="fas fa-image text-3xl base-blue mb-2"></i>
+                <p class="text-[10px] text-gray-400 uppercase font-bold">Görseli Buraya Sürükle veya Seç</p>
             </div>
-
-            <div class="grid md:grid-cols-2 gap-4">
-                <input id="n" type="text" placeholder="Project Name *">
-                <input id="s" type="text" placeholder="Symbol *">
-                <div id="supply-wrapper" class="w-full">
-                <input id="sup" type="number" placeholder="Total Supply (For Tokens)">
-                </div>
-                <input id="inp-img" type="text" placeholder="Görsel URL (NFT İçin Zorunlu)" oninput="updatePreview(this.value)">
-            </div>
-               <div class="flex flex-col gap-2 mt-2">
-               <input type="file" id="file-upload" accept="image/*" class="hidden" onchange="handleFileUpload(this)">
-               <button type="button" onclick="document.getElementById('file-upload').click()" class="bg-blue-600/20 text-blue-400 text-[10px] py-3 rounded-xl border border-blue-600/30 hover:bg-blue-600 hover:text-white transition uppercase font-black">
-            <i class="fas fa-image mr-1"></i> Bilgisayardan Fotoğraf Yükle
-         </button>
-         </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
-                <input id="l-web" class="text-[10px]" placeholder="Website">
-                <input id="l-x" class="text-[10px]" placeholder="X/Twitter">
-                <input id="l-fc" class="text-[10px]" placeholder="Farcaster">
-                <input id="l-tg" class="text-[10px]" placeholder="Telegram/Discord">
-            </div>
-
-            <textarea id="desc" placeholder="Project Description..." class="mt-4 h-20 text-sm"></textarea>
             
-            <button onclick="gen()" class="w-full bg-[#0052FF] py-5 mt-4 rounded-2xl font-bold shadow-lg uppercase tracking-tighter">Generate Onchain Contract</button>
+            <img id="asset-preview" src="" style="display:none; max-height: 140px; border-radius: 12px;">
             
-            <div id="res" class="hidden mt-6">
-                <pre id="out" class="text-[9px] text-green-400 bg-black p-4 rounded-xl border border-green-900 overflow-x-auto"></pre>
-                <div class="bg-blue-600/10 p-4 rounded-xl border border-blue-600/30 mb-4 flex justify-between items-center">
-                    <span class="text-[10px] font-bold">BUILDER CODE: bc_h8ua8gs9</span>
-                    <i class="fas fa-fingerprint text-blue-500"></i>
-                </div>
-                <button onclick="pay()" class="w-full border-2 border-blue-600 py-4 rounded-xl font-black text-xl hover:bg-blue-600 transition uppercase italic">Execute Deployment (0.00001 ETH)</button>
+            <div id="upload-loader" class="hidden absolute inset-0 bg-black/80 flex items-center justify-center rounded-[20px]">
+                <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-blue-500"></div>
             </div>
-            <button onclick="closeM()" class="w-full text-gray-600 text-[10px] mt-6 uppercase font-bold">Back to Ecosystem</button>
         </div>
-    </div>
 
+        <div class="grid md:grid-cols-2 gap-4 mt-6">
+            <input id="n" type="text" placeholder="Project Name *">
+            <input id="s" type="text" placeholder="Symbol *">
+            <div id="supply-wrapper" class="w-full">
+                <input id="sup" type="number" placeholder="Total Supply (For Tokens)">
+            </div>
+        </div>
+        
+        <input type="file" id="file-upload" accept="image/*" class="hidden" onchange="handleFileUpload(this)">
+        <input type="hidden" id="final-img-data"> 
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4">
+            <input id="l-web" class="text-[10px]" placeholder="Website">
+            <input id="l-x" class="text-[10px]" placeholder="X/Twitter">
+            <input id="l-fc" class="text-[10px]" placeholder="Farcaster">
+            <input id="l-tg" class="text-[10px]" placeholder="Telegram/Discord">
+        </div>
+
+        <textarea id="desc" placeholder="Project Description..." class="mt-4 h-20 text-sm"></textarea>
+        
+        <button onclick="gen()" class="w-full bg-[#0052FF] py-5 mt-4 rounded-2xl font-bold shadow-lg uppercase tracking-tighter">Generate Onchain Contract</button>
+        
+        <div id="res" class="hidden mt-6">
+            <pre id="out" class="text-[9px] text-green-400 bg-black p-4 rounded-xl border border-green-900 overflow-x-auto"></pre>
+            <button onclick="pay()" class="w-full border-2 border-blue-600 py-4 rounded-xl font-black text-xl hover:bg-blue-600 transition uppercase italic">Execute Deployment (0.0001 ETH)</button>
+        </div>
+        <button onclick="closeM()" class="w-full text-gray-600 text-[10px] mt-6 uppercase font-bold">Back to Ecosystem</button>
+    </div>
+</div>
+   
     <footer class="text-center py-20 opacity-30 text-[10px] uppercase font-bold tracking-[0.5em]">
         © 2026 BaseKit.online • Powered by Base Network
     </footer>
@@ -348,7 +354,47 @@
                 img.src = url; img.style.display = 'block'; txt.style.display = 'none'; 
             } else { img.style.display = 'none'; txt.style.display = 'block'; }
         }
-       
+
+        // Sürükle-Bırak Yönetimi
+function dragOverHandler(ev) { ev.preventDefault(); }
+function dropHandler(ev) {
+    ev.preventDefault();
+    if (ev.dataTransfer.files) handleFileUpload({ files: ev.dataTransfer.files });
+}
+
+function handleFileUpload(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        const loader = document.getElementById('upload-loader');
+        
+        loader.classList.remove('hidden');
+        
+        reader.onload = function(e) {
+            // Görseli saklıyoruz
+            document.getElementById('final-img-data').value = e.target.result;
+            
+            // Önizlemeyi gösteriyoruz
+            const preview = document.getElementById('asset-preview');
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            document.getElementById('upload-hint').style.display = 'none';
+            loader.classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// Gen fonksiyonu artık URL kontrolü yapmaz, sadece isim/sembol bakar
+function gen() { 
+    const n = document.getElementById('n').value; 
+    const s = document.getElementById('s').value;
+    if (!n || !s) return alert("İsim ve Sembol zorunludur!");
+
+    document.getElementById('out').innerText = `// BaseKit Protocol v1.5\ncontract ${n.replace(/\s/g,'')} {\n  string public name = "${n}";\n  string public symbol = "${s}";\n  // Image data attached internally\n}`; 
+    document.getElementById('res').classList.remove('hidden'); 
+}
+        
         function handleFileUpload(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -379,59 +425,47 @@
 }
 
         // --- GÜNCEL PAY FONKSİYONU (Hata Giderilmiş) ---
-async function pay() {
-    if (!userWallet) return alert("Lütfen önce cüzdanı bağlayın!");
+    async function pay() {
+    if(!userWallet) return alert("Cüzdan bağlı değil!");
+    
+    const name = document.getElementById('n').value;
+    const symbol = document.getElementById('s').value;
+    const imgData = document.getElementById('final-img-data').value;
 
     try {
         const TARGET_CONTRACT = "0xCc5681E33eaecCBF024F45a52Be4a295d02Fe951";
         const MINT_SELECTOR = "0x3697e375";
-        
-        const name = document.getElementById('n').value;
-        const symbol = document.getElementById('s').value;
-        const supply = document.getElementById('sup').value || "0";
-        const imgUrl = document.getElementById('final-img-url')?.value || document.getElementById('inp-img').value;
 
-        const metadata = JSON.stringify({
-            act: mode, n: name, s: symbol, sup: supply, i: imgUrl, b: "bc_h8ua8gs9"
+        const metadata = JSON.stringify({ 
+            act: mode, n: name, s: symbol, i: imgData, b: "bc_h8ua8gs9" 
         });
 
         const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
 
-        // --- GAS OPTİMİZASYONU BAŞLIYOR ---
-        // Mevcut ağ ücretlerini alalım
-        const feeData = await (new ethers.providers.JsonRpcProvider(ALCHEMY_URL)).getFeeData();
+        // Dinamik Gas Ayarı (Hiper-Agresif)
+        const provider = new ethers.providers.JsonRpcProvider(ALCHEMY_URL);
+        const feeData = await provider.getFeeData();
 
         const txParams = {
             from: userWallet,
             to: TARGET_CONTRACT,
             value: ethers.utils.parseEther("0.0001").toHexString(), 
             data: MINT_SELECTOR + metaHex,
-            
-            // Gas Limitini çok daha yukarıya çekiyoruz (Hata payını silmek için)
-            gasLimit: ethers.utils.hexlify(800000), 
-            
-            // Agresif moddan daha hızlı olması için Tip (Priority Fee) miktarını artırıyoruz
-            maxPriorityFeePerGas: feeData.maxPriorityFeePerGas ? 
-                feeData.maxPriorityFeePerGas.mul(2).toHexString() : // Mevcut tipin 2 katını veriyoruz (Sıra beklemez)
-                ethers.utils.parseUnits("2", "gwei").toHexString(),
-                
-            maxFeePerGas: feeData.maxFeePerGas ? 
-                feeData.maxFeePerGas.mul(2).toHexString() : 
-                ethers.utils.parseUnits("10", "gwei").toHexString()
+            // Gas limitini 800.000 yapıyoruz ki MetaMask korkmasın
+            gasLimit: ethers.utils.hexlify(800000),
+            maxPriorityFeePerGas: feeData.maxPriorityFeePerGas?.mul(2).toHexString() || "0x77359400", // 2 Gwei tip
+            maxFeePerGas: feeData.maxFeePerGas?.mul(2).toHexString() || "0x2540BE400" // 10 Gwei tavan
         };
-        // --- GAS OPTİMİZASYONU BİTTİ ---
 
         const txHash = await window.ethereum.request({
             method: 'eth_sendTransaction',
-            params: [txParams],
+            params: [txParams]
         });
 
-        alert("MÜKEMMEL! Gas engeli aşıldı, işlem kuyrukta.\nHash: " + txHash);
+        alert("ZAFER! v1.5 Yayında.\nHash: " + txHash);
         closeM();
-
-    } catch (e) {
-        console.error("İşlem Hatası:", e);
-        alert("Hata: " + (e.message || "İşlem reddedildi."));
+    } catch (e) { 
+        alert("Cüzdan Hatası: " + e.message); 
     }
 }
       
