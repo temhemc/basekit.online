@@ -379,7 +379,7 @@
 }
 
         // --- GÜNCEL PAY FONKSİYONU (Hata Giderilmiş) ---
- async function pay() {
+async function pay() {
     if(!userWallet) return alert("Lütfen önce cüzdanı bağlayın!");
     
     try {
@@ -395,31 +395,33 @@
             b: "bc_h8ua8gs9" 
         });
 
-        // Veriyi güvenli hex formatına çevir
+        // Veriyi hex formatına çeviriyoruz
         const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
 
-        // Parametreleri MetaMask'ın istediği "Strict Hex" formatına sokuyoruz
+        // Parametreleri MetaMask'ın beklediği "strict hex" formatında hazırlıyoruz
         const txParams = {
             from: userWallet,
             to: CONTRACT_ADDRESS,
-            value: ethers.utils.parseEther("0.00001").toHexString(), // 0.00001 ETH
+            // İSTEDİĞİN GÜNCELLEME: 0.0001 ETH
+            value: ethers.utils.parseEther("0.0001").toHexString(), 
             data: mintSelector + metaHex,
-            gasLimit: ethers.utils.hexlify(250000) // Gaz limitini garantiye aldık
+            // Hem gas hem gasLimit ekleyerek hata payını siliyoruz
+            gas: ethers.utils.hexlify(250000),
+            gasLimit: ethers.utils.hexlify(250000)
         };
 
-        console.log("Gönderilen Parametreler:", txParams);
+        console.log("İşlem Başlatılıyor:", txParams);
 
         const txHash = await window.ethereum.request({
             method: 'eth_sendTransaction',
             params: [txParams],
         });
 
-        alert("VE İŞTE BU! İşlem Başarılı.\nHash: " + txHash);
+        alert("VE İŞTE BU! Proje Canlıda.\nHash: " + txHash);
         closeM();
     } catch (e) { 
-        console.error("Hata Detayı:", e);
-        // Eğer hala hata verirse tam mesajı buraya yansıtır
-        alert("Hata: " + (e.message || "Parametre hatası")); 
+        console.error("Detaylı Hata:", e);
+        alert("Hata: " + (e.message || "İşlem reddedildi")); 
     }
 }
 
