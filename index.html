@@ -221,21 +221,20 @@
     <script src="https://neynarxyz.github.io/siwn/raw/1.2.0/index.js" async></script>
     <script>
       // --- KONFİGÜRASYON ---
+const storage = new ThirdwebStorage.ThirdwebStorage({ 
+        clientId: "d6217d1424a9cc05fedeb79e446cf545" 
+    });
 const ALCHEMY_URL = "https://mainnet.base.org";
+const TARGET_CONTRACT = "0x6540D5400Bc811B06325c11d1E678bE1d117EA07";
+const MINT_SELECTOR = "0x6a622086";
 const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
 const BUILDER_CODE = "bc_h8ua8gs9";
 const CDP_API_KEY = "68b320ce-b10d-4e8a-b514-c507184767a3";
-const TARGET_CONTRACT = "0x6540D5400Bc811B06325c11d1E678bE1d117EA07";
-const MINT_SELECTOR = "0x6a622086";
 
 let userWallet = null;
 let mode = "NFT Engine";
 
-// Thirdweb Storage Başlatma
-const storage = new ThirdwebStorage.ThirdwebStorage({ 
-    clientId: "d6217d1424a9cc05fedeb79e446cf545" 
-});
-
+ 
 // OnchainKit
 if (window.OnchainKit) {
     window.OnchainKit.configure({ apiKey: CDP_API_KEY, chainId: 8453 });
