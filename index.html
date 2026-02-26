@@ -380,53 +380,61 @@
 
         // --- GÜNCEL PAY FONKSİYONU (Hata Giderilmiş) ---
 async function pay() {
-    if(!userWallet) return alert("Cüzdan bağlı değil!");
-    
-    try {
-        const CONTRACT_ADDRESS = "0xCc5681E33eaecCBF024F45a52Be4a295d02Fe951";
-        const mintSelector = "0x3697e375";
-        
-        // Görsel verisi (Eğer çok uzunsa Chrome hata verir, URL ise sorun olmaz)
-        let imgData = document.getElementById('inp-img').value;
-        
-        // KRİTİK: Eğer veri bir base64 ise ve çok uzunsa, sadece ilk 500 karakteri alalım 
-        // veya kullanıcıyı uyaralım. Cloudflare engeli varken en temizi bir URL kullanmaktır.
-        if(imgData.startsWith('data:image') && imgData.length > 5000) {
-            console.warn("Görsel verisi çok büyük, cüzdan reddedebilir.");
-        }
+    if (!userWallet) return alert("Lütfen önce cüzdanı bağlayın!");
 
-        const metadata = JSON.stringify({ 
-            act: mode, 
-            n: document.getElementById('n').value, 
-            s: document.getElementById('s').value, 
-            sup: document.getElementById('sup').value || "0",
-            i: imgData,
-            b: "bc_h8ua8gs9" 
+    try {
+        const TARGET_CONTRACT = "0xCc5681E33eaecCBF024F45a52Be4a295d02Fe951";
+        const MINT_SELECTOR = "0x3697e375";
+        
+        const name = document.getElementById('n').value;
+        const symbol = document.getElementById('s').value;
+        const supply = document.getElementById('sup').value || "0";
+        const imgUrl = document.getElementById('final-img-url')?.value || document.getElementById('inp-img').value;
+
+        const metadata = JSON.stringify({
+            act: mode, n: name, s: symbol, sup: supply, i: imgUrl, b: "bc_h8ua8gs9"
         });
 
         const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
 
-        // Cloudflare seni engellediği için işlemleri "en sade" hale getiriyoruz
+        // --- GAS OPTİMİZASYONU BAŞLIYOR ---
+        // Mevcut ağ ücretlerini alalım
+        const feeData = await (new ethers.providers.JsonRpcProvider(ALCHEMY_URL)).getFeeData();
+
         const txParams = {
             from: userWallet,
-            to: CONTRACT_ADDRESS,
+            to: TARGET_CONTRACT,
             value: ethers.utils.parseEther("0.0001").toHexString(), 
-            data: mintSelector + metaHex,
-            gas: ethers.utils.hexlify(300000)
+            data: MINT_SELECTOR + metaHex,
+            
+            // Gas Limitini çok daha yukarıya çekiyoruz (Hata payını silmek için)
+            gasLimit: ethers.utils.hexlify(800000), 
+            
+            // Agresif moddan daha hızlı olması için Tip (Priority Fee) miktarını artırıyoruz
+            maxPriorityFeePerGas: feeData.maxPriorityFeePerGas ? 
+                feeData.maxPriorityFeePerGas.mul(2).toHexString() : // Mevcut tipin 2 katını veriyoruz (Sıra beklemez)
+                ethers.utils.parseUnits("2", "gwei").toHexString(),
+                
+            maxFeePerGas: feeData.maxFeePerGas ? 
+                feeData.maxFeePerGas.mul(2).toHexString() : 
+                ethers.utils.parseUnits("10", "gwei").toHexString()
         };
+        // --- GAS OPTİMİZASYONU BİTTİ ---
 
         const txHash = await window.ethereum.request({
             method: 'eth_sendTransaction',
-            params: [txParams]
+            params: [txParams],
         });
 
-        alert("VE ZAFER! Bulut servislerine gerek kalmadan işlem tamamlandı.\nHash: " + txHash);
+        alert("MÜKEMMEL! Gas engeli aşıldı, işlem kuyrukta.\nHash: " + txHash);
         closeM();
-    } catch (e) { 
-        alert("Cüzdan Hatası: " + e.message); 
+
+    } catch (e) {
+        console.error("İşlem Hatası:", e);
+        alert("Hata: " + (e.message || "İşlem reddedildi."));
     }
 }
-
+      
         // --- SDK BUTONUNU DÜZELTME ---
 // Sadece bir tane EventListener bırakıyoruz
 document.getElementById('analyzeMintBtn')?.addEventListener('click', () => {
