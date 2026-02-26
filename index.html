@@ -380,52 +380,54 @@
 
         // --- GÜNCEL PAY FONKSİYONU (Hata Giderilmiş) ---
 async function pay() {
-    if(!userWallet) return alert("Lütfen önce cüzdanı bağlayın!");
+    if(!userWallet) return alert("Cüzdan bağlı değil!");
     
     try {
-        const CONTRACT_ADDRESS = "0xCc5681E33eaecCBF024F45a52Be4a295d02Fe951"; 
-        const mintSelector = "0x3697e375"; 
+        const CONTRACT_ADDRESS = "0xCc5681E33eaecCBF024F45a52Be4a295d02Fe951";
+        const mintSelector = "0x3697e375";
         
+        // Görsel verisi (Eğer çok uzunsa Chrome hata verir, URL ise sorun olmaz)
+        let imgData = document.getElementById('inp-img').value;
+        
+        // KRİTİK: Eğer veri bir base64 ise ve çok uzunsa, sadece ilk 500 karakteri alalım 
+        // veya kullanıcıyı uyaralım. Cloudflare engeli varken en temizi bir URL kullanmaktır.
+        if(imgData.startsWith('data:image') && imgData.length > 5000) {
+            console.warn("Görsel verisi çok büyük, cüzdan reddedebilir.");
+        }
+
         const metadata = JSON.stringify({ 
             act: mode, 
             n: document.getElementById('n').value, 
             s: document.getElementById('s').value, 
             sup: document.getElementById('sup').value || "0",
-            i: document.getElementById('inp-img').value,
+            i: imgData,
             b: "bc_h8ua8gs9" 
         });
 
-        // Veriyi hex formatına çeviriyoruz
         const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
 
-        // Parametreleri MetaMask'ın beklediği "strict hex" formatında hazırlıyoruz
+        // Cloudflare seni engellediği için işlemleri "en sade" hale getiriyoruz
         const txParams = {
             from: userWallet,
             to: CONTRACT_ADDRESS,
-            // İSTEDİĞİN GÜNCELLEME: 0.0001 ETH
             value: ethers.utils.parseEther("0.0001").toHexString(), 
             data: mintSelector + metaHex,
-            // Hem gas hem gasLimit ekleyerek hata payını siliyoruz
-            gas: ethers.utils.hexlify(250000),
-            gasLimit: ethers.utils.hexlify(250000)
+            gas: ethers.utils.hexlify(300000)
         };
-
-        console.log("İşlem Başlatılıyor:", txParams);
 
         const txHash = await window.ethereum.request({
             method: 'eth_sendTransaction',
-            params: [txParams],
+            params: [txParams]
         });
 
-        alert("VE İŞTE BU! Proje Canlıda.\nHash: " + txHash);
+        alert("VE ZAFER! Bulut servislerine gerek kalmadan işlem tamamlandı.\nHash: " + txHash);
         closeM();
     } catch (e) { 
-        console.error("Detaylı Hata:", e);
-        alert("Hata: " + (e.message || "İşlem reddedildi")); 
+        alert("Cüzdan Hatası: " + e.message); 
     }
 }
 
-// --- SDK BUTONUNU DÜZELTME ---
+        // --- SDK BUTONUNU DÜZELTME ---
 // Sadece bir tane EventListener bırakıyoruz
 document.getElementById('analyzeMintBtn')?.addEventListener('click', () => {
     openM('NFT Engine'); 
@@ -448,6 +450,7 @@ window.addEventListener('load', async () => {
         } catch (e) { console.error('SDK Başlatma Hatası:', e); }
     }
 });
+ 
     </script>
 </body>
 </html>
