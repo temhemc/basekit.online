@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://explorer-api.walletconnect.com https://*.base.org https://*.wrpcd.net; img-src 'self' data: https:;">
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://explorer-api.walletconnect.com https://*.base.org https://*.wrpcd.net https://*.thirdweb.com; img-src 'self' data: https:;">
     <script src="https://cdn.jsdelivr.net/npm/@farcaster/miniapp-sdk@latest/dist/index.min.js"></script>
+    <script src="https://unpkg.com/@thirdweb-dev/storage@latest/dist/thirdweb-dev-storage.browser.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@coinbase/onchainkit@latest/dist/index.min.js"></script>
     <title>BaseKit.online | Farcaster & Base Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -178,6 +179,7 @@
             <div class="grid md:grid-cols-2 gap-4">
                 <input id="n" type="text" placeholder="Project Name *">
                 <input id="s" type="text" placeholder="Symbol *">
+                <input type="hidden" id="final-img-data">
                 <div id="supply-wrapper" class="w-full">
                 <input id="sup" type="number" placeholder="Total Supply (For Tokens)">
                 </div>
@@ -218,208 +220,197 @@
 
     <script src="https://neynarxyz.github.io/siwn/raw/1.2.0/index.js" async></script>
     <script>
-       const ALCHEMY_URL = "https://mainnet.base.org";
-       const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
-       const BUILDER_CODE = "bc_h8ua8gs9";
-       const CDP_API_KEY = "68b320ce-b10d-4e8a-b514-c507184767a3"; // Senin anahtarın
+      // --- KONFİGÜRASYON ---
+const ALCHEMY_URL = "https://mainnet.base.org";
+const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
+const BUILDER_CODE = "bc_h8ua8gs9";
+const CDP_API_KEY = "68b320ce-b10d-4e8a-b514-c507184767a3";
+const TARGET_CONTRACT = "0x6540D5400Bc811B06325c11d1E678bE1d117EA07";
+const MINT_SELECTOR = "0x6a622086";
 
-    // OnchainKit'i aktif et
-    if (window.OnchainKit) {
-    window.OnchainKit.configure({ 
-        apiKey: CDP_API_KEY, 
-        chainId: 8453 // Base Mainnet
-    });
+let userWallet = null;
+let mode = "NFT Engine";
+
+// Thirdweb Storage Başlatma
+const storage = new ThirdwebStorage.ThirdwebStorage({ 
+    clientId: "d6217d1424a9cc05fedeb79e446cf545" 
+});
+
+// OnchainKit
+if (window.OnchainKit) {
+    window.OnchainKit.configure({ apiKey: CDP_API_KEY, chainId: 8453 });
 }
-        
-        const dict = {
-            en: { welcome: "Welcome to BaseKit", sub: "\"Converting Information to Onchain Value\"", factory: "Builder Factory", token: "🚀 Deploy New Token (ERC-20)", nft: "🖼️ Launch NFT Collection (ERC-721)" },
-            tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: "\"Bilgiyi Onchain Değere Dönüştürüyoruz\"", factory: "Geliştirici Fabrikası", token: "🚀 Yeni Token Oluştur (ERC-20)", nft: "🖼️ NFT Koleksiyonu Başlat (ERC-721)" },
-            zh: { welcome: "欢迎体验 BaseKit", sub: "\"将信息转化为链上价值\"", factory: "构建者工厂", token: "🚀 部署新代币 (ERC-20)", nft: "🖼️ 启动 NFT 系列 (ERC-721)" },
-            ko: { welcome: "BaseKit에 오신 것을 환영합니다", sub: "\"정보를 온체인 가치로 전환\"", factory: "빌더 팩토리", token: "🚀 새 토큰 배포 (ERC-20)", nft: "🖼️ NFT 컬렉션 출시 (ERC-721)" },
-            de: { welcome: "Willkommen bei BaseKit", sub: "\"Information in Onchain-Wert umwandeln\"", factory: "Builder Factory", token: "🚀 Neuen Token deployen (ERC-20)", nft: "🖼️ NFT-Kollektion starten (ERC-721)" },
-            fr: { welcome: "Bienvenue sur BaseKit", sub: "\"Convertir l'information en valeur onchain\"", factory: "Usine de Constructeurs", token: "🚀 Déployer un nouveau token (ERC-20)", nft: "🖼️ Lancer une collection NFT (ERC-721)" }
-        };
 
-        // --- WALLET LOGIC ---
-        async function handleWallet() {
-            if (window.ethereum) {
-                try {
-                    const acc = await ethereum.request({ method: 'eth_requestAccounts' });
-                    userWallet = acc[0];
-                    updateUI(true);
-                } catch (e) { alert("Connection rejected."); }
-            } else { alert("Please install MetaMask!"); }
-        }
+// --- DİL SÖZLÜĞÜ (KORUNDU) ---
+const dict = {
+    en: { welcome: "Welcome to BaseKit", sub: "\"Converting Information to Onchain Value\"", factory: "Builder Factory", token: "🚀 Deploy New Token (ERC-20)", nft: "🖼️ Launch NFT Collection (ERC-721)" },
+    tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: "\"Bilgiyi Onchain Değere Dönüştürüyoruz\"", factory: "Geliştirici Fabrikası", token: "🚀 Yeni Token Oluştur (ERC-20)", nft: "🖼️ NFT Koleksiyonu Başlat (ERC-721)" },
+    zh: { welcome: "欢迎体验 BaseKit", sub: "\"将信息转化为链上价值\"", factory: "构建者工厂", token: "🚀 部署新代币 (ERC-20)", nft: "🖼️ 启动 NFT 系列 (ERC-721)" },
+    ko: { welcome: "BaseKit에 오신 것을 환영합니다", sub: "\"정보를 온체인 가치로 전환\"", factory: "빌더 팩토리", token: "🚀 새 토큰 배포 (ERC-20)", nft: "🖼️ NFT 컬렉션 출시 (ERC-721)" },
+    de: { welcome: "Willkommen bei BaseKit", sub: "\"Information in Onchain-Wert umwandeln\"", factory: "Builder Factory", token: "🚀 Neuen Token deployen (ERC-20)", nft: "🖼️ NFT-Kollektion starten (ERC-721)" },
+    fr: { welcome: "Bienvenue sur BaseKit", sub: "\"Convertir l'information en valeur onchain\"", factory: "Usine de Constructeurs", token: "🚀 Déployer un nouveau token (ERC-20)", nft: "🖼️ Lancer une collection NFT (ERC-721)" }
+};
 
-        function disconnect() {
-            userWallet = null;
-            updateUI(false);
-        }
-
-        function updateUI(connected) {
-            const btn = document.getElementById('wallet-btn');
-            const logout = document.getElementById('disconnect-btn');
-            const bTag = document.getElementById('builder-tag');
-            if (connected) {
-                btn.innerHTML = `<i class="fas fa-check-circle text-green-400"></i> ${userWallet.slice(0,6)}...${userWallet.slice(-4)}`;
-                logout.classList.remove('hidden');
-                bTag.classList.remove('hidden');
-            } else {
-                btn.innerHTML = `<i class="fas fa-wallet"></i> Connect Wallet`;
-                logout.classList.add('hidden');
-                bTag.classList.add('hidden');
-            }
-        }
-
-        // --- MONITOR LOGIC ---
-      async function updateLiveStats() {
-    try {
-        // Gas çekme
-        const rGas = await fetch(ALCHEMY_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({"jsonrpc":"2.0","id":1,"method":"eth_gasPrice","params":[]})
-        });
-        const dGas = await rGas.json();
-        
-        // Block çekme
-        const rBlock = await fetch(ALCHEMY_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({"jsonrpc":"2.0","id":2,"method":"eth_blockNumber","params":[]})
-        });
-        const dBlock = await rBlock.json();
-
-        if(dGas.result) document.getElementById('live-gas').innerText = (parseInt(dGas.result, 16) / 1e9).toFixed(4) + " Gwei";
-        if(dBlock.result) document.getElementById('live-block').innerText = "#" + parseInt(dBlock.result, 16);
-    } catch (e) { console.error("Alchemy Stats Error:", e); }
+function changeLang(lang, btn) {
+    const t = dict[lang]; if(!t) return;
+    document.getElementById('welcome-title').innerText = t.welcome;
+    document.getElementById('welcome-sub').innerText = t.sub;
+    document.getElementById('factory-title').innerText = t.factory;
+    document.getElementById('btn-token').innerText = t.token;
+    document.getElementById('btn-nft').innerText = t.nft;
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('lang-active'));
+    btn.classList.add('lang-active');
 }
-      
-        async function updateTicker() {
-            try {
-                const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum,aerodrome-finance,degen-base,brett&vs_currencies=usd&include_24hr_change=true");
-                const data = await res.json();
-                const coins = [{id:'ethereum',sym:'ETH'}, {id:'aerodrome-finance',sym:'AERO'}, {id:'degen-base',sym:'DEGEN'}, {id:'brett',sym:'BRETT'}];
-                let html = "";
-                coins.forEach(c => {
-                    const change = data[c.id].usd_24h_change.toFixed(1);
-                    const color = change >= 0 ? "text-green-400" : "text-red-400";
-                    html += `<span class="whitespace-nowrap">${c.sym}: <span class="text-white">$${data[c.id].usd.toFixed(2)}</span> <span class="${color}">(${change}%)</span></span>`;
-                });
-                document.getElementById('market-ticker').innerHTML = html;
-            } catch (e) { }
-        }
 
-        function onSignInSuccess(data) {
-            const user = data.user;
-            document.getElementById('user-info').classList.remove('hidden');
-            document.getElementById('feed-placeholder').style.display = 'none';
-            document.querySelector('.neynar_signin').style.display = 'none';
-            document.getElementById('user-info').innerHTML = `<img src="${user.pfp_url}" class="w-12 h-12 rounded-full border-2 border-purple-500 shadow-lg"><div><p class="text-white font-bold text-base">@${user.username}</p><p class="text-purple-400 text-[10px] font-mono italic">FID: ${user.fid} • Connected</p></div>`;
-        }
+// --- CÜZDAN MANTIĞI ---
+async function handleWallet() {
+    if (window.ethereum) {
+        try {
+            const acc = await ethereum.request({ method: 'eth_requestAccounts' });
+            userWallet = acc[0];
+            updateUI(true);
+        } catch (e) { alert("Connection rejected."); }
+    } else { alert("Please install MetaMask!"); }
+}
 
-        function changeLang(lang, btn) {
-            const t = dict[lang]; if(!t) return;
-            document.getElementById('welcome-title').innerText = t.welcome;
-            document.getElementById('welcome-sub').innerText = t.sub;
-            document.getElementById('factory-title').innerText = t.factory;
-            document.getElementById('btn-token').innerText = t.token;
-            document.getElementById('btn-nft').innerText = t.nft;
-            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('lang-active'));
-            btn.classList.add('lang-active');
-        }
+function disconnect() { userWallet = null; updateUI(false); }
 
-        // --- FACTORY ENHANCEMENTS ---
-        function openM(t) { 
-            mode = t; 
-            document.getElementById('m-title').innerText = t; 
-            document.getElementById('supply-wrapper').style.display = t === 'Token Lab' ? 'block' : 'none';
-            document.getElementById('m').classList.add('active'); 
-        }
+function updateUI(connected) {
+    const btn = document.getElementById('wallet-btn');
+    const logout = document.getElementById('disconnect-btn');
+    const bTag = document.getElementById('builder-tag');
+    if (connected) {
+        btn.innerHTML = `<i class="fas fa-check-circle text-green-400"></i> ${userWallet.slice(0,6)}...${userWallet.slice(-4)}`;
+        logout.classList.remove('hidden'); bTag.classList.remove('hidden');
+    } else {
+        btn.innerHTML = `<i class="fas fa-wallet"></i> Connect Wallet`;
+        logout.classList.add('hidden'); bTag.classList.add('hidden');
+    }
+}
 
-        function closeM() { document.getElementById('m').classList.remove('active'); }
-
-       function updatePreview(url) {
-            const img = document.getElementById('asset-preview');
-            const txt = document.getElementById('preview-text');
-            if(url && (url.startsWith('http') || url.startsWith('data:image'))) { 
-                img.src = url; img.style.display = 'block'; txt.style.display = 'none'; 
-            } else { img.style.display = 'none'; txt.style.display = 'block'; }
-        }
-       
-        function handleFileUpload(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const base64Data = e.target.result;
-                    document.getElementById('inp-img').value = base64Data;
-                    updatePreview(base64Data);
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
+// --- THIRDWEB GÖRSEL YÜKLEME ---
+async function handleFileUpload(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const preview = document.getElementById('asset-preview');
+        const loader = document.getElementById('upload-loader');
+        const hint = document.getElementById('upload-hint');
         
-   function gen() { 
+        if(loader) loader.classList.remove('hidden');
+        try {
+            const uri = await storage.upload(file);
+            document.getElementById('final-img-data').value = uri; // IPFS Linkini kaydeder
+            if(preview) {
+                preview.src = uri.replace("ipfs://", "https://ipfs.io/ipfs/");
+                preview.style.display = 'block';
+            }
+            if(hint) hint.style.display = 'none';
+        } catch (e) { alert("Upload Error: " + e.message); }
+        finally { if(loader) loader.classList.add('hidden'); }
+    }
+}
+
+// --- MODAL & GEN ---
+function openM(t) { 
+    mode = t; 
+    document.getElementById('m-title').innerText = t; 
+    document.getElementById('supply-wrapper').style.display = t === 'Token Lab' ? 'block' : 'none';
+    document.getElementById('m').classList.add('active'); 
+}
+function closeM() { document.getElementById('m').classList.remove('active'); }
+
+function gen() { 
     const n = document.getElementById('n').value; 
     const s = document.getElementById('s').value;
-    const img = document.getElementById('inp-img').value;
-
-    if (!n || !s) return alert("İsim ve Sembol alanları zorunludur!");
-    
-    // BURAYI GÜNCELLE: Hem http hem de data:image (yüklenen dosya) kabul edilsin
-    if (mode === 'NFT Engine' && (!img || (!img.startsWith('http') && !img.startsWith('data:image')))) {
-        return alert("NFT oluşturmak için bir görsel seçmeli veya geçerli bir URL girmelisiniz!");
-    }
-
-    const sup = document.getElementById('sup').value || "0";
-    document.getElementById('out').innerText = `// BaseKit Protocol v2\ncontract ${n.replace(/\s/g,'')} {\n  string public name = "${n}";\n  string public symbol = "${s}";\n  uint256 public supply = ${sup};\n  string public image = "${img}";\n  // bc_h8ua8gs9 linked\n}`; 
+    if (!n || !s) return alert("Name and Symbol are required!");
+    document.getElementById('out').innerText = `// BaseKit Protocol v1.6\ncontract ${n.replace(/\s/g,'')} {\n  string public name = "${n}";\n  string public symbol = "${s}";\n  string public mode = "${mode}";\n}`; 
     document.getElementById('res').classList.remove('hidden'); 
 }
 
-        // --- GÜNCEL PAY FONKSİYONU (Hata Giderilmiş) ---
-   async function pay() {
-        if(!userWallet) return alert("Lütfen cüzdanı bağlayın!");
-        
-        try {
-            const functionSelector = "0x6a622086"; 
-            const metadata = JSON.stringify({ 
-                act: mode, 
-                n: document.getElementById('n').value, 
-                s: document.getElementById('s').value, 
-                i: document.getElementById('inp-img').value,
-                b: BUILDER_CODE 
-            });
-            const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
+// --- ÖDEME VE MINT (GERÇEK İŞLEM) ---
+async function pay() {
+    if(!userWallet) return alert("Please connect wallet first!");
+    const imgData = document.getElementById('final-img-data').value;
+    if(mode === 'NFT Engine' && !imgData) return alert("Please upload an image first!");
 
-            const txHash = await window.ethereum.request({
-                method: 'eth_sendTransaction',
-                params: [{
-                    from: userWallet,
-                    to: "0x6540D5400Bc811B06325c11d1E678bE1d117EA07",
-                    value: '0x5AF3107A4000', 
-                    data: functionSelector + metaHex 
-                }]
-            });
-            alert("İşlem Başarılı! Hash: " + txHash);
-        } catch (e) { console.error(e); alert("Hata: " + e.message); }
-    }
+    try {
+        const metadata = JSON.stringify({ 
+            act: mode, 
+            n: document.getElementById('n').value, 
+            s: document.getElementById('s').value, 
+            i: imgData, 
+            b: BUILDER_CODE 
+        });
+        const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
 
-// --- SDK BUTONUNU DÜZELTME ---
-// Ana sayfadaki büyük butonun form verileri olmadan hata vermesini engelleyelim
-document.getElementById('analyzeMintBtn')?.addEventListener('click', () => {
-    // Eğer kullanıcı henüz form doldurmadıysa Modal'ı aç, direkt mint yapmasın
-    // Çünkü isim/sembol olmadan "gerçek" bir mint olmaz.
-    openM('NFT Engine'); 
-    alert("Lütfen önce NFT/Token detaylarını girin.");
+        const txParams = {
+            from: userWallet,
+            to: TARGET_CONTRACT,
+            value: '0x5AF3107A4000', // 0.00001 ETH
+            data: MINT_SELECTOR + metaHex,
+            gasLimit: ethers.utils.hexlify(600000)
+        };
+
+        const txHash = await window.ethereum.request({
+            method: 'eth_sendTransaction',
+            params: [txParams]
+        });
+
+        alert("SUCCESS! Hash: " + txHash);
+        closeM();
+    } catch (e) { alert("Error: " + e.message); }
+}
+
+// --- DASHBOARD MONİTÖR ---
+async function updateLiveStats() {
+    try {
+        const rGas = await fetch(ALCHEMY_URL, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({"jsonrpc":"2.0","id":1,"method":"eth_gasPrice","params":[]})
+        });
+        const dGas = await rGas.json();
+        const rBlock = await fetch(ALCHEMY_URL, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({"jsonrpc":"2.0","id":2,"method":"eth_blockNumber","params":[]})
+        });
+        const dBlock = await rBlock.json();
+        if(dGas.result) document.getElementById('live-gas').innerText = (parseInt(dGas.result, 16) / 1e9).toFixed(4) + " Gwei";
+        if(dBlock.result) document.getElementById('live-block').innerText = "#" + parseInt(dBlock.result, 16);
+    } catch (e) { }
+}
+
+async function updateTicker() {
+    try {
+        const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum,aerodrome-finance,degen-base,brett&vs_currencies=usd&include_24hr_change=true");
+        const data = await res.json();
+        const coins = [{id:'ethereum',sym:'ETH'}, {id:'aerodrome-finance',sym:'AERO'}, {id:'degen-base',sym:'DEGEN'}, {id:'brett',sym:'BRETT'}];
+        let html = "";
+        coins.forEach(c => {
+            const change = data[c.id].usd_24h_change.toFixed(1);
+            const color = change >= 0 ? "text-green-400" : "text-red-400";
+            html += `<span class="whitespace-nowrap">${c.sym}: <span class="text-white">$${data[c.id].usd.toFixed(2)}</span> <span class="${color}">(${change}%)</span></span> `;
+        });
+        document.getElementById('market-ticker').innerHTML = html;
+    } catch (e) { }
+}
+
+function onSignInSuccess(data) {
+    const user = data.user;
+    document.getElementById('user-info').classList.remove('hidden');
+    document.getElementById('feed-placeholder').style.display = 'none';
+    document.querySelector('.neynar_signin').style.display = 'none';
+    document.getElementById('user-info').innerHTML = `<img src="${user.pfp_url}" class="w-12 h-12 rounded-full border-2 border-purple-500"><div><p class="text-white font-bold">@${user.username}</p><p class="text-purple-400 text-[10px]">FID: ${user.fid}</p></div>`;
+}
+
+// --- BAŞLATMA ---
+setInterval(updateLiveStats, 10000);
+setInterval(updateTicker, 60000);
+window.addEventListener('load', () => {
+    updateLiveStats(); updateTicker();
+    document.getElementById('analyzeMintBtn')?.addEventListener('click', () => openM('NFT Engine'));
 });
-        
-       // --- INITIALIZATION ---
-        setInterval(updateLiveStats, 10000);
-        setInterval(updateTicker, 60000);
-
-        // Farcaster Mini App & Cüzdan Mantığı (Tek ve Temiz Blok)
-        window.addEventListener('load', async () => {
-            // SDK Başlatma
+           
+        // SDK Başlatma
             if (typeof window.MiniAppSDK !== 'undefined') {
                 try {
                     const sdk = window.MiniAppSDK;
@@ -435,7 +426,7 @@ document.getElementById('analyzeMintBtn')?.addEventListener('click', () => {
                 openM('NFT Engine');
                 alert("Lütfen önce projenizin detaylarını doldurun.");
             });
-        });
+    
     </script>
 </body>
 </html>
