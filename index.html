@@ -378,31 +378,37 @@
 
         // --- GÜNCEL PAY FONKSİYONU (Hata Giderilmiş) ---
    async function pay() {
-        if(!userWallet) return alert("Lütfen cüzdanı bağlayın!");
+    if(!userWallet) return alert("Lütfen cüzdanı bağlayın!");
+    
+    try {
+        // BURAYA REMIX'TEN ALDIĞIN YENİ KONTRAT ADRESİNİ YAZ (9c12 değil, yeni kontrat!)
+        const CONTRACT_ADDRESS = "0xCc5681E33eaecCBF024F45a52Be4a295d02Fe951"; 
         
-        try {
-            const functionSelector = "0x6a622086"; 
-            const metadata = JSON.stringify({ 
-                act: mode, 
-                n: document.getElementById('n').value, 
-                s: document.getElementById('s').value, 
-                i: document.getElementById('inp-img').value,
-                b: BUILDER_CODE 
-            });
-            const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
+        // Bu selector kontratındaki 'mint' fonksiyonunu temsil eder
+        const mintSelector = "0x3697e375"; 
+        
+        const metadata = JSON.stringify({ 
+            act: mode, 
+            n: document.getElementById('n').value, 
+            s: document.getElementById('s').value, 
+            i: document.getElementById('inp-img').value,
+            b: "bc_h8ua8gs9" 
+        });
+        
+        const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
 
-            const txHash = await window.ethereum.request({
-                method: 'eth_sendTransaction',
-                params: [{
-                    from: userWallet,
-                    to: "0x6540D5400Bc811B06325c11d1E678bE1d117EA07",
-                    value: '0x5AF3107A4000', 
-                    data: functionSelector + metaHex 
-                }]
-            });
-            alert("İşlem Başarılı! Hash: " + txHash);
-        } catch (e) { console.error(e); alert("Hata: " + e.message); }
-    }
+        const txHash = await window.ethereum.request({
+            method: 'eth_sendTransaction',
+            params: [{
+                from: userWallet,
+                to: CONTRACT_ADDRESS, // Para artık kontrata gidiyor
+                value: '0x5AF3107A4000', // 0.00001 ETH
+                data: mintSelector + metaHex // Pocket Universe bunu artık sevecek!
+            }]
+        });
+        alert("Harika! v1.0 resmen yayında. Hash: " + txHash);
+    } catch (e) { alert("Hata: " + e.message); }
+}
 
 // --- SDK BUTONUNU DÜZELTME ---
 // Ana sayfadaki büyük butonun form verileri olmadan hata vermesini engelleyelim
