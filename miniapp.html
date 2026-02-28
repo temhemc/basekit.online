@@ -5,48 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BaseKit Mini App | Farcaster</title>
 
-    <meta name="farcaster-miniapp-v1" content='{
-        "version":"1",
-        "name":"BaseKit Supporter",
-        "description":"BaseKit builder hub inside Farcaster mini apps",
-        "iconUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
-        "homeUrl":"https://basekit.online/miniapp.html",
-        "splashImageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
-        "splashBackgroundColor":"#000000",
-        "primaryCategory":"utility",
-        "tags":["base","toolkit","nft","mint","supporter"],
-        "requiredChains":["eip155:8453"],
-        "requiredCapabilities":["actions.ready","actions.openUrl"]
+    <meta name="farcaster-frame-v2" content='{
+        "version": "1",
+        "name": "BaseKit Supporter",
+        "description": "BaseKit builder hub inside Farcaster",
+        "icon": "https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
+        "homeUrl": "https://basekit.online/miniapp.html",
+        "imageUrl": "https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
+        "buttonTitle": "Launch BaseKit",
+        "apiUrl": "https://basekit.online"
     }' />
 
     <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk@latest/dist/index.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-    <script src="https://unpkg.com/@thirdweb-dev/storage@latest/dist/thirdweb-dev-storage.browser.umd.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    
     <style>
-        body { margin:0; font-family: 'Space Grotesk', sans-serif; background:#000; color:#fff; }
-        iframe { width:100vw; height:100vh; border:none; }
+        body, html { margin:0; padding:0; height:100%; overflow:hidden; background:#000; }
+        iframe { width:100%; height:100%; border:none; display:block; }
+        
+        /* Loading Ekranı (İsteğe bağlı, profesyonel durur) */
+        #loader {
+            position: fixed; inset: 0; background: #000; display: flex; 
+            align-items: center; justify-content: center; z-index: 100;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Ana index.html'i mini app içine iframe olarak gömüyoruz -->
-    <iframe src="https://basekit.online"></iframe>
+    <div id="loader">
+        <h2 style="color:#0052FF; font-family:sans-serif; letter-spacing:5px; animation: pulse 1.5s infinite;">BASEKIT...</h2>
+    </div>
+
+    <iframe id="main-app" src="https://basekit.online" onload="document.getElementById('loader').style.display='none'"></iframe>
 
     <script>
-        // Farcaster Mini App Handshake
-        (function(){
-            const handshake = setInterval(() => {
-                if(window.farcaster && window.farcaster.actions) {
-                    window.farcaster.actions.ready();
-                    console.log("Farcaster Mini App Handshake: SUCCESS");
-                    clearInterval(handshake);
-                }
-            }, 50);
-            setTimeout(()=>clearInterval(handshake),5000);
-        })();
+        async function initMiniApp() {
+            // SDK v2 Erişim yolu düzeltildi
+            const sdk = window.farcaster?.sdk;
+            if (!sdk) return;
+
+            try {
+                // MAVİ EKRANI (SPLASH) KAPATAN KRİTİK SİNYAL
+                await sdk.actions.ready();
+                console.log("Farcaster Mini App Handshake: SUCCESS");
+            } catch (err) {
+                console.error("Handshake error:", err);
+            }
+        }
+
+        // SDK yüklenmesi için güvenli döngü
+        const checkSDK = setInterval(() => {
+            if (window.farcaster?.sdk) {
+                clearInterval(checkSDK);
+                initMiniApp();
+            }
+        }, 50);
+
+        setTimeout(() => clearInterval(checkSDK), 5000);
     </script>
+
+    <style>
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+    </style>
 </body>
 </html>
