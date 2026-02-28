@@ -4,14 +4,17 @@
     "payload": "eyJkb21haW4iOiJiYXNla2l0Lm9ubGluZSJ9",
     "signature": "tVZxybeEklXd5GF4INT4M287uhVEF9CYLFu73dj5+tU/AChCZ5hYURy2el0nA7rpWfzohML9wJPDaciohaMsjxw="
   },
- "frame": {
+  "miniapp": {
     "version": "1",
     "name": "BaseKit Supporter",
-    "iconUrl": "https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
+    "description": "BaseKit builder hub inside Farcaster mini apps",
     "homeUrl": "https://basekit.online",
+    "iconUrl": "https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
     "splashImageUrl": "https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
-    "splashBackgroundColor": "#0000FF",
+    "splashBackgroundColor": "#000000",
     "primaryCategory": "utility",
-    "tags": ["base", "toolkit", "nft", "mint", "supporter"]
+    "tags": ["base", "toolkit", "nft", "mint", "supporter"],
+    "requiredChains": ["eip155:8453"],
+    "requiredCapabilities": ["actions.ready", "actions.openUrl"]
   }
 }
