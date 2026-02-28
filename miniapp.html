@@ -1,72 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BaseKit Supporter MiniApp</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BaseKit Mini App | Farcaster</title>
 
-  <meta name="farcaster-miniapp" content='{
-    "name":"BaseKit Supporter",
-    "description":"BaseKit builder hub inside Farcaster mini apps",
-    "iconUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
-    "homeUrl":"https://basekit.online/miniapp.html",
-    "splashImageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
-    "splashBackgroundColor":"#0052FF",
-    "primaryCategory":"utility",
-    "tags":["base","toolkit","nft","mint","supporter"],
-    "requiredChains":["eip155:8453"],
-    "requiredCapabilities":["actions.ready","actions.openUrl"]
-  }'>
+    <meta name="farcaster-miniapp-v1" content='{
+        "version":"1",
+        "name":"BaseKit Supporter",
+        "description":"BaseKit builder hub inside Farcaster mini apps",
+        "iconUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
+        "homeUrl":"https://basekit.online/miniapp.html",
+        "splashImageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
+        "splashBackgroundColor":"#000000",
+        "primaryCategory":"utility",
+        "tags":["base","toolkit","nft","mint","supporter"],
+        "requiredChains":["eip155:8453"],
+        "requiredCapabilities":["actions.ready","actions.openUrl"]
+    }' />
 
-  <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk@latest/dist/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk@latest/dist/index.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <script src="https://unpkg.com/@thirdweb-dev/storage@latest/dist/thirdweb-dev-storage.browser.umd.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <style>
-    body { background:#00050a; color:#fff; font-family:sans-serif; display:flex; justify-content:center; align-items:center; flex-direction:column; height:100vh; margin:0; text-align:center; }
-    img { width:120px; border-radius:15px; border:2px solid #0052FF; margin-bottom: 15px; }
-    h1 { font-size:24px; margin-bottom:15px; }
-    .pulse-box { background:#050505; border:1px solid #0052FF; padding:15px; border-radius:12px; margin-bottom:20px; color:#00ff00; font-family:monospace; }
-    button { background:#0052FF; color:#fff; border:none; padding:18px 30px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:16px; width:80%; max-width:300px; }
-    #status-debug { margin-top:15px; font-size:12px; color:#888; }
-  </style>
+    <style>
+        body { margin:0; font-family: 'Space Grotesk', sans-serif; background:#000; color:#fff; }
+        iframe { width:100vw; height:100vh; border:none; }
+    </style>
 </head>
 <body>
-  <img src="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" alt="BaseKit Icon">
-  <h1>BaseKit LIVE</h1>
-  <div class="pulse-box">Base Pulse: <span id="tps-sim">84.53</span> TPS</div>
-  <button id="launch-btn">⚡ Launch Main App</button>
-  <p id="status-debug">Connecting via Farcaster SDK...</p>
 
-  <script>
-    async function initMiniApp() {
-      const sdk = window.farcaster?.sdk;
-      if (!sdk) {
-        document.getElementById('status-debug').innerText = "Farcaster SDK not loaded yet.";
-        return;
-      }
+    <!-- Ana index.html'i mini app içine iframe olarak gömüyoruz -->
+    <iframe src="https://basekit.online"></iframe>
 
-      try {
-        await sdk.actions.ready();
-        document.getElementById('status-debug').innerText = "Ready to launch BaseKit!";
-
-        setInterval(() => {
-          document.getElementById('tps-sim').innerText = (Math.random()*20+70).toFixed(2);
-        }, 3000);
-
-        document.getElementById('launch-btn').addEventListener('click', () => {
-          sdk.actions.openUrl("https://basekit.online");
-        });
-      } catch (err) {
-        console.error("Farcaster MiniApp Error:", err);
-        document.getElementById('status-debug').innerText = "Error initializing mini app.";
-      }
-    }
-
-    const checkSDK = setInterval(() => {
-      if(window.farcaster?.sdk){
-        clearInterval(checkSDK);
-        initMiniApp();
-      }
-    }, 50);
-  </script>
+    <script>
+        // Farcaster Mini App Handshake
+        (function(){
+            const handshake = setInterval(() => {
+                if(window.farcaster && window.farcaster.actions) {
+                    window.farcaster.actions.ready();
+                    console.log("Farcaster Mini App Handshake: SUCCESS");
+                    clearInterval(handshake);
+                }
+            }, 50);
+            setTimeout(()=>clearInterval(handshake),5000);
+        })();
+    </script>
 </body>
 </html>
