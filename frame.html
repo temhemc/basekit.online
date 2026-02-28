@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BaseKit Supporter</title>
-    <meta name="fc:frame" content='{"version":"next","imageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","button":{"title":"Launch BaseKit","action":{"type":"launch_frame","name":"BaseKit","url":"https://basekit.online","splashImageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","splashBackgroundColor":"#0000FF"}}}'>
-    
-    <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk/dist/bundle.min.js"></script>
+
+    <meta name="farcaster-frame-v2" content='{"name":"BaseKit Supporter","icon":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","description":"BaseKit Builder Hub","imageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","buttonTitle":"Launch BaseKit","apiUrl":"https://basekit.online"}'>
+
+    <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk@latest/dist/index.min.js"></script>
 </head>
 <body style="background:#000; color:#0052FF; font-family:sans-serif; text-align:center; margin:0; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;">
     
@@ -19,60 +20,41 @@
             <p style="color: #444; font-size: 10px; margin-top: 5px;">Connected via Farcaster SDK</p>
         </div>
 
-        <button id="mint-btn" style="background:#0052FF; color:#fff; border:none; padding:18px 30px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:16px; width: 100%;">⚡ Analyze & Mint Badge</button>
+        <button id="mint-btn" style="background:#0052FF; color:#fff; border:none; padding:18px 30px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:16px; width: 100%;">⚡ Launch Main App</button>
         <p id="status-debug" style="font-size: 12px; margin-top: 15px; color: #666;"></p>
     </div>
 
     <script>
         async function runBaseKit() {
-            const sdk = window.frameSDK;
+            // SDK Başlatma
+            const sdk = window.farcaster?.sdk;
             if (!sdk) return;
 
             try {
-                // CSP hatası almamak için ready() en başta çağrılmalı
+                // MAVİ EKRANI KALDIRAN SİNYAL (Ready)
                 await sdk.actions.ready();
                 document.getElementById('app-container').style.display = 'block';
 
-                // Rastgele TPS simülasyonu (Gerçek fetch CSP engeline takıldığı için)
                 setInterval(() => {
                     document.getElementById('tps-sim').innerText = (Math.random() * 20 + 70).toFixed(2);
                 }, 3000);
 
-                document.getElementById('mint-btn').addEventListener('click', async () => {
-                    const status = document.getElementById('status-debug');
-                    status.innerText = "Initiating Secure Transaction...";
-                    
-                    try {
-                        // SDK'nın sendTransaction yetkisini kontrol et
-                        if (sdk.actions && sdk.actions.sendTransaction) {
-                            await sdk.actions.sendTransaction({
-                                chainId: 8453,
-                                method: "eth_sendTransaction",
-                                params: {
-                                    abi: [{"name":"mint","type":"function","inputs":[{"name":"to","type":"address"}],"outputs":[],"stateMutability":"payable"}],
-                                    to: "0x6540D5400Bc811B06325c11d1E678bE1d117EA07",
-                                    data: "0x40c10f190000000000000000000000004604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12",
-                                    value: "100000000000000" // 0.0001 ETH
-                                }
-                            });
-                            status.innerText = "Transaction Sent Successfully!";
-                            status.style.color = "#00ff00";
-                        } else {
-                            status.innerText = "Error: sendTransaction not available in this frame version.";
-                        }
-                    } catch (e) {
-                        status.innerText = "Error: " + (e.message || "User rejected");
-                        status.style.color = "red";
-                    }
+                document.getElementById('mint-btn').addEventListener('click', () => {
+                    // Ana dApp'e yönlendir (index.html)
+                    sdk.actions.openUrl("https://basekit.online");
                 });
             } catch (err) {
-                console.error("Initialization Error:", err);
+                console.error("Farcaster Handshake Error:", err);
             }
         }
         
-        // Güvenli başlatma
-        if (document.readyState === "complete") { runBaseKit(); }
-        else { window.addEventListener("load", runBaseKit); }
+        // SDK'nın yüklendiğinden emin olmak için kısa bir döngü
+        const checkSDK = setInterval(() => {
+            if (window.farcaster?.sdk) {
+                clearInterval(checkSDK);
+                runBaseKit();
+            }
+        }, 50);
     </script>
 </body>
 </html>
