@@ -693,40 +693,42 @@
             }
         }
 
-      /**
-         * System Core Initialization - v43.0 "The Splash Killer"
+         /**
+         * v44.0 Dökümantasyon Odaklı Boot Sistemi
          */
-        window.addEventListener('load', () => { 
-            // 1. IPFS Storage Başlat
+        window.addEventListener('load', () => {
+            // 1. IPFS Storage
             if (typeof ThirdwebStorage !== 'undefined') {
                 storage = new ThirdwebStorage.ThirdwebStorage({ clientId: "d6217d1424a9cc05fedeb79e446cf545" });
             }
             
-            // 2. Market Pulse & Döngüler
-            updatePulse(); 
-            setInterval(updatePulse, 20000); 
+            updatePulse();
+            setInterval(updatePulse, 20000);
 
-            // 3. --- TEK VE GERÇEK HANDSHAKE ---
-            // Warpcast Splash Screen kilidini burası açar.
+            // 2. Dökümandaki "Hybrid Detection" Kontrolü
+            const urlParams = new URLSearchParams(window.location.search);
+            const isMiniApp = urlParams.get('miniApp') === 'true';
+
+            // 3. Handshake (Splash Ekranını Kapatan Kısım)
             const handshake = setInterval(() => {
-                // Farcaster v2 SDK'sına en güvenli ulaşım yolu
                 const sdk = window.farcaster?.sdk;
-                
-                if (sdk && sdk.actions && typeof sdk.actions.ready === 'function') {
-                    sdk.actions.ready(); 
-                    console.log("Farcaster Splash: TERMINATED_SUCCESS");
-                    clearInterval(handshake);
+                if (sdk && sdk.actions) {
+                    // Sadece MiniApp modundaysak veya her durumda splash'i kapat
+                    sdk.actions.ready().then(() => {
+                        console.log("Farcaster Splash: TERMINATED BY DOCS");
+                        clearInterval(handshake);
+                    }).catch(err => {
+                        console.error("Splash Termination Failed:", err);
+                    });
                 }
             }, 50);
 
-            // Güvenlik: 8 saniye sonra hala yanıt yoksa döngüyü temizle
+            // 8 saniye güvenlik zaman aşımı
             setTimeout(() => clearInterval(handshake), 8000);
-            
-            // 4. Hero Buton Bağlantısı
-            document.getElementById('analyzeMintBtn')?.addEventListener('click', () => { 
-                openM('NFT Engine'); 
-            });
-        }); 
+
+            document.getElementById('analyzeMintBtn')?.addEventListener('click', () => { openM('NFT Engine'); });
+        });
+        
         // FAZLA PARANTEZLER TEMİZLENDİ
     </script>
 </body>
