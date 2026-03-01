@@ -693,38 +693,41 @@
             }
         }
 
-       /**
-         * System Core Initialization
+      /**
+         * System Core Initialization - v43.0 "The Splash Killer"
          */
         window.addEventListener('load', () => { 
-            // Thirdweb Storage Init
+            // 1. IPFS Storage Başlat
             if (typeof ThirdwebStorage !== 'undefined') {
                 storage = new ThirdwebStorage.ThirdwebStorage({ clientId: "d6217d1424a9cc05fedeb79e446cf545" });
             }
             
-            // Market Pulse Başlat
+            // 2. Market Pulse & Döngüler
             updatePulse(); 
-            setInterval(updatePulse, 15000); 
+            setInterval(updatePulse, 20000); 
 
-            // --- TEK VE GERÇEK HANDSHAKE ---
-            // Splash ekranını kapatan kritik görev
+            // 3. --- TEK VE GERÇEK HANDSHAKE ---
+            // Warpcast Splash Screen kilidini burası açar.
             const handshake = setInterval(() => {
+                // Farcaster v2 SDK'sına en güvenli ulaşım yolu
                 const sdk = window.farcaster?.sdk;
-                if (sdk && sdk.actions) {
+                
+                if (sdk && sdk.actions && typeof sdk.actions.ready === 'function') {
                     sdk.actions.ready(); 
-                    console.log("Farcaster Splash: Terminated");
+                    console.log("Farcaster Splash: TERMINATED_SUCCESS");
                     clearInterval(handshake);
                 }
             }, 50);
 
-            // 5 saniye sonra hala yanıt yoksa döngüyü kır (Güvenlik önlemi)
-            setTimeout(() => clearInterval(handshake), 5000);
+            // Güvenlik: 8 saniye sonra hala yanıt yoksa döngüyü temizle
+            setTimeout(() => clearInterval(handshake), 8000);
             
-            // Hero Action Binding
-            document.getElementById('master-mint-btn')?.addEventListener('click', () => { 
-                openProtocolModal('NFT Engine'); 
+            // 4. Hero Buton Bağlantısı
+            document.getElementById('analyzeMintBtn')?.addEventListener('click', () => { 
+                openM('NFT Engine'); 
             });
-        }); // <-- BURADAKİ FAZLALIKLARI TEMİZLEDİM
+        }); 
+        // FAZLA PARANTEZLER TEMİZLENDİ
     </script>
 </body>
 </html>
