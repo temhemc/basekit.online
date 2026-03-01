@@ -3,409 +3,392 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline' 'unsafe-eval' https://*.warpcast.com https://*.farcaster.xyz https://api.coingecko.com https://explorer-api.walletconnect.com https://*.bridge.walletconnect.org https://*.thirdweb.com; img-src * data: blob:; frame-src *;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline' 'unsafe-eval'; img-src * data: blob:; frame-src *;">
     
-    <title>BaseKit.online | Master Infrastructure Hub</title>
+    <title>BaseKit.online | Farcaster & Base Hub</title>
 
-  <meta name="farcaster-miniapp-v1" content='{
-  "version":"1",
-  "name":"BaseKit.online",
-  "iconUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
-  "description":"Professional Base Builder Infrastructure Hub",
-  "homeUrl":"https://basekit.online",
-  "splashImageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
-  "splashBackgroundColor":"#0052FF",
-  "primaryCategory":"utility",
-  "requiredChains":["eip155:8453"],
-  "requiredCapabilities":["actions.ready","actions.openUrl"]
-}' />
-
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <script src="https://unpkg.com/@thirdweb-dev/storage@latest/dist/thirdweb-dev-storage.browser.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@farcaster/miniapp-sdk@latest/dist/index.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700;900&display=swap');
-        
-        :root { 
-            --base-blue: #0052FF; 
-            --base-bg: #00050a; 
-            --glass-white: rgba(255, 255, 255, 0.03);
-            --border-blue: rgba(0, 82, 255, 0.2);
-        }
-
-        body { 
-            background-color: var(--base-bg); 
-            color: #fff; 
-            font-family: 'Space Grotesk', sans-serif; 
-            margin: 0; 
-            overflow-x: hidden; 
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .italic-fix { 
-            padding-left: 0.8em; 
-            padding-right: 0.4em; 
-        }
-
-        .base-blue { color: var(--base-blue); }
-
-        .glass-panel { 
-            background: rgba(0, 82, 255, 0.04); 
-            border: 1px solid rgba(0, 82, 255, 0.12); 
-            backdrop-filter: blur(30px); 
-            border-radius: 2.5rem; 
-        }
-
-        .factory-card {
-            background: linear-gradient(145deg, rgba(255,255,255,0.01) 0%, rgba(0,82,255,0.05) 100%);
-            border: 1px solid rgba(255,255,255,0.07);
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .factory-card:hover { 
-            transform: translateY(-15px); 
-            border-color: var(--base-blue); 
-            box-shadow: 0 40px 80px rgba(0, 82, 255, 0.3); 
-        }
-
-        .modal-overlay { 
-            display: none; 
-            position: fixed; 
-            inset: 0; 
-            background: rgba(0,0,0,0.98); 
-            z-index: 9999; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 25px; 
-            backdrop-filter: blur(25px); 
-        }
-
-        .modal-overlay.active { display: flex; }
-
-        .modal-content {
-            background: #000814;
-            border: 1px solid rgba(0, 82, 255, 0.2);
-            border-radius: 4.5rem;
-            width: 100%;
-            max-width: 1000px;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 50px;
-            position: relative;
-        }
-
-        input, textarea { 
-            background: rgba(255,255,255,0.05); 
-            border: 1px solid rgba(255,255,255,0.1); 
-            color: #fff; 
-            padding: 20px; 
-            border-radius: 22px; 
-            width: 100%; 
-            margin-bottom: 15px; 
-            outline: none; 
-            transition: 0.4s;
-            font-size: 14px;
-        }
-
-        input:focus { 
-            border-color: var(--base-blue); 
-            background: rgba(0, 82, 255, 0.08); 
-        }
-
-        .lang-selector-btn { 
-            cursor: pointer; 
-            padding: 12px 20px; 
-            border-radius: 16px; 
-            font-size: 11px; 
-            border: 1px solid rgba(255,255,255,0.08); 
-            transition: 0.3s; 
-            background: transparent;
-            color: #777;
-            font-weight: 700;
-        }
-
-        .lang-active { 
-            background: var(--base-blue) !important; 
-            color: #fff !important; 
-            border-color: var(--base-blue) !important; 
-        }
-
-        .wallet-item { 
-            background: rgba(255,255,255,0.04); 
-            border: 1px solid rgba(255,255,255,0.08); 
-            transition: 0.4s; 
-            cursor: pointer; 
-            border-radius: 2.5rem; 
-            padding: 2rem; 
-        }
-
-        .wallet-item:hover { 
-            background: rgba(0, 82, 255, 0.15); 
-            border-color: var(--base-blue); 
-        }
-
-        .preview-area { 
-            width: 100%; 
-            height: 350px; 
-            border: 3px dashed rgba(0, 82, 255, 0.2); 
-            border-radius: 4rem; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            overflow: hidden; 
-            background: rgba(0, 82, 255, 0.01); 
-            position: relative; 
-        }
-
-        #pulse-indicator { animation: pulse-anim 2.5s infinite; }
-        @keyframes pulse-anim { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(1.1); } }
+        @keyframes pulse-green { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        #sync-indicator { animation: pulse-green 2s infinite; }
+        body { background-color: #00050a; color: #fff; font-family: sans-serif; margin: 0; overflow-x: hidden; }
+        .base-blue { color: #0052FF; }
+        .glass { background: rgba(0, 82, 255, 0.05); border: 1px solid rgba(0, 82, 255, 0.15); border-radius: 2rem; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal.active { display: flex; }
+        input, textarea { background: #000; border: 1px solid #1a2a4a; color: white; padding: 12px; border-radius: 12px; width: 100%; margin-bottom: 8px; outline: none; }
+        input:focus { border-color: #0052FF; }
+        .lang-btn { cursor: pointer; padding: 6px 12px; border-radius: 8px; font-size: 11px; border: 1px solid rgba(255,255,255,0.1); }
+        .lang-active { background: #0052FF !important; color: white !important; }
+        .farcaster-card { background: rgba(133, 93, 205, 0.1); border: 1px solid rgba(133, 93, 205, 0.3); border-radius: 1.5rem; }
+        .preview-box { width: 100%; height: 120px; border: 2px dashed #1a2a4a; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; overflow: hidden; background: #000; }
+        .wallet-option { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s; cursor: pointer; border-radius: 1.5rem; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; font-weight: bold; width: 100%; }
+        .wallet-option:hover { background: rgba(0, 82, 255, 0.2); border-color: #0052FF; transform: scale(1.02); }
     </style>
-</head>
-<body class="p-6 lg:p-12">
 
-    <div id="wallet-modal" class="modal-overlay">
-        <div class="bg-[#000814] border border-blue-600/30 p-14 rounded-[4.5rem] w-full max-w-md shadow-2xl text-center">
-            <h3 id="wallet-title-text" class="text-3xl font-black mb-12 italic-fix uppercase text-blue-500 tracking-widest">Gateway</h3>
-            <div class="space-y-5">
-                <div onclick="initConnect('MetaMask')" class="wallet-item flex items-center gap-8">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Logo.svg" class="w-12 h-12">
-                    <span class="font-bold text-xl text-white">MetaMask</span>
+    <meta property="fc:frame" content="vNext" />
+    <meta property="fc:frame:image" content="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" />
+    <meta property="fc:frame:button:1" content="Analyze & Mint" />
+    <meta property="fc:frame:button:1:target" content="https://basekit.online/api/tx-data.json" />
+    <meta property="fc:frame:button:1:action" content="tx" />
+    <meta property="fc:frame:post_url" content="https://basekit.online/" />
+</head>
+<body class="p-4">
+
+    <div id="wallet-modal" class="modal">
+        <div class="bg-[#000814] border border-blue-600 p-8 rounded-[2.5rem] w-full max-w-md shadow-2xl">
+            <h3 class="text-xl font-bold mb-6 text-center italic uppercase tracking-widest text-[#0052FF]">Bağlantı Seç</h3>
+            <div class="space-y-4">
+                <div onclick="initConnect('MetaMask')" class="wallet-option">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Logo.svg" class="w-8 h-8">
+                    <span>MetaMask</span>
                 </div>
-                <div onclick="initConnect('Coinbase Wallet')" class="wallet-item flex items-center gap-8">
-                    <img src="https://avatars.githubusercontent.com/u/18060234?s=280&v=4" class="w-12 h-12 rounded-full">
-                    <span class="font-bold text-xl text-white">Base Wallet</span>
+                <div onclick="initConnect('Coinbase Wallet')" class="wallet-option">
+                    <img src="https://avatars.githubusercontent.com/u/18060234?s=280&v=4" class="w-8 h-8 rounded-full">
+                    <span>Base (Coinbase) Wallet</span>
                 </div>
             </div>
-            <button onclick="closeWalletSelector()" id="wallet-cancel" class="mt-12 text-gray-700 uppercase font-black text-[11px] tracking-[0.5em]">Back to Infrastructure</button>
+            <button onclick="closeWalletSelector()" class="w-full text-gray-600 text-[10px] mt-6 uppercase font-bold">Vazgeç</button>
         </div>
     </div>
 
-    <nav class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-16 sticky top-0 backdrop-blur-3xl z-[999] py-6 px-10 glass-panel border-none">
-        <div class="flex items-center gap-10">
-            <h1 class="text-3xl font-black italic italic-fix tracking-tighter">BASEKIT<span class="base-blue">.ONLINE</span></h1>
-            <div id="lang-menu" class="hidden xl:flex gap-3">
-                <button onclick="changeLang('en', this)" class="lang-selector-btn lang-active">🇺🇸 EN</button>
-                <button onclick="changeLang('tr', this)" class="lang-selector-btn">🇹🇷 TR</button>
-                <button onclick="changeLang('zh', this)" class="lang-selector-btn">🇨🇳 ZH</button>
-                <button onclick="changeLang('ko', this)" class="lang-selector-btn">🇰🇷 KO</button>
-                <button onclick="changeLang('de', this)" class="lang-selector-btn">🇩🇪 DE</button>
-                <button onclick="changeLang('fr', this)" class="lang-selector-btn">🇫🇷 FR</button>
+    <nav class="max-w-7xl mx-auto flex justify-between items-center mb-8 sticky top-0 bg-[#00050a]/90 backdrop-blur-md z-50 py-3 px-4">
+        <div class="flex items-center gap-6">
+            <h1 class="text-2xl font-bold italic tracking-tighter">BASEKIT<span class="base-blue">.ONLINE</span></h1>
+            <div id="lang-menu" class="hidden md:flex gap-2 flex-wrap">
+                <button onclick="changeLang('en', this)" class="lang-btn lang-active">🇺🇸 EN</button>
+                <button onclick="changeLang('tr', this)" class="lang-btn">🇹🇷 TR</button>
+                <button onclick="changeLang('zh', this)" class="lang-btn">🇨🇳 ZH</button>
+                <button onclick="changeLang('ko', this)" class="lang-btn">🇰🇷 KO</button>
+                <button onclick="changeLang('de', this)" class="lang-btn">🇩🇪 DE</button>
+                <button onclick="changeLang('fr', this)" class="lang-btn">🇫🇷 FR</button>
             </div>
         </div>
-        <div class="flex items-center gap-6">
-            <div id="builder-tag" class="hidden md:flex px-6 py-3 bg-blue-500/5 border border-blue-500/15 rounded-full text-[11px] font-black text-blue-400 uppercase italic-fix">
-                BUILDER: <span class="text-white tracking-widest font-black italic-fix">bc_h8ua8gs9</span>
-            </div>
-            <button onclick="showWalletSelector()" id="wallet-btn" class="bg-[#0052FF] px-10 py-4 rounded-full font-black text-xs flex items-center gap-4 shadow-2xl">
-                <i class="fas fa-bolt"></i> <span id="connect-text">Connect Wallet</span>
+        <div class="flex gap-2">
+            <div id="builder-tag" class="hidden md:flex items-center px-4 bg-blue-600/10 border border-blue-600/30 rounded-full text-[10px] font-bold text-blue-400">BC: bc_h8ua8gs9</div>
+            <button onclick="showWalletSelector()" id="wallet-btn" class="bg-[#0052FF] px-6 py-2 rounded-full font-bold text-sm shadow-lg flex items-center gap-2 transition hover:bg-blue-600">
+                <i class="fas fa-wallet"></i> <span>Connect Wallet</span>
             </button>
-            <button id="disconnect-btn" onclick="disconnect()" class="hidden w-14 h-14 bg-red-500/10 text-red-500 border border-red-500/20 rounded-full flex items-center justify-center transition"><i class="fas fa-power-off"></i></button>
+            <button id="disconnect-btn" onclick="disconnect()" class="hidden bg-red-600/20 text-red-500 border border-red-600/30 px-4 py-2 rounded-full font-bold text-xs hover:bg-red-600 transition">
+                <i class="fas fa-power-off"></i>
+            </button>
         </div>
     </nav>
 
-    <header class="max-w-7xl mx-auto mb-24 text-center">
-        <div class="relative inline-block glass-panel overflow-hidden rounded-[5rem] border-white/5 shadow-2xl max-w-6xl mx-auto">
-            <img src="https://i.postimg.cc/7YcT3jhc/Gemini_Generated_Image_b6cp2gb6cp2gb6cp.png" class="w-full h-[450px] object-cover opacity-80" alt="Hero">
-            <div class="absolute bottom-14 left-1/2 -translate-x-1/2 w-full px-10">
-                <h2 id="welcome-title" class="text-4xl sm:text-6xl font-black uppercase italic italic-fix text-white tracking-widest mb-4">Welcome to <span class="base-blue">BaseKit</span></h2>
-                <p id="welcome-sub" class="text-gray-400 text-sm sm:text-base uppercase tracking-[0.6em] italic-fix">"Converting Information to Onchain Value"</p>
+    <div class="max-w-7xl mx-auto text-center mb-16 px-4">
+        <div class="relative group">
+            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+            <div class="relative bg-black rounded-[3rem] ring-1 ring-white/10 shadow-2xl overflow-hidden">
+                <img src="https://i.postimg.cc/7YcT3jhc/Gemini_Generated_Image_b6cp2gb6cp2gb6cp.png" class="w-full h-[380px] sm:h-[450px] md:h-[520px] object-cover object-center" alt="BaseKit">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent pointer-events-none"></div>
+                <div class="absolute bottom-10 left-1/2 -translate-x-1/2 w-full px-4 text-center">
+                    <div class="bg-black/65 backdrop-blur-xl border border-white/15 inline-block px-10 py-6 rounded-[2rem] shadow-2xl">
+                        <h2 id="welcome-title" class="text-2xl sm:text-4xl font-black uppercase italic tracking-widest text-white mb-2">Welcome to <span class="text-[#0052FF]">BaseKit</span></h2>
+                        <p id="welcome-sub" class="text-blue-200 text-xs sm:text-sm font-medium italic tracking-tight uppercase">"Converting Information to Onchain Value"</p>
+                    </div>
+                </div>
             </div>
         </div>
-        <button id="analyzeMintBtn" class="mt-12 bg-[#0052FF] py-6 px-16 rounded-full font-black uppercase italic italic-fix tracking-[0.3em] text-sm hover:scale-105 transition shadow-2xl">
-            <i class="fas fa-bolt mr-3"></i> <span id="analyze-text">Analyze & Mint Asset</span>
+    </div>
+
+    <div class="text-center mt-8">
+        <button id="analyzeMintBtn" class="bg-[#0052FF] hover:bg-blue-600 text-white font-black py-4 px-10 rounded-full shadow-[0_0_20px_rgba(0,82,255,0.4)] transition-all transform hover:scale-105 uppercase italic tracking-tighter">
+            <i class="fas fa-bolt mr-2"></i> Analyze & Mint
         </button>
-    </header>
+    </div>
 
-    <main class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 mb-32 px-4">
-        
-        <div class="lg:col-span-7 space-y-12">
-            <div class="glass-panel h-[600px] overflow-hidden relative shadow-2xl">
-                <div id="swap-title" class="absolute top-6 left-10 text-[12px] font-black text-blue-500 uppercase tracking-[0.4em] italic-fix z-20">Base Swap Infrastructure</div>
-                <iframe src="https://app.uniswap.org/#/swap?theme=dark&chain=base" width="100%" height="100%" style="border:none; padding-top:60px;"></iframe>
+    <main class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 mt-12 px-4">
+        <div class="lg:col-span-7 space-y-8">
+            <div class="glass h-[500px] overflow-hidden relative">
+                <div class="absolute top-0 left-0 right-0 bg-blue-600/20 backdrop-blur-md p-2 text-[10px] font-bold text-center uppercase z-10 border-b border-white/10">
+                    <i class="fas fa-exchange-alt mr-2"></i> Base Ecosystem Swap
+                </div>
+                <iframe src="https://app.uniswap.org/#/swap?theme=dark&chain=base" width="100%" height="100%" style="border: none; padding-top: 30px;"></iframe>
             </div>
-
-            <div class="glass-panel p-16 relative overflow-hidden bg-purple-600/5 border-purple-500/20 shadow-2xl">
-                <h3 id="social-hub-title" class="text-2xl font-black mb-12 uppercase text-purple-400 italic-fix flex items-center gap-6">
-                    <i class="fab fa-ethereum text-3xl"></i> Farcaster Social Hub
-                </h3>
-                <div class="neynar_signin" data-client_id="a8b7c178-8d87-4ace-840a-4bc908166c29" data-theme="dark"></div>
-                <div id="user-info" class="hidden mt-10 flex items-center gap-10 p-10 glass-panel rounded-[4rem] border-white/5"></div>
-                <p id="feed-placeholder" class="text-[12px] text-gray-500 italic mt-12 italic-fix uppercase tracking-[0.4em] leading-loose text-center">Sync Farcaster identity to bridge social metadata with assets.</p>
+            <div class="farcaster-card p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold flex items-center gap-2"><i class="fab fa-ethereum text-purple-400"></i> Farcaster Social Hub</h3>
+                    <div id="farcaster-auth">
+                        <div class="neynar_signin" data-client_id="a8b7c178-8d87-4ace-840a-4bc908166c29" data-theme="dark" data-variant="farcaster"></div>
+                    </div>
+                </div>
+                <div id="neynar-feed" class="space-y-4 text-sm text-gray-400 italic">
+                    <div id="user-info" class="hidden flex items-center gap-4 p-4 bg-purple-500/10 rounded-2xl border border-purple-500/20"></div>
+                    <p id="feed-placeholder">Connect your Farcaster account to sync with BaseKit.</p>
+                </div>
             </div>
         </div>
 
-        <div class="lg:col-span-5 space-y-12">
-            <div class="glass-panel p-14 border-l-[12px] border-blue-600 shadow-2xl bg-blue-600/5">
-                <h3 id="factory-title" class="text-3xl font-black mb-14 uppercase italic-fix text-white">Builder Factory</h3>
-                <div class="grid gap-8">
-                    <div onclick="openM('Token Lab')" class="factory-card p-12 rounded-[4.5rem]">
-                        <h4 id="btn-token" class="text-2xl font-black mb-4 italic-fix">Deploy Token</h4>
-                        <p id="token-sub" class="text-xs text-gray-500 italic-fix uppercase tracking-widest font-bold">ERC-20 Mainnet Launchpad</p>
-                    </div>
-                    <div onclick="openM('NFT Engine')" class="factory-card p-12 rounded-[4.5rem]">
-                        <h4 id="btn-nft" class="text-2xl font-black mb-4 text-purple-400 italic-fix">NFT Engine</h4>
-                        <p id="nft-sub" class="text-xs text-gray-500 italic-fix uppercase tracking-widest font-bold">ERC-721 Digital Generator</p>
-                    </div>
+        <div class="lg:col-span-5 space-y-6">
+            <div class="glass p-10 border-l-4 border-blue-600 shadow-2xl">
+                <h3 id="factory-title" class="text-xl font-bold mb-8 italic base-blue uppercase tracking-widest text-left">Builder Factory</h3>
+                <div class="space-y-4">
+                    <button onclick="openM('Token Lab')" class="w-full p-6 bg-white/5 border border-white/10 rounded-2xl hover:border-blue-500 flex justify-between items-center transition group">
+                        <span id="btn-token" class="font-bold">🚀 Deploy New Token (ERC-20)</span>
+                    </button>
+                    <button onclick="openM('NFT Engine')" class="w-full p-6 bg-white/5 border border-white/10 rounded-2xl hover:border-purple-500 flex justify-between items-center transition text-purple-400 group">
+                        <span id="btn-nft" class="font-bold">🖼️ Launch NFT Collection (ERC-721)</span>
+                    </button>
                 </div>
             </div>
 
-            <div class="glass-panel p-12 border-l-[12px] border-green-500 shadow-2xl bg-green-500/5 text-center">
-                <div class="flex justify-between items-center mb-12">
-                    <span id="pulse-title" class="text-[11px] font-black uppercase tracking-[0.6em] text-green-400">Network Pulse</span>
-                    <span id="pulse-indicator" class="text-[10px] font-bold bg-green-500/10 px-6 py-2 rounded-full text-green-500 border border-green-500/20 uppercase tracking-widest">Live</span>
+            <div class="glass p-8 border-l-4 border-green-500 shadow-2xl">
+                <h3 class="text-lg font-bold mb-6 italic text-green-400 uppercase flex justify-between items-center">
+                    <span>Base Live Pulse</span>
+                    <span id="sync-indicator" class="text-[10px] bg-green-500/20 px-2 py-1 rounded-full text-green-500 uppercase">Synced</span>
+                </h3>
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-black/40 p-4 rounded-xl border border-white/5 text-center">
+                        <p class="text-[10px] text-gray-500 uppercase">Current Gas</p>
+                        <p id="live-gas" class="text-xl font-bold text-white">... Gwei</p>
+                    </div>
+                    <div class="bg-black/40 p-4 rounded-xl border border-white/5 text-center">
+                        <p class="text-[10px] text-gray-500 uppercase">Last Block</p>
+                        <p id="live-block" class="text-xl font-bold text-white">#-------</p>
+                    </div>
                 </div>
-                <div id="market-ticker" class="bg-blue-600/5 p-10 rounded-[3rem] border border-blue-500/10 text-[12px] font-black flex flex-wrap gap-8 justify-center uppercase tracking-widest italic-fix text-blue-300 leading-relaxed shadow-inner">
-                    Syncing Market Node...
-                </div>
+                <div id="market-ticker" class="mt-4 bg-black/60 p-4 rounded-xl border border-blue-500/20 text-xs font-bold flex flex-wrap gap-4">Loading prices...</div>
             </div>
         </div>
     </main>
 
-    <div id="m" class="modal-overlay">
-        <div class="modal-content">
-            <h3 id="m-title-header" class="text-5xl font-black mb-16 base-blue italic-fix uppercase text-center tracking-[0.3em]">Protocol Hub</h3>
-            
-            <div class="grid lg:grid-cols-2 gap-16">
-                <div class="space-y-10">
-                    <div id="drop-area" class="preview-area group">
-                        <img id="asset-preview" src="" style="display:none; width:100%; height:100%; object-fit: cover;">
-                        <p id="preview-text" class="text-[13px] font-black uppercase tracking-[0.5em] italic-fix text-center px-10">Drag Media Infrastructure Here</p>
-                    </div>
-                    <button onclick="document.getElementById('file-upload').click()" id="browse-btn" class="w-full py-6 bg-blue-600/10 text-blue-400 rounded-3xl border border-blue-600/20 font-black uppercase text-xs tracking-[0.4em] italic-fix">Select Media</button>
-                    <input id="inp-img" type="text" placeholder="Or Paste Direct URL (ipfs://...)" class="text-xs" oninput="updatePreview(this.value)">
-                </div>
-
-                <div class="space-y-8">
-                    <div class="grid grid-cols-2 gap-6">
-                        <input id="n" type="text" placeholder="Name *">
-                        <input id="s" type="text" placeholder="Symbol *">
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <input id="l-web" class="text-[11px]" placeholder="Website">
-                        <input id="l-x" class="text-[11px]" placeholder="X.com">
-                        <input id="l-fc" class="text-[11px]" placeholder="Farcaster">
-                        <input id="l-tg" class="text-[11px]" placeholder="Telegram">
-                    </div>
-                    <textarea id="desc" placeholder="Vision and Roadmap details..." class="h-48 text-sm leading-relaxed"></textarea>
-                </div>
+    <div id="m" class="modal">
+        <div class="bg-[#000814] border border-blue-600 p-10 rounded-[3rem] w-full max-w-2xl max-h-[95vh] overflow-y-auto shadow-2xl">
+            <h3 id="m-title" class="text-2xl font-bold mb-6 base-blue italic uppercase"></h3>
+            <div id="preview-area" class="preview-box">
+                <p id="preview-text" class="text-[10px] text-gray-600 uppercase">Görsel Önizleme Bekleniyor</p>
+                <img id="asset-preview" src="" style="display:none; max-height:100%;">
+                <div id="upload-loader" class="hidden text-blue-500"><i class="fas fa-spinner fa-spin"></i></div>
             </div>
-
-            <input type="hidden" id="final-img-data">
-            <input type="file" id="file-upload" accept="image/*" class="hidden" onchange="handleFileUpload(this)">
-
-            <div class="mt-20 space-y-8">
-                <button onclick="gen()" id="stage-btn" class="w-full py-8 bg-white/5 border border-white/10 rounded-[3.5rem] font-black uppercase tracking-[0.5em] italic-fix text-sm">Stage Operation</button>
-                <div id="res" class="hidden">
-                    <pre id="out" class="text-[11px] text-green-500 bg-black/90 p-10 rounded-[3.5rem] border border-green-500/20 mb-10 font-mono shadow-inner"></pre>
-                    <button id="pay-btn" onclick="pay()" class="w-full py-10 bg-blue-600 rounded-[3.5rem] font-black text-3xl uppercase italic italic-fix tracking-[0.3em] shadow-2xl hover:bg-blue-500 transition">Broadcast (0.0001 ETH)</button>
+            <div class="grid md:grid-cols-2 gap-4">
+                <input id="n" type="text" placeholder="Project Name *">
+                <input id="s" type="text" placeholder="Symbol *">
+                <input type="hidden" id="final-img-data">
+                <div id="supply-wrapper" class="w-full">
+                    <input id="sup" type="number" placeholder="Total Supply (For Tokens)">
                 </div>
+                <input id="inp-img" type="text" placeholder="Görsel URL (NFT İçin Zorunlu)" oninput="updatePreview(this.value)">
             </div>
-
-            <button onclick="closeM()" id="back-dash" class="w-full text-gray-700 text-[12px] mt-20 uppercase font-black italic-fix tracking-[1em] text-center">Back to Hub</button>
+            <div class="flex flex-col gap-2 mt-2">
+                <input type="file" id="file-upload" accept="image/*" class="hidden" onchange="handleFileUpload(this)">
+                <button type="button" onclick="document.getElementById('file-upload').click()" class="bg-blue-600/20 text-blue-400 text-[10px] py-3 rounded-xl border border-blue-600/30 hover:bg-blue-600 hover:text-white transition uppercase font-black">
+                    <i class="fas fa-image mr-1"></i> Dosya Yükle (IPFS)
+                </button>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                <input id="l-web" class="text-[10px]" placeholder="Website">
+                <input id="l-x" class="text-[10px]" placeholder="X/Twitter">
+                <input id="l-fc" class="text-[10px]" placeholder="Farcaster">
+                <input id="l-tg" class="text-[10px]" placeholder="Telegram">
+            </div>
+            <textarea id="desc" placeholder="Project Description..." class="mt-4 h-20 text-sm"></textarea>
+            <button onclick="gen()" class="w-full bg-[#0052FF] py-5 mt-4 rounded-2xl font-bold uppercase shadow-lg tracking-tighter">Generate Onchain Contract</button>
+            <div id="res" class="hidden mt-6">
+                <pre id="out" class="text-[9px] text-green-400 bg-black p-4 rounded-xl border border-green-900 overflow-x-auto"></pre>
+                <button onclick="pay()" class="w-full border-2 border-blue-600 py-4 rounded-xl font-black text-xl hover:bg-blue-600 transition mt-4 uppercase italic">Execute Deployment (0.0001 ETH)</button>
+            </div>
+            <button onclick="closeM()" class="w-full text-gray-600 text-[10px] mt-6 uppercase font-bold">Vazgeç</button>
         </div>
     </div>
 
-    <footer class="text-center py-28 opacity-20 text-[10px] uppercase font-black tracking-[2em] italic-fix">© 2026 BaseKit.online Infrastructure</footer>
+    <footer class="text-center py-20 opacity-30 text-[10px] uppercase font-bold tracking-[0.5em]">© 2026 BaseKit.online • Powered by Base Network</footer>
 
     <script src="https://neynarxyz.github.io/siwn/raw/1.2.0/index.js" async></script>
     <script>
-        const ALCHEMY_URL = "https://mainnet.base.org", BUILDER_CODE = "bc_h8ua8gs9", TARGET_CONTRACT = "0x6540D5400Bc811B06325c11d1E678bE1d117EA07", MINT_SELECTOR = "0x6a622086";
-        let storage, userWallet = null, mode = "NFT Engine", walletProviders = [];
+        // --- 1. AYARLAR ---
+        const ALCHEMY_URL = "https://mainnet.base.org";
+        const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
+        const BUILDER_CODE = "bc_h8ua8gs9";
+        const TARGET_CONTRACT = "0x6540D5400Bc811B06325c11d1E678bE1d117EA07";
+        const MINT_SELECTOR = "0x6a622086";
 
-        async function updateMarketPulse() {
-            try {
-                const r = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum,aerodrome-finance,degen-base,brett&vs_currencies=usd");
-                const d = await r.json();
-                document.getElementById('market-ticker').innerHTML = `ETH: $${d.ethereum.usd} | AERO: $${d['aerodrome-finance'].usd} | DEGEN: $${d['degen-base'].usd}`;
-            } catch (e) { console.error("Pulse Error"); }
-        }
+        let storage;
+        let userWallet = null;
+        let mode = "NFT Engine";
+        let walletProviders = [];
 
-        window.addEventListener("eip6963:announceProvider", (e) => { if (!walletProviders.some(p => p.info.uuid === e.detail.info.uuid)) walletProviders.push(e.detail); });
+        // --- 2. CÜZDAN DEDEKTÖRÜ (EIP-6963) ---
+        window.addEventListener("eip6963:announceProvider", (event) => {
+            if (!walletProviders.some(p => p.info.uuid === event.detail.info.uuid)) {
+                walletProviders.push(event.detail);
+            }
+        });
         window.dispatchEvent(new Event("eip6963:requestProvider"));
 
         function showWalletSelector() { document.getElementById('wallet-modal').classList.add('active'); }
         function closeWalletSelector() { document.getElementById('wallet-modal').classList.remove('active'); }
 
-        async function initConnect(name) {
-            let p; const found = walletProviders.find(wp => wp.info.name.toLowerCase().includes(name.toLowerCase().split(' ')[0]));
-            if (found) p = found.provider;
-            if (p) { try { const acc = await p.request({ method: 'eth_requestAccounts' }); userWallet = acc[0]; window.ethereum = p; updateUI(true); closeWalletSelector(); } catch (e) { console.error(e); } }
+        async function initConnect(walletName) {
+            let provider;
+            // Modern dedektörde ara
+            const found = walletProviders.find(p => p.info.name.toLowerCase().includes(walletName.toLowerCase().split(' ')[0]));
+            if (found) {
+                provider = found.provider;
+            } else {
+                // Klasik window.ethereum kontrolü
+                if (walletName === 'MetaMask' && window.ethereum?.isMetaMask) provider = window.ethereum;
+                if (walletName.includes('Coinbase') && window.ethereum?.isCoinbaseWallet) provider = window.ethereum;
+                // Çoklu cüzdan varsa listeyi tara
+                if (!provider && window.ethereum?.providers) {
+                    provider = window.ethereum.providers.find(p => 
+                        (walletName === 'MetaMask' && p.isMetaMask) || 
+                        (walletName.includes('Coinbase') && p.isCoinbaseWallet)
+                    );
+                }
+            }
+
+            if (provider) {
+                try {
+                    const accounts = await provider.request({ method: 'eth_requestAccounts' });
+                    userWallet = accounts[0];
+                    window.ethereum = provider;
+                    updateUI(true);
+                    closeWalletSelector();
+                } catch (e) { console.error("Bağlantı reddedildi."); }
+            } else {
+                alert(walletName + " bulunamadı! Lütfen yüklü olduğundan emin olun.");
+            }
         }
 
         function disconnect() { userWallet = null; updateUI(false); }
-        function updateUI(c) {
-            const btn = document.getElementById('connect-text'), tag = document.getElementById('builder-tag'), off = document.getElementById('disconnect-btn');
-            if (c) { btn.innerText = `${userWallet.slice(0,6)}...`; tag.classList.remove('hidden'); off.classList.remove('hidden'); }
-            else { btn.innerText = `Connect Wallet`; tag.classList.add('hidden'); off.classList.add('hidden'); }
-        }
-
-        const dict = {
-            en: { welcome: "Welcome to BaseKit", sub: "\"Converting Information to Onchain Value\"", factory: "Builder Factory", token: "Deploy Token", nft: "NFT Engine", tokenSub: "ERC-20 Mainnet Launchpad", nftSub: "ERC-721 Digital Generator", pulse: "Network Pulse", swap: "Base Swap Infrastructure", social: "Farcaster Social Hub", connect: "Connect Wallet", analyze: "Analyze & Mint Asset", stage: "Stage Operation", back: "Back", hub: "Protocol Hub", gateway: "Gateway", media: "Select Media", drop: "Drag Media Here" },
-            tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: "\"Bilgiyi Onchain Değere Dönüştürüyoruz\"", factory: "Geliştirici Fabrikası", token: "Token Oluştur", nft: "NFT Motoru", tokenSub: "ERC-20 Ana Ağ Dağıtımı", nftSub: "ERC-721 Dijital Oluşturucu", pulse: "Ağ Nabzı", swap: "Base Takas Arayüzü", social: "Farcaster Sosyal Merkezi", connect: "Bağlan", analyze: "Analiz Et & Mintle", stage: "İşlemi Hazırla", back: "Geri", hub: "Protokol Merkezi", gateway: "Giriş Kapısı", media: "Medya Seç", drop: "Dosyayı Bırak" },
-            zh: { welcome: "欢迎体验 BaseKit", sub: "\"将信息转化为链上价值\"", factory: "构建者工厂", token: "部署代币", nft: "NFT 引擎", tokenSub: "ERC-20 启动平台", nftSub: "ERC-721 生成器", pulse: "网络脉搏", swap: "Base 交易界面", social: "Farcaster 社交枢纽", connect: "连接", analyze: "分析并铸造资产", stage: "准备执行", back: "返回", hub: "协议枢纽", gateway: "门户", media: "选择媒体", drop: "拖入媒体" },
-            ko: { welcome: "BaseKit에 오신 것을 환영합니다", sub: "\"정보를 온체인 가치로 전환\"", factory: "빌더 팩토리", token: "토큰 배포", nft: "NFT 엔진", tokenSub: "ERC-20 런치패드", nftSub: "ERC-721 생성기", pulse: "네트워크 펄스", swap: "Base 스왑 인터페이스", social: "Farcaster 소셜 허브", connect: "연결", analyze: "분석 및 민팅", stage: "작업 준비", back: "뒤로", hub: "프로토콜 허브", gateway: "게이트웨이", media: "미디어 선택", drop: "미디어 드래그" },
-            de: { welcome: "Willkommen bei BaseKit", sub: "\"Information umwandeln\"", factory: "Builder-Fabrik", token: "Token deployen", nft: "NFT-Engine", tokenSub: "ERC-20 Launchpad", nftSub: "ERC-721 Generator", pulse: "Netzwerkpuls", swap: "Base Swap Interface", social: "Farcaster Social Hub", connect: "Verbinden", analyze: "Analysieren & Minten", stage: "Aktion vorbereiten", back: "Zurück", hub: "Protokoll Hub", gateway: "Gateway", media: "Medien wählen", drop: "Medien ziehen" },
-            fr: { welcome: "Bienvenue sur BaseKit", sub: "\"Convertir l'information\"", factory: "Usine de Build", token: "Déployer Token", nft: "Moteur NFT", tokenSub: "ERC-20 Lancement", nftSub: "Générateur d'actifs", pulse: "Pouls du réseau", swap: "Interface Base Swap", social: "Farcaster Social Hub", connect: "Connecter", analyze: "Analyser & Mint", stage: "Préparer l'opération", back: "Retour", hub: "Hub Protocole", gateway: "Passerelle", media: "Choisir média", drop: "Déposer média" }
-        };
-
-        function changeLang(l, btn) {
-            const t = dict[l]; if(!t) return;
-            document.getElementById('welcome-title').innerHTML = `${t.welcome.split('BaseKit')[0]}<span class="base-blue">BaseKit</span>`;
-            document.getElementById('welcome-sub').innerText = t.sub; document.getElementById('factory-title').innerText = t.factory;
-            document.querySelectorAll('.lang-selector-btn').forEach(x => x.classList.remove('lang-active')); btn.classList.add('lang-active');
-        }
-
-        async function handleFileUpload(source) {
-            const file = source.files[0]; if (file && storage) {
-                try { const uri = await storage.upload(file); document.getElementById('final-img-data').value = uri; const p = document.getElementById('asset-preview'); p.src = uri.replace("ipfs://", "https://ipfs.io/ipfs/"); p.style.display = 'block'; document.getElementById('preview-text').style.display = 'none'; } catch (e) { console.error("IPFS Err"); }
+        function updateUI(connected) {
+            const btn = document.getElementById('wallet-btn');
+            const logout = document.getElementById('disconnect-btn');
+            const bTag = document.getElementById('builder-tag');
+            if (connected) {
+                btn.innerHTML = `<i class="fas fa-check-circle text-green-400"></i> ${userWallet.slice(0,6)}...`;
+                logout.classList.remove('hidden'); bTag.classList.remove('hidden');
+            } else {
+                btn.innerHTML = `<i class="fas fa-wallet"></i> Connect Wallet`;
+                logout.classList.add('hidden'); bTag.classList.add('hidden');
             }
         }
-        function updatePreview(v) { const p = document.getElementById('asset-preview'); if(v) { p.src = v; p.style.display = 'block'; document.getElementById('final-img-data').value = v; } }
-        function openM(t) { mode = t; document.getElementById('m-title-header').innerText = t; document.getElementById('m').classList.add('active'); }
-        function closeM() { document.getElementById('m').classList.remove('active'); }
-        function gen() { document.getElementById('res').classList.remove('hidden'); document.getElementById('out').innerText = `>> Staging Deployment...\n>> Action: ${mode}\n>> Builder: ${BUILDER_CODE}\n>> Status: READY`; }
 
-        async function pay() {
-            if(!userWallet) return;
-            try { 
-                const meta = JSON.stringify({ act: mode, n: document.getElementById('n').value, s: document.getElementById('s').value, i: document.getElementById('final-img-data').value, b: BUILDER_CODE });
-                const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(meta)).slice(2);
-                const txParams = { from: userWallet, to: TARGET_CONTRACT, value: '0x5AF3107A4000', data: MINT_SELECTOR + metaHex, gasLimit: ethers.utils.hexlify(650000) };
-                await window.ethereum.request({ method: 'eth_sendTransaction', params: [txParams] });
-            } catch (e) { console.error(e); }
+        // --- 3. DİLLER ---
+        const dict = {
+            en: { welcome: "Welcome to BaseKit", sub: "\"Converting Information to Onchain Value\"", factory: "Builder Factory", token: "🚀 Deploy New Token (ERC-20)", nft: "🖼️ Launch NFT Collection (ERC-721)" },
+            tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: "\"Bilgiyi Onchain Değere Dönüştürüyoruz\"", factory: "Geliştirici Fabrikası", token: "🚀 Yeni Token Oluştur (ERC-20)", nft: "🖼️ NFT Koleksiyonu Başlat (ERC-721)" },
+            zh: { welcome: "欢迎体验 BaseKit", sub: "\"将信息转化为链上价值\"", factory: "构建者工厂", token: "🚀 部署新代币 (ERC-20)", nft: "🖼️ 启动 NFT 系列 (ERC-721)" },
+            ko: { welcome: "BaseKit에 오신 것을 환영합니다", sub: "\"정보를 온체인 가치로 전환\"", factory: "빌더 팩토리", token: "🚀 새 토큰 배포 (ERC-20)", nft: "🖼️ NFT 컬렉션 출시 (ERC-721)" },
+            de: { welcome: "Willkommen bei BaseKit", sub: "\"Information in Onchain-Wert umwandeln\"", factory: "Builder Factory", token: "🚀 Neuen Token deployen (ERC-20)", nft: "🖼️ NFT-Kollektion starten (ERC-721)" },
+            fr: { welcome: "Bienvenue sur BaseKit", sub: "\"Convertir l'information en valeur onchain\"", factory: "Usine de Constructeurs", token: "🚀 Déployer un nouveau token (ERC-20)", nft: "🖼️ Lancer une collection NFT (ERC-721)" }
+        };
+
+        function changeLang(lang, btn) {
+            const t = dict[lang]; if(!t) return;
+            document.getElementById('welcome-title').innerText = t.welcome;
+            document.getElementById('welcome-sub').innerText = t.sub;
+            document.getElementById('factory-title').innerText = t.factory;
+            document.getElementById('btn-token').innerText = t.token;
+            document.getElementById('btn-nft').innerText = t.nft;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('lang-active'));
+            btn.classList.add('lang-active');
         }
 
-        window.addEventListener('load', () => { 
-            if (typeof ThirdwebStorage !== 'undefined') storage = new ThirdwebStorage.ThirdwebStorage({ clientId: "d6217d1424a9cc05fedeb79e446cf545" }); 
-            updateMarketPulse(); setInterval(updateMarketPulse, 20000); 
-            
-         document.getElementById('analyzeMintBtn')?.addEventListener('click', () => { openM('NFT Engine'); });
+        // --- 4. MEDIA & IPFS ---
+        async function handleFileUpload(input) {
+            if (input.files && input.files[0] && storage) {
+                const loader = document.getElementById('upload-loader');
+                const preview = document.getElementById('asset-preview');
+                const hint = document.getElementById('preview-text');
+                if(loader) loader.classList.remove('hidden');
+                try {
+                    const uri = await storage.upload(input.files[0]);
+                    document.getElementById('final-img-data').value = uri;
+                    if(preview) { preview.src = uri.replace("ipfs://", "https://ipfs.io/ipfs/"); preview.style.display = 'block'; }
+                    if(hint) hint.style.display = 'none';
+                } catch (e) { alert("IPFS Yükleme Hatası!"); }
+                finally { if(loader) loader.classList.add('hidden'); }
+            }
+        }
+
+        function updatePreview(val) {
+            const preview = document.getElementById('asset-preview');
+            const hint = document.getElementById('preview-text');
+            if(preview && val) { 
+                preview.src = val; preview.style.display = 'block'; 
+                if(hint) hint.style.display = 'none'; 
+                document.getElementById('final-img-data').value = val; 
+            }
+        }
+
+        // --- 5. MODAL VE MINT ---
+        function openM(t) { 
+            mode = t; document.getElementById('m-title').innerText = t; 
+            document.getElementById('supply-wrapper').style.display = t === 'Token Lab' ? 'block' : 'none'; 
+            document.getElementById('m').classList.add('active'); 
+        }
+        function closeM() { document.getElementById('m').classList.remove('active'); }
+
+        function gen() {
+            const n = document.getElementById('n').value; const s = document.getElementById('s').value;
+            if (!n || !s) return alert("Eksik bilgi!");
+            document.getElementById('out').innerText = `BaseKit Protocol v11.0\nName: ${n}\nSymbol: ${s}\nMode: ${mode}\nBuilder: ${BUILDER_CODE}`;
+            document.getElementById('res').classList.remove('hidden');
+        }
+
+        async function pay() {
+            if(!userWallet) return alert("Cüzdan bağlayın!");
+            const imgData = document.getElementById('final-img-data').value;
+            if(!imgData && mode === 'NFT Engine') return alert("Görsel eksik!");
+            try {
+                const metadata = JSON.stringify({ 
+                    act: mode, n: document.getElementById('n').value, s: document.getElementById('s').value, 
+                    i: imgData, b: BUILDER_CODE,
+                    w: document.getElementById('l-web').value, x: document.getElementById('l-x').value,
+                    f: document.getElementById('l-fc').value, t: document.getElementById('l-tg').value
+                });
+                const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
+                const txParams = { from: userWallet, to: TARGET_CONTRACT, value: '0x5AF3107A4000', data: MINT_SELECTOR + metaHex, gasLimit: ethers.utils.hexlify(600000) };
+                const txHash = await window.ethereum.request({ method: 'eth_sendTransaction', params: [txParams] });
+                alert("İşlem Başarılı! Hash: " + txHash); closeM();
+            } catch (e) { alert("Hata: " + e.message); }
+        }
+
+        // --- 6. PULSE VE TICKER ---
+        async function updateLiveStats() {
+            try {
+                const rGas = await fetch(ALCHEMY_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({"jsonrpc":"2.0","id":1,"method":"eth_gasPrice","params":[]}) });
+                const dGas = await rGas.json();
+                const rBlock = await fetch(ALCHEMY_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({"jsonrpc":"2.0","id":2,"method":"eth_blockNumber","params":[]}) });
+                const dBlock = await rBlock.json();
+                if(dGas.result) document.getElementById('live-gas').innerText = (parseInt(dGas.result, 16) / 1e9).toFixed(4) + " Gwei";
+                if(dBlock.result) document.getElementById('live-block').innerText = "#" + parseInt(dBlock.result, 16);
+            } catch (e) { }
+        }
+
+        async function updateTicker() {
+            try {
+                const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum,aerodrome-finance,degen-base,brett&vs_currencies=usd&include_24hr_change=true");
+                const data = await res.json();
+                const coins = [{id:'ethereum',sym:'ETH'}, {id:'aerodrome-finance',sym:'AERO'}, {id:'degen-base',sym:'DEGEN'}, {id:'brett',sym:'BRETT'}];
+                let html = "";
+                coins.forEach(c => { const change = data[c.id].usd_24h_change.toFixed(1); const color = change >= 0 ? "text-green-400" : "text-red-400"; html += `<span class="whitespace-nowrap">${c.sym}: $${data[c.id].usd.toFixed(2)} <span class="${color}">(${change}%)</span></span> `; });
+                document.getElementById('market-ticker').innerHTML = html;
+            } catch (e) { }
+        }
+
+        function onSignInSuccess(data) {
+            const user = data.user;
+            document.getElementById('user-info').classList.remove('hidden');
+            document.getElementById('feed-placeholder').style.display = 'none';
+            document.getElementById('user-info').innerHTML = `<img src="${user.pfp_url}" class="w-12 h-12 rounded-full border-2 border-purple-500"><div><p class="text-white font-bold">@${user.username}</p><p class="text-purple-400 text-[10px]">FID: ${user.fid}</p></div>`;
+        }
+
+        // --- 7. BAŞLATICI ---
+        window.addEventListener('load', () => {
+            if (typeof ThirdwebStorage !== 'undefined') {
+                storage = new ThirdwebStorage.ThirdwebStorage({ clientId: "d6217d1424a9cc05fedeb79e446cf545" });
+            }
+            updateLiveStats(); updateTicker();
+            setInterval(updateLiveStats, 10000); setInterval(updateTicker, 60000);
+            document.getElementById('analyzeMintBtn')?.addEventListener('click', () => { openM('NFT Engine'); });
         });
     </script>
-
-  <script src="https://unpkg.com/@farcaster/miniapp-sdk/dist/index.umd.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", async () => {
-  try {
-    if (window.FarcasterMiniApp) {
-      const sdk = new window.FarcasterMiniApp.FarcasterSDK({ environment: "production" });
-      await sdk.actions.ready();
-      console.log("MiniApp Ready ✅ Splash Removed");
-    } else {
-      console.error("MiniApp SDK not loaded");
-    }
-  } catch (err) {
-    console.error("MiniApp Boot Error:", err);
-  }
-});
-
-</script> 
-
 </body>
 </html>
