@@ -7,16 +7,20 @@
     
     <title>BaseKit.online | Master Infrastructure Hub</title>
 
-    <meta name="farcaster-frame-v2" content='{
-        "name": "BaseKit.online",
-        "icon": "https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
-        "description": "Professional Base Builder Infrastructure Hub",
-        "imageUrl": "https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
-        "buttonTitle": "Build on Base",
-        "apiUrl": "https://basekit.online"
-    }' />
+  <meta name="farcaster-miniapp-v1" content='{
+  "version":"1",
+  "name":"BaseKit.online",
+  "iconUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
+  "description":"Professional Base Builder Infrastructure Hub",
+  "homeUrl":"https://basekit.online",
+  "splashImageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
+  "splashBackgroundColor":"#0052FF",
+  "primaryCategory":"utility",
+  "requiredChains":["eip155:8453"],
+  "requiredCapabilities":["actions.ready","actions.openUrl"]
+}' />
 
-    <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk@latest/dist/index.min.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <script src="https://unpkg.com/@thirdweb-dev/storage@latest/dist/thirdweb-dev-storage.browser.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -381,20 +385,27 @@
             if (typeof ThirdwebStorage !== 'undefined') storage = new ThirdwebStorage.ThirdwebStorage({ clientId: "d6217d1424a9cc05fedeb79e446cf545" }); 
             updateMarketPulse(); setInterval(updateMarketPulse, 20000); 
             
-            // --- FARCASTER HANDSHAKE BOOT ---
-            const handshake = setInterval(() => {
-                const sdk = window.farcaster?.sdk;
-                if (sdk && sdk.actions) {
-                    sdk.actions.ready().then(() => {
-                        console.log("Infrastructure: Terminated Splash");
-                        clearInterval(handshake);
-                    }).catch(e => console.error("Handshake fail"));
-                }
-            }, 50);
-            setTimeout(() => clearInterval(handshake), 8000);
-
-            document.getElementById('analyzeMintBtn')?.addEventListener('click', () => { openM('NFT Engine'); });
+         document.getElementById('analyzeMintBtn')?.addEventListener('click', () => { openM('NFT Engine'); });
         });
     </script>
+
+  <script src="https://unpkg.com/@farcaster/miniapp-sdk/dist/index.umd.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    if (window.FarcasterMiniApp) {
+      const sdk = new window.FarcasterMiniApp.FarcasterSDK({ environment: "production" });
+      await sdk.actions.ready();
+      console.log("MiniApp Ready ✅ Splash Removed");
+    } else {
+      console.error("MiniApp SDK not loaded");
+    }
+  } catch (err) {
+    console.error("MiniApp Boot Error:", err);
+  }
+});
+
+</script> 
+
 </body>
 </html>
