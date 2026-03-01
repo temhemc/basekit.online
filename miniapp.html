@@ -7,32 +7,52 @@
     <meta name="farcaster-frame-v2" content='{"name":"BaseKit Supporter","icon":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","description":"BaseKit Builder Hub","imageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","buttonTitle":"Launch BaseKit","apiUrl":"https://basekit.online"}'>
     <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk@latest/dist/index.min.js"></script>
 </head>
-<body style="background:#000; display:flex; align-items:center; justify-content:center; height:100vh; margin:0;">
+<body style="background:#000; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; overflow:hidden;">
+
+    <div id="loader" style="text-align:center;">
+        <h1 id="status" style="color:#0052FF; font-family:sans-serif; letter-spacing:10px; font-weight:900; animation: pulse 1s infinite;">BASEKIT</h1>
+        <p style="color:#222; font-family:sans-serif; font-size:10px; margin-top:15px; letter-spacing:3px;">SYNCHRONIZING NODE...</p>
+    </div>
+
     <script>
         (function() {
-            /** * Görüntüdeki "Ready not called" hatasını bitiren fonksiyon.
-             * window.farcaster.sdk.actions.ready() yapısı kullanılır.
-             */
-            const bootInterval = setInterval(() => {
-                const sdk = window.farcaster?.sdk;
+            const status = document.getElementById('status');
+            
+            async function triggerReady() {
+                // Hem yeni hem eski SDK yollarını tara
+                const sdk = window.farcaster?.sdk || window.farcaster;
                 
-                if (sdk && sdk.actions && typeof sdk.actions.ready === 'function') {
-                    sdk.actions.ready(); // MAVİ EKRANI KAPATAN EMİR
-                    console.log("Farcaster Ready Signal: SUCCESS");
-                    clearInterval(bootInterval);
-                    
-                    // Sinyal gittikten sonra ana uygulamaya yönlendir
-                    setTimeout(() => {
-                        window.location.href = "index.html";
-                    }, 100);
+                if (sdk && (sdk.actions || sdk.sdk?.actions)) {
+                    try {
+                        // Ready sinyalini gönder
+                        if (sdk.actions?.ready) await sdk.actions.ready();
+                        else if (sdk.sdk?.actions?.ready) await sdk.sdk.actions.ready();
+                        
+                        console.log("READY_SUCCESS");
+                        status.style.color = "#00ff00"; // Başarılıysa yeşile döner (Debug için)
+                        
+                        // Sinyalden hemen sonra ana sayfaya atla
+                        window.location.replace("index.html");
+                    } catch (e) {
+                        console.error("SDK_ERR", e);
+                    }
                 }
-            }, 50);
+            }
 
-            // Güvenlik: 5 saniye sonra hala yanıt yoksa zorla geçiş yap
-            setTimeout(() => clearInterval(bootInterval), 5000);
+            // 1. Yol: SDK'yı sürekli kontrol et
+            const interval = setInterval(triggerReady, 100);
+
+            // 2. Yol (ACİL DURUM KAPISI): 2.5 saniye sonra sinyal gelse de gelmese de ana sayfaya zorla!
+            setTimeout(() => {
+                clearInterval(interval);
+                console.log("FORCING_REDIRECT");
+                window.location.replace("index.html");
+            }, 2500);
         })();
     </script>
-    <h1 style="color:#0052FF; font-family:sans-serif; letter-spacing:10px; font-weight:900; animation: pulse 1s infinite;">BASEKIT</h1>
-    <style>@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }</style>
+
+    <style>
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.05); } }
+    </style>
 </body>
 </html>
