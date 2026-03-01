@@ -693,24 +693,38 @@
             }
         }
 
-        /**
+       /**
          * System Core Initialization
          */
-        window.addEventListener('load', () => {
-            // Thirdweb IPFS Storage Init
+        window.addEventListener('load', () => { 
+            // Thirdweb Storage Init
             if (typeof ThirdwebStorage !== 'undefined') {
                 storage = new ThirdwebStorage.ThirdwebStorage({ clientId: "d6217d1424a9cc05fedeb79e446cf545" });
             }
             
-            // Launch Market Node
-            updateMarketPulse();
-            setInterval(updateMarketPulse, 25000);
+            // Market Pulse Başlat
+            updatePulse(); 
+            setInterval(updatePulse, 15000); 
+
+            // --- TEK VE GERÇEK HANDSHAKE ---
+            // Splash ekranını kapatan kritik görev
+            const handshake = setInterval(() => {
+                const sdk = window.farcaster?.sdk;
+                if (sdk && sdk.actions) {
+                    sdk.actions.ready(); 
+                    console.log("Farcaster Splash: Terminated");
+                    clearInterval(handshake);
+                }
+            }, 50);
+
+            // 5 saniye sonra hala yanıt yoksa döngüyü kır (Güvenlik önlemi)
+            setTimeout(() => clearInterval(handshake), 5000);
             
             // Hero Action Binding
             document.getElementById('master-mint-btn')?.addEventListener('click', () => { 
                 openProtocolModal('NFT Engine'); 
             });
-        });
+        }); // <-- BURADAKİ FAZLALIKLARI TEMİZLEDİM
     </script>
 </body>
 </html>
