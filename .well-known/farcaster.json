@@ -4,15 +4,21 @@
     "payload": "eyJkb21haW4iOiJiYXNla2l0Lm9ubGluZSJ9",
     "signature": "tVZxybeEklXd5GF4INT4M287uhVEF9CYLFu73dj5+tU/AChCZ5hYURy2el0nA7rpWfzohML9wJPDaciohaMsjxw="
   },
-  "frame": {
+  "miniapp": {
     "version": "1",
     "name": "BaseKit Supporter",
     "iconUrl": "https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
-    "homeUrl":  "https://basekit.online/index.html",
+    "homeUrl": "https://basekit.online/index.html?miniApp=true",
     "imageUrl": "https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
     "buttonTitle": "Launch BaseKit",
     "splashImageUrl": "https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
-    "splashBackgroundColor": "#0052FF",
-    "apiUrl": "https://basekit.online"
+    "splashBackgroundColor": "#00050a",
+    "requiredChains": [
+      "eip155:8453"
+    ],
+    "requiredCapabilities": [
+      "actions.signIn",
+      "wallet.getEthereumProvider"
+    ]
   }
 }
