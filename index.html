@@ -3,16 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline' 'unsafe-eval' https://*.warpcast.com https://*.farcaster.xyz https://explorer-api.walletconnect.com https://api.coingecko.com https://*.bridge.walletconnect.org; img-src * data: blob:; frame-src *;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline' 'unsafe-eval' https://*.warpcast.com https://*.farcaster.xyz https://api.coingecko.com https://explorer-api.walletconnect.com https://*.bridge.walletconnect.org https://*.thirdweb.com; img-src * data: blob:; frame-src *;">
     
-    <title>BaseKit.online | Master Builder Infrastructure Hub</title>
-
-    <meta property="fc:frame" content="vNext" />
-    <meta property="fc:frame:image" content="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" />
-    <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
-    <meta property="fc:frame:button:1" content="Launch BaseKit" />
-    <meta property="fc:frame:button:1:action" content="post" />
-    <meta property="fc:frame:post_url" content="https://basekit.online/" />
+    <title>BaseKit.online | Master Infrastructure Hub</title>
 
     <meta name="farcaster-frame-v2" content='{
         "name": "BaseKit.online",
@@ -48,24 +41,20 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Critical Fix: Prevent character cutoff in italic fonts */
         .italic-fix { 
             padding-left: 0.8em; 
             padding-right: 0.4em; 
         }
 
-        .base-blue { 
-            color: var(--base-blue); 
-        }
+        .base-blue { color: var(--base-blue); }
 
-        .glass-effect { 
+        .glass-panel { 
             background: rgba(0, 82, 255, 0.04); 
             border: 1px solid rgba(0, 82, 255, 0.12); 
             backdrop-filter: blur(30px); 
             border-radius: 2.5rem; 
         }
 
-        /* Professional Factory Cards */
         .factory-card {
             background: linear-gradient(145deg, rgba(255,255,255,0.01) 0%, rgba(0,82,255,0.05) 100%);
             border: 1px solid rgba(255,255,255,0.07);
@@ -81,7 +70,6 @@
             box-shadow: 0 40px 80px rgba(0, 82, 255, 0.3); 
         }
 
-        /* Modal Architecture */
         .modal-overlay { 
             display: none; 
             position: fixed; 
@@ -94,9 +82,7 @@
             backdrop-filter: blur(25px); 
         }
 
-        .modal-overlay.active { 
-            display: flex; 
-        }
+        .modal-overlay.active { display: flex; }
 
         .modal-content {
             background: #000814;
@@ -108,7 +94,6 @@
             overflow-y: auto;
             padding: 50px;
             position: relative;
-            box-shadow: 0 50px 100px rgba(0,0,0,0.5);
         }
 
         input, textarea { 
@@ -127,10 +112,8 @@
         input:focus { 
             border-color: var(--base-blue); 
             background: rgba(0, 82, 255, 0.08); 
-            box-shadow: 0 0 20px rgba(0, 82, 255, 0.1);
         }
 
-        /* Navigation Components */
         .lang-selector-btn { 
             cursor: pointer; 
             padding: 12px 20px; 
@@ -149,7 +132,7 @@
             border-color: var(--base-blue) !important; 
         }
 
-        .wallet-connector-item { 
+        .wallet-item { 
             background: rgba(255,255,255,0.04); 
             border: 1px solid rgba(255,255,255,0.08); 
             transition: 0.4s; 
@@ -158,13 +141,12 @@
             padding: 2rem; 
         }
 
-        .wallet-connector-item:hover { 
+        .wallet-item:hover { 
             background: rgba(0, 82, 255, 0.15); 
             border-color: var(--base-blue); 
-            transform: scale(1.02);
         }
 
-        .media-preview-area { 
+        .preview-area { 
             width: 100%; 
             height: 350px; 
             border: 3px dashed rgba(0, 82, 255, 0.2); 
@@ -177,64 +159,33 @@
             position: relative; 
         }
 
-        #network-pulse-indicator { 
-            animation: pulse-animation 2.5s infinite; 
-        }
-
-        @keyframes pulse-animation { 
-            0%, 100% { opacity: 1; transform: scale(1); } 
-            50% { opacity: 0.3; transform: scale(1.1); } 
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #0052FF33; border-radius: 10px; }
+        #pulse-indicator { animation: pulse-anim 2.5s infinite; }
+        @keyframes pulse-anim { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(1.1); } }
     </style>
 </head>
 <body class="p-6 lg:p-12">
 
-    <script>
-        (function() {
-            /** * Farcaster Mini App Handshake
-             * SDK yüklendiği an Splash Screen kilidini açar.
-             */
-            const handshakeSession = setInterval(() => {
-                const sdk = window.farcaster?.sdk || window.farcaster;
-                if (sdk && (sdk.actions || sdk.sdk?.actions)) {
-                    const readySignal = sdk.actions?.ready || sdk.sdk?.actions?.ready;
-                    if (readySignal) {
-                        readySignal();
-                        console.log("Farcaster Handshake: INITIALIZED");
-                        clearInterval(handshakeSession);
-                    }
-                }
-            }, 100);
-            setTimeout(() => clearInterval(handshakeSession), 6000);
-        })();
-    </script>
-
-    <div id="wallet-modal-overlay" class="modal-overlay">
+    <div id="wallet-modal" class="modal-overlay">
         <div class="bg-[#000814] border border-blue-600/30 p-14 rounded-[4.5rem] w-full max-w-md shadow-2xl text-center">
-            <h3 id="wallet-modal-title" class="text-3xl font-black mb-12 italic-fix uppercase text-blue-500 tracking-widest">Gateway</h3>
+            <h3 id="wallet-title-text" class="text-3xl font-black mb-12 italic-fix uppercase text-blue-500 tracking-widest">Gateway</h3>
             <div class="space-y-5">
-                <div onclick="initConnect('MetaMask')" class="wallet-connector-item flex items-center gap-8">
+                <div onclick="initConnect('MetaMask')" class="wallet-item flex items-center gap-8">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Logo.svg" class="w-12 h-12">
                     <span class="font-bold text-xl text-white">MetaMask</span>
                 </div>
-                <div onclick="initConnect('Coinbase Wallet')" class="wallet-connector-item flex items-center gap-8">
+                <div onclick="initConnect('Coinbase Wallet')" class="wallet-item flex items-center gap-8">
                     <img src="https://avatars.githubusercontent.com/u/18060234?s=280&v=4" class="w-12 h-12 rounded-full">
                     <span class="font-bold text-xl text-white">Base Wallet</span>
                 </div>
             </div>
-            <button onclick="closeWalletSelector()" id="wallet-modal-close" class="mt-12 text-gray-700 uppercase font-black text-[11px] tracking-[0.5em] hover:text-blue-500 transition">Back to Infrastructure</button>
+            <button onclick="closeWalletSelector()" id="wallet-cancel" class="mt-12 text-gray-700 uppercase font-black text-[11px] tracking-[0.5em]">Back to Infrastructure</button>
         </div>
     </div>
 
-    <nav class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-16 sticky top-0 backdrop-blur-3xl z-[999] py-6 px-10 glass-effect border-none shadow-2xl">
-        <div class="flex items-center gap-10 mb-6 md:mb-0">
+    <nav class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-16 sticky top-0 backdrop-blur-3xl z-[999] py-6 px-10 glass-panel border-none">
+        <div class="flex items-center gap-10">
             <h1 class="text-3xl font-black italic italic-fix tracking-tighter">BASEKIT<span class="base-blue">.ONLINE</span></h1>
-            <div id="language-switcher" class="hidden xl:flex gap-3">
+            <div id="lang-menu" class="hidden xl:flex gap-3">
                 <button onclick="changeLang('en', this)" class="lang-selector-btn lang-active">🇺🇸 EN</button>
                 <button onclick="changeLang('tr', this)" class="lang-selector-btn">🇹🇷 TR</button>
                 <button onclick="changeLang('zh', this)" class="lang-selector-btn">🇨🇳 ZH</button>
@@ -244,492 +195,206 @@
             </div>
         </div>
         <div class="flex items-center gap-6">
-            <div id="builder-identity-tag" class="hidden md:flex px-6 py-3 bg-blue-500/5 border border-blue-500/15 rounded-full text-[11px] font-black text-blue-400 uppercase italic-fix items-center gap-3">
-                <i class="fas fa-id-badge text-blue-500/40"></i>
+            <div id="builder-tag" class="hidden md:flex px-6 py-3 bg-blue-500/5 border border-blue-500/15 rounded-full text-[11px] font-black text-blue-400 uppercase italic-fix">
                 BUILDER: <span class="text-white tracking-widest font-black italic-fix">bc_h8ua8gs9</span>
             </div>
-            <button onclick="showWalletSelector()" id="connect-trigger" class="bg-[#0052FF] px-10 py-4 rounded-full font-black text-xs flex items-center gap-4 shadow-2xl hover:scale-105 transition transform active:scale-95">
-                <i class="fas fa-bolt"></i> <span id="connect-text-label">Connect Wallet</span>
+            <button onclick="showWalletSelector()" id="wallet-btn" class="bg-[#0052FF] px-10 py-4 rounded-full font-black text-xs flex items-center gap-4 shadow-2xl">
+                <i class="fas fa-bolt"></i> <span id="connect-text">Connect Wallet</span>
             </button>
-            <button id="disconnect-trigger" onclick="disconnect()" class="hidden w-14 h-14 bg-red-500/10 text-red-500 border border-red-500/20 rounded-full flex items-center justify-center hover:bg-red-500/20 transition"><i class="fas fa-power-off"></i></button>
+            <button id="disconnect-btn" onclick="disconnect()" class="hidden w-14 h-14 bg-red-500/10 text-red-500 border border-red-500/20 rounded-full flex items-center justify-center transition"><i class="fas fa-power-off"></i></button>
         </div>
     </nav>
 
     <header class="max-w-7xl mx-auto mb-24 text-center">
-        <div class="relative inline-block glass-effect overflow-hidden rounded-[5rem] border-white/5 shadow-2xl max-w-6xl mx-auto">
-            <img src="https://i.postimg.cc/7YcT3jhc/Gemini_Generated_Image_b6cp2gb6cp2gb6cp.png" class="w-full h-[450px] object-cover opacity-80" alt="BaseKit Hero">
-            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90"></div>
+        <div class="relative inline-block glass-panel overflow-hidden rounded-[5rem] border-white/5 shadow-2xl max-w-6xl mx-auto">
+            <img src="https://i.postimg.cc/7YcT3jhc/Gemini_Generated_Image_b6cp2gb6cp2gb6cp.png" class="w-full h-[450px] object-cover opacity-80" alt="Hero">
             <div class="absolute bottom-14 left-1/2 -translate-x-1/2 w-full px-10">
-                <h2 id="hero-welcome-title" class="text-4xl sm:text-6xl font-black uppercase italic italic-fix text-white tracking-widest mb-4">Welcome to <span class="base-blue">BaseKit</span></h2>
-                <p id="hero-welcome-sub" class="text-gray-400 text-sm sm:text-base uppercase tracking-[0.6em] italic-fix font-medium">"Converting Information to Onchain Value"</p>
+                <h2 id="welcome-title" class="text-4xl sm:text-6xl font-black uppercase italic italic-fix text-white tracking-widest mb-4">Welcome to <span class="base-blue">BaseKit</span></h2>
+                <p id="welcome-sub" class="text-gray-400 text-sm sm:text-base uppercase tracking-[0.6em] italic-fix">"Converting Information to Onchain Value"</p>
             </div>
         </div>
-        <div class="mt-12">
-            <button id="master-mint-btn" class="bg-[#0052FF] hover:bg-blue-600 text-white font-black py-6 px-16 rounded-full shadow-[0_20px_60px_rgba(0,82,255,0.4)] transition-all transform hover:scale-110 uppercase italic italic-fix tracking-[0.3em] text-sm">
-                <i class="fas fa-bolt mr-3"></i> <span id="mint-btn-text">Analyze & Mint Asset</span>
-            </button>
-        </div>
+        <button id="analyzeMintBtn" class="mt-12 bg-[#0052FF] py-6 px-16 rounded-full font-black uppercase italic italic-fix tracking-[0.3em] text-sm hover:scale-105 transition shadow-2xl">
+            <i class="fas fa-bolt mr-3"></i> <span id="analyze-text">Analyze & Mint Asset</span>
+        </button>
     </header>
 
     <main class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 mb-32 px-4">
         
         <div class="lg:col-span-7 space-y-12">
-            <div class="glass-effect h-[600px] overflow-hidden relative shadow-2xl">
-                <div id="swap-header-title" class="absolute top-6 left-10 text-[12px] font-black text-blue-500 uppercase tracking-[0.4em] italic-fix z-20">Base Swap Infrastructure</div>
+            <div class="glass-panel h-[600px] overflow-hidden relative shadow-2xl">
+                <div id="swap-title" class="absolute top-6 left-10 text-[12px] font-black text-blue-500 uppercase tracking-[0.4em] italic-fix z-20">Base Swap Infrastructure</div>
                 <iframe src="https://app.uniswap.org/#/swap?theme=dark&chain=base" width="100%" height="100%" style="border:none; padding-top:60px;"></iframe>
             </div>
 
-            <div class="glass-effect p-16 relative overflow-hidden bg-purple-600/5 border-purple-500/20 shadow-2xl">
-                <div class="absolute -right-20 -top-20 w-64 h-64 bg-purple-500/10 rounded-full blur-[100px]"></div>
-                <h3 id="social-hub-header" class="text-2xl font-black mb-12 uppercase text-purple-400 italic-fix flex items-center gap-6 tracking-widest">
+            <div class="glass-panel p-16 relative overflow-hidden bg-purple-600/5 border-purple-500/20 shadow-2xl">
+                <h3 id="social-hub-title" class="text-2xl font-black mb-12 uppercase text-purple-400 italic-fix flex items-center gap-6">
                     <i class="fab fa-ethereum text-3xl"></i> Farcaster Social Hub
                 </h3>
-                <div id="farcaster-siwn-container" class="flex justify-center">
-                    <div class="neynar_signin" data-client_id="a8b7c178-8d87-4ace-840a-4bc908166c29" data-theme="dark" data-variant="farcaster"></div>
-                </div>
-                <div id="farcaster-user-data" class="hidden mt-10 flex items-center gap-10 p-10 glass-effect rounded-[4rem] border-white/5"></div>
-                <p id="social-hub-placeholder" class="text-[12px] text-gray-500 italic mt-12 italic-fix uppercase tracking-[0.4em] leading-loose text-center">Sync Farcaster identity to bridge social metadata with assets.</p>
+                <div class="neynar_signin" data-client_id="a8b7c178-8d87-4ace-840a-4bc908166c29" data-theme="dark"></div>
+                <div id="user-info" class="hidden mt-10 flex items-center gap-10 p-10 glass-panel rounded-[4rem] border-white/5"></div>
+                <p id="feed-placeholder" class="text-[12px] text-gray-500 italic mt-12 italic-fix uppercase tracking-[0.4em] leading-loose text-center">Sync Farcaster identity to bridge social metadata with assets.</p>
             </div>
         </div>
 
         <div class="lg:col-span-5 space-y-12">
-            <div class="glass-effect p-14 border-l-[12px] border-blue-600 shadow-2xl bg-blue-600/5">
-                <h3 id="builder-factory-header" class="text-3xl font-black mb-14 uppercase italic-fix text-white tracking-widest">Builder Factory</h3>
+            <div class="glass-panel p-14 border-l-[12px] border-blue-600 shadow-2xl bg-blue-600/5">
+                <h3 id="factory-title" class="text-3xl font-black mb-14 uppercase italic-fix text-white">Builder Factory</h3>
                 <div class="grid gap-8">
-                    <div onclick="openProtocolModal('Token Lab')" class="factory-card p-12 rounded-[4.5rem]">
-                        <div class="w-16 h-16 bg-blue-500/10 rounded-[1.5rem] flex items-center justify-center mb-8 text-blue-500 text-3xl">
-                            <i class="fas fa-coins"></i>
-                        </div>
-                        <h4 id="factory-token-title" class="text-2xl font-black mb-4 italic-fix tracking-tighter">Deploy Token</h4>
-                        <p id="factory-token-sub" class="text-xs text-gray-500 italic-fix uppercase tracking-widest font-bold">ERC-20 Mainnet Launchpad</p>
+                    <div onclick="openM('Token Lab')" class="factory-card p-12 rounded-[4.5rem]">
+                        <h4 id="btn-token" class="text-2xl font-black mb-4 italic-fix">Deploy Token</h4>
+                        <p id="token-sub" class="text-xs text-gray-500 italic-fix uppercase tracking-widest font-bold">ERC-20 Mainnet Launchpad</p>
                     </div>
-                    <div onclick="openProtocolModal('NFT Engine')" class="factory-card p-12 rounded-[4.5rem]">
-                        <div class="w-16 h-16 bg-purple-500/10 rounded-[1.5rem] flex items-center justify-center mb-8 text-purple-500 text-3xl">
-                            <i class="fas fa-images"></i>
-                        </div>
-                        <h4 id="factory-nft-title" class="text-2xl font-black mb-4 text-purple-400 italic-fix tracking-tighter">NFT Engine</h4>
-                        <p id="factory-nft-sub" class="text-xs text-gray-500 italic-fix uppercase tracking-widest font-bold">ERC-721 Digital Generator</p>
+                    <div onclick="openM('NFT Engine')" class="factory-card p-12 rounded-[4.5rem]">
+                        <h4 id="btn-nft" class="text-2xl font-black mb-4 text-purple-400 italic-fix">NFT Engine</h4>
+                        <p id="nft-sub" class="text-xs text-gray-500 italic-fix uppercase tracking-widest font-bold">ERC-721 Digital Generator</p>
                     </div>
                 </div>
             </div>
 
-            <div class="glass-effect p-12 border-l-[12px] border-green-500 shadow-2xl bg-green-500/5 text-center">
+            <div class="glass-panel p-12 border-l-[12px] border-green-500 shadow-2xl bg-green-500/5 text-center">
                 <div class="flex justify-between items-center mb-12">
-                    <span id="network-pulse-title" class="text-[11px] font-black uppercase tracking-[0.6em] text-green-400">Network Pulse</span>
-                    <span id="network-pulse-indicator" class="text-[10px] font-bold bg-green-500/10 px-6 py-2 rounded-full text-green-500 border border-green-500/20 uppercase tracking-widest">Live Sync</span>
+                    <span id="pulse-title" class="text-[11px] font-black uppercase tracking-[0.6em] text-green-400">Network Pulse</span>
+                    <span id="pulse-indicator" class="text-[10px] font-bold bg-green-500/10 px-6 py-2 rounded-full text-green-500 border border-green-500/20 uppercase tracking-widest">Live</span>
                 </div>
-                <div id="global-market-ticker" class="bg-blue-600/5 p-10 rounded-[3rem] border border-blue-500/10 text-[12px] font-black flex flex-wrap gap-8 justify-center uppercase tracking-widest italic-fix text-blue-300 leading-relaxed shadow-inner">
-                    Initializing Real-time Market Node...
+                <div id="market-ticker" class="bg-blue-600/5 p-10 rounded-[3rem] border border-blue-500/10 text-[12px] font-black flex flex-wrap gap-8 justify-center uppercase tracking-widest italic-fix text-blue-300 leading-relaxed shadow-inner">
+                    Syncing Market Node...
                 </div>
             </div>
         </div>
     </main>
 
-    <div id="protocol-modal-hub" class="modal-overlay">
+    <div id="m" class="modal-overlay">
         <div class="modal-content">
-            <h3 id="protocol-hub-header" class="text-5xl font-black mb-16 base-blue italic-fix uppercase text-center tracking-[0.3em]">Protocol Hub</h3>
+            <h3 id="m-title-header" class="text-5xl font-black mb-16 base-blue italic-fix uppercase text-center tracking-[0.3em]">Protocol Hub</h3>
             
             <div class="grid lg:grid-cols-2 gap-16">
                 <div class="space-y-10">
-                    <div id="media-drop-zone" class="media-preview-area group">
-                        <img id="media-asset-preview" src="" style="display:none; width:100%; height:100%; object-fit: cover;">
-                        <div id="media-upload-loader" class="hidden flex flex-col items-center">
-                            <i class="fas fa-sync fa-spin text-5xl mb-8 text-blue-500"></i>
-                            <span class="text-[12px] font-black tracking-[0.8em] uppercase text-blue-400">Syncing IPFS...</span>
-                        </div>
-                        <p id="media-preview-placeholder" class="text-[13px] font-black uppercase tracking-[0.5em] italic-fix text-center px-10">Drag & Drop Media Infrastructure Here</p>
+                    <div id="drop-area" class="preview-area group">
+                        <img id="asset-preview" src="" style="display:none; width:100%; height:100%; object-fit: cover;">
+                        <p id="preview-text" class="text-[13px] font-black uppercase tracking-[0.5em] italic-fix text-center px-10">Drag Media Infrastructure Here</p>
                     </div>
-                    <button onclick="document.getElementById('hidden-file-input').click()" id="media-browse-trigger" class="w-full py-6 bg-blue-600/10 text-blue-400 rounded-3xl border border-blue-600/20 font-black uppercase text-xs tracking-[0.4em] italic-fix hover:bg-blue-600/20 transition">Browse Local Assets</button>
-                    <input id="media-url-input" type="text" placeholder="Or Paste Direct IPFS/CID/URL (https://...)" class="text-xs" oninput="handleManualUrlPreview(this.value)">
+                    <button onclick="document.getElementById('file-upload').click()" id="browse-btn" class="w-full py-6 bg-blue-600/10 text-blue-400 rounded-3xl border border-blue-600/20 font-black uppercase text-xs tracking-[0.4em] italic-fix">Select Media</button>
+                    <input id="inp-img" type="text" placeholder="Or Paste Direct URL (ipfs://...)" class="text-xs" oninput="updatePreview(this.value)">
                 </div>
 
                 <div class="space-y-8">
                     <div class="grid grid-cols-2 gap-6">
-                        <input id="meta-name" type="text" placeholder="Protocol Name *">
-                        <input id="meta-symbol" type="text" placeholder="Symbol *">
+                        <input id="n" type="text" placeholder="Name *">
+                        <input id="s" type="text" placeholder="Symbol *">
                     </div>
-                    <div id="supply-volume-container" style="display:none;">
-                        <input id="meta-supply" type="number" placeholder="Max Supply Volume">
-                    </div>
-                    
                     <div class="grid grid-cols-2 gap-4">
-                        <input id="meta-link-web" class="text-[11px]" placeholder="Web Infrastructure">
-                        <input id="meta-link-x" class="text-[11px]" placeholder="X.com / Twitter">
-                        <input id="meta-link-fc" class="text-[11px]" placeholder="Farcaster Handle">
-                        <input id="meta-link-tg" class="text-[11px]" placeholder="Telegram Node">
+                        <input id="l-web" class="text-[11px]" placeholder="Website">
+                        <input id="l-x" class="text-[11px]" placeholder="X.com">
+                        <input id="l-fc" class="text-[11px]" placeholder="Farcaster">
+                        <input id="l-tg" class="text-[11px]" placeholder="Telegram">
                     </div>
-                    <textarea id="meta-description" placeholder="Specify project vision, ecosystem utility, and decentralization milestones..." class="h-48 text-sm leading-relaxed"></textarea>
+                    <textarea id="desc" placeholder="Vision and Roadmap details..." class="h-48 text-sm leading-relaxed"></textarea>
                 </div>
             </div>
 
-            <input type="hidden" id="finalized-ipfs-data">
-            <input type="file" id="hidden-file-input" accept="image/*" class="hidden" onchange="handleOnchainFileUpload(this)">
+            <input type="hidden" id="final-img-data">
+            <input type="file" id="file-upload" accept="image/*" class="hidden" onchange="handleFileUpload(this)">
 
             <div class="mt-20 space-y-8">
-                <button onclick="stageOperationDeployment()" id="protocol-stage-trigger" class="w-full py-8 bg-white/5 border border-white/10 rounded-[3.5rem] font-black uppercase tracking-[0.5em] hover:border-blue-500 transition shadow-2xl italic-fix text-sm">Stage Protocol Broadcast</button>
-                <div id="broadcast-result-layer" class="hidden">
-                    <pre id="deployment-output-log" class="text-[11px] text-green-500 bg-black/90 p-10 rounded-[3.5rem] border border-green-500/20 mb-10 font-mono shadow-inner leading-relaxed overflow-x-auto"></pre>
-                    <div id="deployment-success-panel" class="hidden p-12 bg-green-500/10 border border-green-500/30 rounded-[4rem] mb-10 text-center shadow-2xl">
-                        <p class="text-green-400 font-black mb-6 uppercase tracking-[0.7em] italic-fix" id="deployment-success-label">Operation Broadcasted Successfully!</p>
-                        <a id="onchain-verify-link" href="#" target="_blank" class="inline-block px-14 py-4 bg-blue-600 text-white rounded-full text-[12px] font-black uppercase tracking-[0.4em] hover:bg-blue-500 transition shadow-xl" id="verify-scan-label">Verify on BaseScan</a>
-                    </div>
-                    <button id="final-execute-btn" onclick="executeOnchainTransaction()" class="w-full py-10 bg-blue-600 rounded-[3.5rem] font-black text-3xl uppercase italic italic-fix tracking-[0.3em] shadow-2xl hover:bg-blue-500 transition transform hover:scale-[1.02] active:scale-95">Execute Broadcast (0.0001 ETH)</button>
+                <button onclick="gen()" id="stage-btn" class="w-full py-8 bg-white/5 border border-white/10 rounded-[3.5rem] font-black uppercase tracking-[0.5em] italic-fix text-sm">Stage Operation</button>
+                <div id="res" class="hidden">
+                    <pre id="out" class="text-[11px] text-green-500 bg-black/90 p-10 rounded-[3.5rem] border border-green-500/20 mb-10 font-mono shadow-inner"></pre>
+                    <button id="pay-btn" onclick="pay()" class="w-full py-10 bg-blue-600 rounded-[3.5rem] font-black text-3xl uppercase italic italic-fix tracking-[0.3em] shadow-2xl hover:bg-blue-500 transition">Broadcast (0.0001 ETH)</button>
                 </div>
             </div>
 
-            <button onclick="closeProtocolModal()" id="protocol-hub-close" class="w-full text-gray-700 text-[12px] mt-20 uppercase font-black italic-fix tracking-[1em] text-center hover:text-white transition">Return to Hub</button>
+            <button onclick="closeM()" id="back-dash" class="w-full text-gray-700 text-[12px] mt-20 uppercase font-black italic-fix tracking-[1em] text-center">Back to Hub</button>
         </div>
     </div>
 
-    <footer class="text-center py-28 opacity-20 text-[10px] uppercase font-black tracking-[2em] italic-fix">BaseKit.online Infrastructure • © 2026 Node</footer>
+    <footer class="text-center py-28 opacity-20 text-[10px] uppercase font-black tracking-[2em] italic-fix">© 2026 BaseKit.online Infrastructure</footer>
 
     <script src="https://neynarxyz.github.io/siwn/raw/1.2.0/index.js" async></script>
     <script>
-        /**
-         * SYSTEM CONSTANTS
-         * Base Mainnet Infrastructure Details
-         */
-        const ALCHEMY_URL = "https://mainnet.base.org";
-        const BUILDER_CODE = "bc_h8ua8gs9";
-        const TARGET_CONTRACT = "0x6540D5400Bc811B06325c11d1E678bE1d117EA07";
-        const MINT_SELECTOR = "0x6a622086";
+        const ALCHEMY_URL = "https://mainnet.base.org", BUILDER_CODE = "bc_h8ua8gs9", TARGET_CONTRACT = "0x6540D5400Bc811B06325c11d1E678bE1d117EA07", MINT_SELECTOR = "0x6a622086";
+        let storage, userWallet = null, mode = "NFT Engine", walletProviders = [];
 
-        let storage, userWallet = null, activeProtocolMode = "NFT Engine", walletProviders = [];
-
-        // --- WALLET DETECTION ENGINE (EIP-6963 COMPLIANT) ---
-        window.addEventListener("eip6963:announceProvider", (event) => {
-            if (!walletProviders.some(p => p.info.uuid === event.detail.info.uuid)) {
-                walletProviders.push(event.detail);
-                console.log("Infrastructure: Wallet Found -> " + event.detail.info.name);
-            }
-        });
-        window.dispatchEvent(new Event("eip6963:requestProvider"));
-
-        function showWalletSelector() { document.getElementById('wallet-modal-overlay').classList.add('active'); }
-        function closeWalletSelector() { document.getElementById('wallet-modal-overlay').classList.remove('active'); }
-
-        /**
-         * Connect Wallet Strategy
-         * Supports Multi-provider injection
-         */
-        async function initConnect(providerName) {
-            let selectedProvider;
-            const foundProvider = walletProviders.find(wp => wp.info.name.toLowerCase().includes(providerName.toLowerCase().split(' ')[0]));
-            
-            if (foundProvider) {
-                selectedProvider = foundProvider.provider;
-            } else {
-                const globalEthProviders = window.ethereum?.providers || [window.ethereum];
-                if (providerName === 'MetaMask') selectedProvider = globalEthProviders.find(x => x?.isMetaMask);
-                if (providerName.includes('Coinbase')) selectedProvider = globalEthProviders.find(x => x?.isCoinbaseWallet);
-            }
-
-            if (selectedProvider) {
-                try {
-                    const accounts = await selectedProvider.request({ method: 'eth_requestAccounts' });
-                    userWallet = accounts[0];
-                    window.ethereum = selectedProvider;
-                    synchronizeInterface(true);
-                    closeWalletSelector();
-                } catch (error) {
-                    console.error("Infrastructure Access Denied:", error);
-                }
-            } else {
-                alert("Protocol Error: " + providerName + " Infrastructure Not Detected.");
-            }
-        }
-
-        function disconnect() {
-            userWallet = null;
-            synchronizeInterface(false);
-            console.log("Infrastructure: Session Disconnected");
-        }
-
-        /**
-         * Interface Synchronization
-         * Updates UI elements based on connection status
-         */
-        function synchronizeInterface(connected) {
-            const connectBtnLabel = document.getElementById('connect-text-label');
-            const builderTagUI = document.getElementById('builder-identity-tag');
-            const disconnectBtnUI = document.getElementById('disconnect-trigger');
-
-            if (connected) {
-                connectBtnLabel.innerText = `${userWallet.slice(0,6)}...${userWallet.slice(-4)}`;
-                builderTagUI.classList.remove('hidden');
-                disconnectBtnUI.classList.remove('hidden');
-            } else {
-                connectBtnLabel.innerText = `Connect Wallet`;
-                builderTagUI.classList.add('hidden');
-                disconnectBtnUI.classList.add('hidden');
-            }
-        }
-
-        /**
-         * Farcaster SIWN Success Event
-         */
-        window.onSignInSuccess = (data) => {
-            const user = data.user;
-            const infoDisplay = document.getElementById('farcaster-user-data');
-            infoDisplay.classList.remove('hidden');
-            infoDisplay.innerHTML = `
-                <img src="${user.pfp_url}" class="w-20 h-20 rounded-full border-4 border-purple-500 shadow-2xl">
-                <div>
-                    <p class="text-white font-black italic-fix uppercase tracking-[0.3em] text-lg">@${user.username}</p>
-                    <p class="text-purple-400 text-[11px] uppercase font-bold tracking-[0.5em] mt-2">Social Node Active | FID: ${user.fid}</p>
-                </div>
-            `;
-            document.getElementById('social-hub-placeholder').style.display = 'none';
-        };
-
-        /**
-         * GLOBAL LOCALIZATION DICTIONARY
-         * 6 COMPLETE LANGUAGES - ZERO TRUNCATION
-         */
-        const masterDictionary = {
-            en: { 
-                welcome: "Welcome to BaseKit", sub: "\"Converting Information to Onchain Value\"", factory: "Builder Factory", token: "Deploy Token", nft: "NFT Engine",
-                tokenSub: "ERC-20 Mainnet Launchpad", nftSub: "ERC-721 Digital Generator", pulse: "Network Pulse", swap: "Base Swap Infrastructure",
-                social: "Farcaster Social Hub", connect: "Connect Wallet", analyze: "Analyze & Mint Asset", stage: "Stage Operation", back: "Back",
-                success: "Success!", scan: "Verify on BaseScan", gateway: "Gateway", media: "Select Media", drop: "Drag Media Here", hub: "Protocol Hub"
-            },
-            tr: { 
-                welcome: "BaseKit'e Hoş Geldiniz", sub: "\"Bilgiyi Onchain Değere Dönüştürüyoruz\"", factory: "Geliştirici Fabrikası", token: "Token Oluştur", nft: "NFT Motoru",
-                tokenSub: "ERC-20 Ana Ağ Dağıtım Terminali", nftSub: "ERC-721 Dijital Varlık Oluşturucu", pulse: "Ağ Nabzı", swap: "Base Takas Arayüzü",
-                social: "Farcaster Sosyal Merkezi", connect: "Bağlan", analyze: "Analiz Et & Mintle", stage: "İşlemi Hazırla", back: "Geri Dön",
-                success: "Dağıtım Başarılı!", scan: "BaseScan'de Görüntüle", gateway: "Giriş Kapısı", media: "Medya Seç", drop: "Dosyayı Bırak", hub: "Protokol Merkezi"
-            },
-            zh: { 
-                welcome: "欢迎体验 BaseKit", sub: "\"将信息转化为链上价值\"", factory: "构建者工厂", token: "部署代币", nft: "NFT 引擎",
-                tokenSub: "ERC-20 主网启动平台", nftSub: "ERC-721 数字资产生成器", pulse: "网络脉搏", swap: "Base 交易界面",
-                social: "Farcaster 社交枢纽", connect: "连接", analyze: "分析并铸造资产", stage: "准备执行", back: "返回",
-                success: "部署成功！", scan: "在 BaseScan 查看", gateway: "门户", media: "选择媒体", drop: "拖入媒体", hub: "协议枢纽"
-            },
-            ko: { 
-                welcome: "BaseKit에 오신 것을 환영합니다", sub: "\"정보를 온체인 가치로 전환\"", factory: "빌더 팩토리", token: "토큰 배포", nft: "NFT 엔진",
-                tokenSub: "ERC-20 메인넷 런치패드", nftSub: "ERC-721 디지털 자산 생성기", pulse: "네트워크 펄스", swap: "Base 스왑 인터페이스",
-                social: "Farcaster 소셜 허브", connect: "연결", analyze: "분석 및 민팅", stage: "작업 준비", back: "뒤로",
-                success: "배포 성공!", scan: "BaseScan에서 보기", gateway: "게이트웨이", media: "미디어 선택", drop: "미디어 드래그", hub: "프로토콜 허브"
-            },
-            de: { 
-                welcome: "Willkommen bei BaseKit", sub: "\"Information umwandeln\"", factory: "Builder-Fabrik", token: "Token deployen", nft: "NFT-Engine",
-                tokenSub: "ERC-20 Mainnet Launchpad", nftSub: "ERC-721 Generator", pulse: "Netzwerkpuls", swap: "Base Swap Interface",
-                social: "Farcaster Social Hub", connect: "Verbinden", analyze: "Analysieren & Minten", stage: "Aktion vorbereiten", back: "Zurück",
-                success: "Bereitgestellt!", scan: "Auf BaseScan ansehen", gateway: "Gateway", media: "Medien wählen", drop: "Medien ziehen", hub: "Protokoll Hub"
-            },
-            fr: { 
-                welcome: "Bienvenue sur BaseKit", sub: "\"Convertir l'information\"", factory: "Usine de Build", token: "Déployer Token", nft: "Moteur NFT",
-                tokenSub: "ERC-20 Lancement", nftSub: "Générateur d'actifs", pulse: "Pouls du réseau", swap: "Interface Base Swap",
-                social: "Farcaster Social Hub", connect: "Connecter", analyze: "Analyser & Mint", stage: "Préparer l'opération", back: "Retour",
-                success: "Réussi !", scan: "Voir sur BaseScan", gateway: "Passerelle", media: "Choisir média", drop: "Déposer média", hub: "Hub Protocole"
-            }
-        };
-
-        /**
-         * Global Language Change Logic
-         */
-        function changeLang(langCode, btnElement) {
-            const translation = masterDictionary[langCode];
-            if(!translation) return;
-
-            document.getElementById('hero-welcome-title').innerHTML = `${translation.welcome.split('BaseKit')[0]}<span class="base-blue">BaseKit</span>`;
-            document.getElementById('hero-welcome-sub').innerText = translation.sub;
-            document.getElementById('builder-factory-header').innerText = translation.factory;
-            document.getElementById('factory-token-title').innerText = translation.token;
-            document.getElementById('factory-nft-title').innerText = translation.nft;
-            document.getElementById('factory-token-sub').innerText = translation.tokenSub;
-            document.getElementById('factory-nft-sub').innerText = translation.nftSub;
-            document.getElementById('network-pulse-title').innerText = translation.pulse;
-            document.getElementById('swap-header-title').innerText = translation.swap;
-            document.getElementById('social-hub-header').innerText = translation.social;
-            document.getElementById('connect-text-label').innerText = userWallet ? `${userWallet.slice(0,6)}...` : translation.connect;
-            document.getElementById('mint-btn-text').innerText = translation.analyze;
-            document.getElementById('protocol-stage-trigger').innerText = translation.stage;
-            document.getElementById('protocol-hub-close').innerText = translation.back;
-            document.getElementById('wallet-modal-close').innerText = translation.back;
-            document.getElementById('deployment-success-label').innerText = translation.success;
-            document.getElementById('verify-scan-label').innerText = translation.scan;
-            document.getElementById('wallet-modal-title').innerText = translation.gateway;
-            document.getElementById('media-browse-trigger').innerText = translation.media;
-            document.getElementById('media-preview-placeholder').innerText = translation.drop;
-            document.getElementById('protocol-hub-header').innerText = translation.hub;
-            
-            // UI Toggle
-            document.querySelectorAll('.lang-selector-btn').forEach(btn => btn.classList.remove('lang-active'));
-            btnElement.classList.add('lang-active');
-        }
-
-        // --- IPFS & ONCHAIN DEPLOYMENT ENGINE ---
-        async function handleOnchainFileUpload(source) {
-            const selectedFile = source.files[0];
-            if (selectedFile && storage) {
-                const uploadLoader = document.getElementById('media-upload-loader');
-                const assetPreview = document.getElementById('media-asset-preview');
-                
-                uploadLoader.classList.remove('hidden'); 
-                document.getElementById('media-preview-placeholder').classList.add('hidden');
-                
-                try {
-                    const ipfsUri = await storage.upload(selectedFile);
-                    document.getElementById('finalized-ipfs-data').value = ipfsUri;
-                    assetPreview.src = ipfsUri.replace("ipfs://", "https://ipfs.io/ipfs/");
-                    assetPreview.style.display = 'block';
-                    console.log("Infrastructure: IPFS Ready -> " + ipfsUri);
-                } catch (error) {
-                    alert("IPFS Connectivity Failure. Please check CORS headers.");
-                } finally {
-                    uploadLoader.classList.add('hidden');
-                }
-            }
-        }
-
-        function handleManualUrlPreview(urlValue) { 
-            const previewImg = document.getElementById('media-asset-preview'); 
-            if(urlValue) { 
-                previewImg.src = urlValue; 
-                previewImg.style.display = 'block'; 
-                document.getElementById('media-preview-placeholder').classList.add('hidden'); 
-                document.getElementById('finalized-ipfs-data').value = urlValue; 
-            }
-        }
-
-        /**
-         * Modal Logic
-         */
-        function openProtocolModal(mode) { 
-            activeProtocolMode = mode; 
-            document.getElementById('protocol-hub-header').innerText = mode; 
-            document.getElementById('supply-volume-container').style.display = mode === 'Token Lab' ? 'block' : 'none'; 
-            document.getElementById('protocol-modal-hub').classList.add('active'); 
-        }
-
-        function closeProtocolModal() { 
-            document.getElementById('protocol-modal-hub').classList.remove('active'); 
-            document.getElementById('broadcast-result-layer').classList.add('hidden');
-            document.getElementById('deployment-success-panel').classList.add('hidden');
-        }
-
-        /**
-         * Staging Phase
-         */
-        function stageOperationDeployment() {
-            const pName = document.getElementById('meta-name').value;
-            const pSymbol = document.getElementById('meta-symbol').value;
-            if (!pName || !pSymbol) return alert("Validation Failed: Identity parameters required.");
-            
-            document.getElementById('deployment-output-log').innerText = `
-                >> PROTOCOL_BOOT_SEQUENCE_v42.0
-                >> ACTION_MODE: ${activeProtocolMode}
-                >> TARGET_NAME: ${pName}
-                >> TARGET_SYMBOL: ${pSymbol}
-                >> BUILDER_ID: ${BUILDER_CODE}
-                >> NETWORK: Base Mainnet (Chain 8453)
-                >> STATUS: PARAMETERS_VERIFIED_READY
-            `;
-            document.getElementById('broadcast-result-layer').classList.remove('hidden');
-        }
-
-        /**
-         * Execution Phase (Onchain Transaction)
-         */
-        async function executeOnchainTransaction() {
-            if(!userWallet) return alert("Gateway Connectivity Missing.");
-            const executeBtn = document.getElementById('final-execute-btn');
-            executeBtn.innerHTML = '<i class="fas fa-satellite fa-spin"></i> BROADCASTING TO BASE...';
-            executeBtn.disabled = true;
-
-            try {
-                const metadataObject = {
-                    action: activeProtocolMode,
-                    name: document.getElementById('meta-name').value,
-                    symbol: document.getElementById('meta-symbol').value,
-                    image: document.getElementById('finalized-ipfs-data').value,
-                    builder: BUILDER_CODE,
-                    web: document.getElementById('meta-link-web').value,
-                    x: document.getElementById('meta-link-x').value,
-                    fc: document.getElementById('meta-link-fc').value,
-                    tg: document.getElementById('meta-link-tg').value
-                };
-
-                const metadataHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(JSON.stringify(metadataObject))).slice(2);
-                const transactionParameters = {
-                    from: userWallet,
-                    to: TARGET_CONTRACT,
-                    value: '0x5AF3107A4000', // 0.0001 ETH
-                    data: MINT_SELECTOR + metadataHex,
-                    gasLimit: ethers.utils.hexlify(650000)
-                };
-
-                const transactionHash = await window.ethereum.request({
-                    method: 'eth_sendTransaction',
-                    params: [transactionParameters]
-                });
-
-                document.getElementById('deployment-success-panel').classList.remove('hidden');
-                document.getElementById('onchain-verify-link').href = `https://basescan.org/tx/${transactionHash}`;
-                executeBtn.innerHTML = 'DEPLOYMENT_FINALIZED';
-            } catch (error) {
-                alert("Protocol Execution Failure: " + error.message);
-                executeBtn.innerHTML = 'Execute Broadcast (0.0001 ETH)';
-                executeBtn.disabled = false;
-            }
-        }
-
-        /**
-         * Global Market Pulse
-         */
         async function updateMarketPulse() {
             try {
-                const rawPulse = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum,aerodrome-finance,degen-base,brett&vs_currencies=usd");
-                const pulseData = await rawPulse.json();
-                document.getElementById('global-market-ticker').innerHTML = `
-                    <span>ETH: <span class="text-white">$${pulseData.ethereum.usd}</span></span> | 
-                    <span>AERO: <span class="text-white">$${pulseData['aerodrome-finance'].usd}</span></span> | 
-                    <span>DEGEN: <span class="text-white">$${pulseData['degen-base'].usd}</span></span> | 
-                    <span>BRETT: <span class="text-white">$${pulseData.brett.usd}</span></span>
-                `;
-            } catch (error) {
-                console.log("Pulse Node Connectivity: Sync Pending...");
-            }
+                const r = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum,aerodrome-finance,degen-base,brett&vs_currencies=usd");
+                const d = await r.json();
+                document.getElementById('market-ticker').innerHTML = `ETH: $${d.ethereum.usd} | AERO: $${d['aerodrome-finance'].usd} | DEGEN: $${d['degen-base'].usd}`;
+            } catch (e) { console.error("Pulse Error"); }
         }
 
-         /**
-         * v44.0 Dökümantasyon Odaklı Boot Sistemi
-         */
-        window.addEventListener('load', () => {
-            // 1. IPFS Storage
-            if (typeof ThirdwebStorage !== 'undefined') {
-                storage = new ThirdwebStorage.ThirdwebStorage({ clientId: "d6217d1424a9cc05fedeb79e446cf545" });
+        window.addEventListener("eip6963:announceProvider", (e) => { if (!walletProviders.some(p => p.info.uuid === e.detail.info.uuid)) walletProviders.push(e.detail); });
+        window.dispatchEvent(new Event("eip6963:requestProvider"));
+
+        function showWalletSelector() { document.getElementById('wallet-modal').classList.add('active'); }
+        function closeWalletSelector() { document.getElementById('wallet-modal').classList.remove('active'); }
+
+        async function initConnect(name) {
+            let p; const found = walletProviders.find(wp => wp.info.name.toLowerCase().includes(name.toLowerCase().split(' ')[0]));
+            if (found) p = found.provider;
+            if (p) { try { const acc = await p.request({ method: 'eth_requestAccounts' }); userWallet = acc[0]; window.ethereum = p; updateUI(true); closeWalletSelector(); } catch (e) { console.error(e); } }
+        }
+
+        function disconnect() { userWallet = null; updateUI(false); }
+        function updateUI(c) {
+            const btn = document.getElementById('connect-text'), tag = document.getElementById('builder-tag'), off = document.getElementById('disconnect-btn');
+            if (c) { btn.innerText = `${userWallet.slice(0,6)}...`; tag.classList.remove('hidden'); off.classList.remove('hidden'); }
+            else { btn.innerText = `Connect Wallet`; tag.classList.add('hidden'); off.classList.add('hidden'); }
+        }
+
+        const dict = {
+            en: { welcome: "Welcome to BaseKit", sub: "\"Converting Information to Onchain Value\"", factory: "Builder Factory", token: "Deploy Token", nft: "NFT Engine", tokenSub: "ERC-20 Mainnet Launchpad", nftSub: "ERC-721 Digital Generator", pulse: "Network Pulse", swap: "Base Swap Infrastructure", social: "Farcaster Social Hub", connect: "Connect Wallet", analyze: "Analyze & Mint Asset", stage: "Stage Operation", back: "Back", hub: "Protocol Hub", gateway: "Gateway", media: "Select Media", drop: "Drag Media Here" },
+            tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: "\"Bilgiyi Onchain Değere Dönüştürüyoruz\"", factory: "Geliştirici Fabrikası", token: "Token Oluştur", nft: "NFT Motoru", tokenSub: "ERC-20 Ana Ağ Dağıtımı", nftSub: "ERC-721 Dijital Oluşturucu", pulse: "Ağ Nabzı", swap: "Base Takas Arayüzü", social: "Farcaster Sosyal Merkezi", connect: "Bağlan", analyze: "Analiz Et & Mintle", stage: "İşlemi Hazırla", back: "Geri", hub: "Protokol Merkezi", gateway: "Giriş Kapısı", media: "Medya Seç", drop: "Dosyayı Bırak" },
+            zh: { welcome: "欢迎体验 BaseKit", sub: "\"将信息转化为链上价值\"", factory: "构建者工厂", token: "部署代币", nft: "NFT 引擎", tokenSub: "ERC-20 启动平台", nftSub: "ERC-721 生成器", pulse: "网络脉搏", swap: "Base 交易界面", social: "Farcaster 社交枢纽", connect: "连接", analyze: "分析并铸造资产", stage: "准备执行", back: "返回", hub: "协议枢纽", gateway: "门户", media: "选择媒体", drop: "拖入媒体" },
+            ko: { welcome: "BaseKit에 오신 것을 환영합니다", sub: "\"정보를 온체인 가치로 전환\"", factory: "빌더 팩토리", token: "토큰 배포", nft: "NFT 엔진", tokenSub: "ERC-20 런치패드", nftSub: "ERC-721 생성기", pulse: "네트워크 펄스", swap: "Base 스왑 인터페이스", social: "Farcaster 소셜 허브", connect: "연결", analyze: "분석 및 민팅", stage: "작업 준비", back: "뒤로", hub: "프로토콜 허브", gateway: "게이트웨이", media: "미디어 선택", drop: "미디어 드래그" },
+            de: { welcome: "Willkommen bei BaseKit", sub: "\"Information umwandeln\"", factory: "Builder-Fabrik", token: "Token deployen", nft: "NFT-Engine", tokenSub: "ERC-20 Launchpad", nftSub: "ERC-721 Generator", pulse: "Netzwerkpuls", swap: "Base Swap Interface", social: "Farcaster Social Hub", connect: "Verbinden", analyze: "Analysieren & Minten", stage: "Aktion vorbereiten", back: "Zurück", hub: "Protokoll Hub", gateway: "Gateway", media: "Medien wählen", drop: "Medien ziehen" },
+            fr: { welcome: "Bienvenue sur BaseKit", sub: "\"Convertir l'information\"", factory: "Usine de Build", token: "Déployer Token", nft: "Moteur NFT", tokenSub: "ERC-20 Lancement", nftSub: "Générateur d'actifs", pulse: "Pouls du réseau", swap: "Interface Base Swap", social: "Farcaster Social Hub", connect: "Connecter", analyze: "Analyser & Mint", stage: "Préparer l'opération", back: "Retour", hub: "Hub Protocole", gateway: "Passerelle", media: "Choisir média", drop: "Déposer média" }
+        };
+
+        function changeLang(l, btn) {
+            const t = dict[l]; if(!t) return;
+            document.getElementById('welcome-title').innerHTML = `${t.welcome.split('BaseKit')[0]}<span class="base-blue">BaseKit</span>`;
+            document.getElementById('welcome-sub').innerText = t.sub; document.getElementById('factory-title').innerText = t.factory;
+            document.querySelectorAll('.lang-selector-btn').forEach(x => x.classList.remove('lang-active')); btn.classList.add('lang-active');
+        }
+
+        async function handleFileUpload(source) {
+            const file = source.files[0]; if (file && storage) {
+                try { const uri = await storage.upload(file); document.getElementById('final-img-data').value = uri; const p = document.getElementById('asset-preview'); p.src = uri.replace("ipfs://", "https://ipfs.io/ipfs/"); p.style.display = 'block'; document.getElementById('preview-text').style.display = 'none'; } catch (e) { console.error("IPFS Err"); }
             }
+        }
+        function updatePreview(v) { const p = document.getElementById('asset-preview'); if(v) { p.src = v; p.style.display = 'block'; document.getElementById('final-img-data').value = v; } }
+        function openM(t) { mode = t; document.getElementById('m-title-header').innerText = t; document.getElementById('m').classList.add('active'); }
+        function closeM() { document.getElementById('m').classList.remove('active'); }
+        function gen() { document.getElementById('res').classList.remove('hidden'); document.getElementById('out').innerText = `>> Staging Deployment...\n>> Action: ${mode}\n>> Builder: ${BUILDER_CODE}\n>> Status: READY`; }
+
+        async function pay() {
+            if(!userWallet) return;
+            try { 
+                const meta = JSON.stringify({ act: mode, n: document.getElementById('n').value, s: document.getElementById('s').value, i: document.getElementById('final-img-data').value, b: BUILDER_CODE });
+                const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(meta)).slice(2);
+                const txParams = { from: userWallet, to: TARGET_CONTRACT, value: '0x5AF3107A4000', data: MINT_SELECTOR + metaHex, gasLimit: ethers.utils.hexlify(650000) };
+                await window.ethereum.request({ method: 'eth_sendTransaction', params: [txParams] });
+            } catch (e) { console.error(e); }
+        }
+
+        window.addEventListener('load', () => { 
+            if (typeof ThirdwebStorage !== 'undefined') storage = new ThirdwebStorage.ThirdwebStorage({ clientId: "d6217d1424a9cc05fedeb79e446cf545" }); 
+            updateMarketPulse(); setInterval(updateMarketPulse, 20000); 
             
-            updatePulse();
-            setInterval(updatePulse, 20000);
-
-            // 2. Dökümandaki "Hybrid Detection" Kontrolü
-            const urlParams = new URLSearchParams(window.location.search);
-            const isMiniApp = urlParams.get('miniApp') === 'true';
-
-            // 3. Handshake (Splash Ekranını Kapatan Kısım)
+            // --- FARCASTER HANDSHAKE BOOT ---
             const handshake = setInterval(() => {
                 const sdk = window.farcaster?.sdk;
                 if (sdk && sdk.actions) {
-                    // Sadece MiniApp modundaysak veya her durumda splash'i kapat
                     sdk.actions.ready().then(() => {
-                        console.log("Farcaster Splash: TERMINATED BY DOCS");
+                        console.log("Infrastructure: Terminated Splash");
                         clearInterval(handshake);
-                    }).catch(err => {
-                        console.error("Splash Termination Failed:", err);
-                    });
+                    }).catch(e => console.error("Handshake fail"));
                 }
             }, 50);
-
-            // 8 saniye güvenlik zaman aşımı
             setTimeout(() => clearInterval(handshake), 8000);
 
             document.getElementById('analyzeMintBtn')?.addEventListener('click', () => { openM('NFT Engine'); });
         });
-        
-        // FAZLA PARANTEZLER TEMİZLENDİ
     </script>
 </body>
 </html>
