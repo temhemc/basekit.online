@@ -3,141 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaseKit Mini App | Infrastructure</title>
-
-    <meta name="farcaster-frame-v2" content='{
-        "version": "1",
-        "name": "BaseKit Supporter",
-        "description": "Professional Base Builder Infrastructure Hub",
-        "icon": "https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
-        "homeUrl": "https://basekit.online/miniapp.html",
-        "imageUrl": "https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg",
-        "buttonTitle": "Launch BaseKit",
-        "apiUrl": "https://basekit.online"
-    }' />
-
+    <title>BaseKit Gateway</title>
+    <meta name="farcaster-frame-v2" content='{"name":"BaseKit Supporter","icon":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","description":"Professional Base Builder Infrastructure","imageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","buttonTitle":"Launch BaseKit","apiUrl":"https://basekit.online"}'>
     <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk@latest/dist/index.min.js"></script>
-
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;900&display=swap');
-
-        body, html { 
-            margin: 0; 
-            padding: 0; 
-            height: 100%; 
-            width: 100%; 
-            background: #00050a; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-family: 'Space Grotesk', sans-serif; 
-            overflow: hidden;
-        }
-
-        #launch-container {
-            text-align: center;
-            transition: opacity 0.8s ease-out;
-        }
-
-        .logo-box {
-            width: 120px;
-            height: 120px;
-            border-radius: 35px;
-            border: 3px solid #0052FF;
-            margin-bottom: 25px;
-            box-shadow: 0 0 50px rgba(0, 82, 255, 0.3);
-            animation: pulse-glow 2s infinite ease-in-out;
-        }
-
-        .status-text {
-            color: #0052FF;
-            font-weight: 900;
-            letter-spacing: 8px;
-            text-transform: uppercase;
-            font-size: 20px;
-            margin: 0;
-        }
-
-        .loader-bar {
-            width: 150px;
-            height: 2px;
-            background: rgba(255,255,255,0.05);
-            margin: 20px auto;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .loader-progress {
-            position: absolute;
-            width: 50%;
-            height: 100%;
-            background: #0052FF;
-            animation: slide 1.5s infinite linear;
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(0, 82, 255, 0.3); }
-            50% { transform: scale(1.05); box-shadow: 0 0 70px rgba(0, 82, 255, 0.5); }
-        }
-
-        @keyframes slide {
-            from { left: -50%; }
-            to { left: 100%; }
-        }
-    </style>
 </head>
-<body>
-
-    <div id="launch-container">
-        <img src="https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg" class="logo-box" alt="BaseKit">
-        <h1 class="status-text">BaseKit</h1>
-        <div class="loader-bar">
-            <div class="loader-progress"></div>
-        </div>
-        <p style="color: #444; font-size: 10px; letter-spacing: 3px; font-weight: 700;">INITIALIZING NODE...</p>
-    </div>
-
+<body style="background:#000; color:#0052FF; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; font-family:sans-serif;">
     <script>
-        /**
-         * MINI APP HANDSHAKE ENGINE
-         * Farcaster Splash Screen'i (Mavi Ekran) kapatmak için hazır sinyali gönderir.
-         */
-        async function boot() {
-            const container = document.getElementById('launch-container');
-            
-            // Farcaster SDK'yı bekle ve Ready sinyalini gönder
-            const interval = setInterval(async () => {
-                const sdk = window.farcaster?.sdk;
-                
-                if (sdk && sdk.actions) {
-                    try {
-                        console.log("Handshake Phase: Attempting Ready...");
-                        await sdk.actions.ready();
-                        console.log("Handshake Phase: SUCCESS");
-                        
-                        clearInterval(interval);
-                        
-                        // Sinyal gittikten sonra şık bir geçiş yap
-                        setTimeout(() => {
-                            container.style.opacity = '0';
-                            window.location.href = "index.html";
-                        }, 800);
-                        
-                    } catch (error) {
-                        console.error("Handshake Phase: Refused", error);
-                    }
+        async function init() {
+            const sdk = window.farcaster?.sdk;
+            if (sdk) {
+                try {
+                    // Dökümantasyondaki kritik adım: ready() çağrısı
+                    await sdk.actions.ready();
+                    console.log("Mini App Displayed");
+                    // Mavi ekran kalktıktan sonra ana uygulamaya geç
+                    window.location.href = "index.html";
+                } catch (e) {
+                    console.error("Handshake failed", e);
                 }
-            }, 100);
-
-            // Güvenlik: 10 saniye sonra hala yanıt yoksa zorla geçiş yap
-            setTimeout(() => {
-                clearInterval(interval);
-                window.location.href = "index.html";
-            }, 10000);
+            }
         }
-
-        // Başlat
-        boot();
+        // SDK'nın yüklenmesini bekle ve başlat
+        const checkSDK = setInterval(() => {
+            if (window.farcaster?.sdk) {
+                clearInterval(checkSDK);
+                init();
+            }
+        }, 50);
     </script>
+    <div style="text-align:center;">
+        <h1 style="letter-spacing:10px; font-weight:900;">BASEKIT</h1>
+        <p style="color:#444; font-size:10px; text-transform:uppercase;">Loading Infrastructure...</p>
+    </div>
 </body>
 </html>
