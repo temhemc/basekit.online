@@ -4,36 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BaseKit Gateway</title>
-    <meta name="farcaster-frame-v2" content='{"name":"BaseKit Supporter","icon":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","description":"Professional Base Builder Infrastructure","imageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","buttonTitle":"Launch BaseKit","apiUrl":"https://basekit.online"}'>
+    <meta name="farcaster-frame-v2" content='{"name":"BaseKit Supporter","icon":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","description":"BaseKit Builder Hub","imageUrl":"https://i.postimg.cc/RhSpzSmW/Screenshot-57.jpg","buttonTitle":"Launch BaseKit","apiUrl":"https://basekit.online"}'>
     <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk@latest/dist/index.min.js"></script>
 </head>
-<body style="background:#000; color:#0052FF; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; font-family:sans-serif;">
+<body style="background:#000; display:flex; align-items:center; justify-content:center; height:100vh; margin:0;">
     <script>
-        async function init() {
-            const sdk = window.farcaster?.sdk;
-            if (sdk) {
-                try {
-                    // Dökümantasyondaki kritik adım: ready() çağrısı
-                    await sdk.actions.ready();
-                    console.log("Mini App Displayed");
-                    // Mavi ekran kalktıktan sonra ana uygulamaya geç
-                    window.location.href = "index.html";
-                } catch (e) {
-                    console.error("Handshake failed", e);
+        (function() {
+            /** * Görüntüdeki "Ready not called" hatasını bitiren fonksiyon.
+             * window.farcaster.sdk.actions.ready() yapısı kullanılır.
+             */
+            const bootInterval = setInterval(() => {
+                const sdk = window.farcaster?.sdk;
+                
+                if (sdk && sdk.actions && typeof sdk.actions.ready === 'function') {
+                    sdk.actions.ready(); // MAVİ EKRANI KAPATAN EMİR
+                    console.log("Farcaster Ready Signal: SUCCESS");
+                    clearInterval(bootInterval);
+                    
+                    // Sinyal gittikten sonra ana uygulamaya yönlendir
+                    setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 100);
                 }
-            }
-        }
-        // SDK'nın yüklenmesini bekle ve başlat
-        const checkSDK = setInterval(() => {
-            if (window.farcaster?.sdk) {
-                clearInterval(checkSDK);
-                init();
-            }
-        }, 50);
+            }, 50);
+
+            // Güvenlik: 5 saniye sonra hala yanıt yoksa zorla geçiş yap
+            setTimeout(() => clearInterval(bootInterval), 5000);
+        })();
     </script>
-    <div style="text-align:center;">
-        <h1 style="letter-spacing:10px; font-weight:900;">BASEKIT</h1>
-        <p style="color:#444; font-size:10px; text-transform:uppercase;">Loading Infrastructure...</p>
-    </div>
+    <h1 style="color:#0052FF; font-family:sans-serif; letter-spacing:10px; font-weight:900; animation: pulse 1s infinite;">BASEKIT</h1>
+    <style>@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }</style>
 </body>
 </html>
