@@ -1,69 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Base Raid Game</title>
-<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
-<style>
-body{
-background:#0b0f1c;
-color:white;
-font-family:Arial;
-text-align:center;
-padding-top:100px;
-}
-.card{
-background:#111827;
-padding:40px;
-border-radius:20px;
-width:400px;
-margin:auto;
-box-shadow:0 0 40px rgba(0,150,255,0.3);
-}
-button{
-background:#0052ff;
-border:none;
-padding:15px 25px;
-color:white;
-font-size:18px;
-border-radius:10px;
-cursor:pointer;
-margin-top:20px;
-transition: 0.3s;
-}
-button:hover{
-background:#0040cc;
-transform: scale(1.05);
-}
-#result{
-margin-top:20px;
-font-size:18px;
-color: #60a5fa;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>Base Raid Game</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <style>
+        body{ background:#0b0f1c; color:white; font-family:Arial; text-align:center; padding-top:100px; }
+        .card{ background:#111827; padding:40px; border-radius:20px; width:400px; margin:auto; box-shadow:0 0 40px rgba(0,150,255,0.3); }
+        button{ background:#0052ff; border:none; padding:15px 25px; color:white; font-size:18px; border-radius:10px; cursor:pointer; margin-top:20px; transition: 0.3s; }
+        button:hover{ background:#0040cc; transform: scale(1.05); }
+        #result{ margin-top:20px; font-size:18px; color: #60a5fa; }
+    </style>
 </head>
 <body>
-
-<div class="card">
-<h1>⚔ Base Raid</h1>
-<p>First Raid FREE<br>Next Raids 0.0005 ETH</p>
-
-<button onclick="connectWallet()">Connect Wallet</button>
-<br>
-<button onclick="launchRaid()">Launch Raid</button>
-
-<div id="result">Waiting connection...</div>
-</div>
+    <div class="card">
+        <h1>⚔ Base Raid</h1>
+        <p>First Raid FREE<br>Next Raids 0.0005 ETH</p>
+        <button onclick="connectWallet()">Connect Wallet</button>
+        <br>
+        <button onclick="launchRaid()">Launch Raid</button>
+        <div id="result">Waiting connection...</div>
+    </div>
 
 <script>
-
-let provider;
-let signer;
-let user;
-
-// Senin az önce deploy ettiğin adres buraya işlendi:
+let provider, signer, user;
 const contractAddress = "0x1A002588CA8d5aEe64eFc655295b96E38b634c3a";
-
 const contractABI = [
     "function raid() payable",
     "function hasPlayedFree(address) view returns (bool)",
@@ -71,59 +32,44 @@ const contractABI = [
 ];
 
 async function connectWallet(){
-    if(window.ethereum){
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        signer = provider.getSigner();
-        user = await signer.getAddress();
-        document.getElementById("result").innerText = "Connected: " + user.slice(0,6) + "...";
-    }else{
-        alert("Lütfen MetaMask yükleyin!");
+    try {
+        if(window.ethereum){
+            // Yeni ve daha stabil bağlantı yöntemi
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            signer = provider.getSigner();
+            user = await signer.getAddress();
+            document.getElementById("result").innerText = "Connected: " + user.slice(0,6) + "...";
+            console.log("Bağlanan adres:", user);
+        } else {
+            alert("MetaMask bulunamadı!");
+        }
+    } catch (err) {
+        console.error("Bağlantı hatası:", err);
+        document.getElementById("result").innerText = "Connection failed!";
     }
 }
 
 async function launchRaid(){
-    if(!signer){
-        alert("Lütfen önce cüzdanı bağlayın!");
-        return;
-    }
-
+    if(!signer){ alert("Please connect wallet first!"); return; }
     const contract = new ethers.Contract(contractAddress, contractABI, signer);
-
     try {
         const played = await contract.hasPlayedFree(user);
         let tx;
-
-        if(!played){
+        if(!played) {
             tx = await contract.raid();
-        }else{
+        } else {
             tx = await contract.raid({ value: ethers.utils.parseEther("0.0005") });
         }
-
-        document.getElementById("result").innerText = "Raid sent 🚀 Waiting result...";
-
+        document.getElementById("result").innerText = "Raid sent 🚀 Waiting...";
         const receipt = await tx.wait();
-        
-        // Event loglarını daha güvenli okumak için:
         const event = receipt.events.find(e => e.event === "RaidResult");
-        const resultValue = event.args.result.toNumber();
-
-        if(resultValue >= 70 && resultValue < 95){
-            document.getElementById("result").innerText = "🔥 You won 0.001 ETH! (Dice: " + resultValue + ")";
-        }
-        else if(resultValue >= 95){
-            document.getElementById("result").innerText = "💎 JACKPOT! (Dice: " + resultValue + ")";
-        }
-        else{
-            document.getElementById("result").innerText = "💀 You lost. Try again. (Dice: " + resultValue + ")";
-        }
-    } catch (error) {
-        console.error(error);
-        document.getElementById("result").innerText = "Error: Check your balance or contract!";
+        const res = event.args.result.toNumber();
+        document.getElementById("result").innerText = "Dice: " + res + (res >= 70 ? " 🔥 WIN!" : " 💀 LOSE");
+    } catch (e) {
+        document.getElementById("result").innerText = "Error: Check balance or network.";
     }
 }
-
 </script>
-
 </body>
 </html>
