@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Base SPIN | Spin & Win</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <style>
+        body { background:#0b0f1c; color:white; font-family:Arial, sans-serif; text-align:center; padding: 50px; }
+        .spin-container { background:#111827; padding:40px; border-radius:24px; width:450px; margin:auto; box-shadow:0 0 50px rgba(0,82,255,0.3); border: 1px solid #1e293b; }
+        
+        .wheel-box { position: relative; width: 300px; height: 300px; margin: 30px auto; }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 8px solid #0052ff; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); background: conic-gradient(#0052ff 0% 10%, #0a1120 10% 100%); }
+        .wheel-marker { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 20px; height: 30px; background: #ff4444; clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 10; }
+
+        button { background:#0052ff; border:none; padding:15px 30px; color:white; font-size:18px; border-radius:12px; cursor:pointer; margin-top:10px; font-weight: bold; width: 100%; transition: 0.3s; }
+        button:hover:not(:disabled) { background: #0040cc; transform: scale(1.02); }
+        button:disabled { background: #1e293b; color: #4b5563; cursor: not-allowed; }
+        #status { margin-top:20px; font-size:16px; color: #94a3b8; line-height: 1.4; }
+    </style>
+</head>
+<body>
+    <div class="spin-container">
+        <h1>🎡 Base SPIN</h1>
+        <p>Cost: 0.0005 ETH | Prize: 0.003 ETH</p>
+        
+        <div class="wheel-box">
+            <div class="wheel-marker"></div>
+            <div id="wheel" class="wheel"></div>
+        </div>
+
+        <button onclick="connectWallet()" id="connectBtn">Connect Wallet</button>
+        <button onclick="launchSpin()" id="spinBtn" style="display:none;">SPIN (0.0005 ETH)</button>
+        <div id="status">Please connect your wallet to start.</div>
+    </div>
+
+<script>
+let provider, signer, user;
+const contractAddress = "0x1B4Da2762Ec28B2B00D51909440d2c96368Ab308";
+const contractABI = [
+    "function spin() payable",
+    "event SpinResult(address indexed player, bool won, uint256 dice, uint256 timestamp)"
+];
+
+async function connectWallet() {
+    if(window.ethereum) {
+        try {
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            signer = provider.getSigner();
+            user = await signer.getAddress();
+            document.getElementById("status").innerText = "Connected: " + user.slice(0,6) + "...";
+            document.getElementById("connectBtn").style.display = 'none';
+            document.getElementById("spinBtn").style.display = 'block';
+        } catch (err) { document.getElementById("status").innerText = "Connection failed."; }
+    } else { alert("MetaMask not found!"); }
+}
+
+async function launchSpin() {
+    const spinBtn = document.getElementById("spinBtn");
+    const status = document.getElementById("status");
+    const wheel = document.getElementById("wheel");
+    const contract = new ethers.Contract(contractAddress, contractABI, signer);
+
+    try {
+        spinBtn.disabled = true;
+        status.innerText = "Confirming transaction on Base...";
+
+        const tx = await contract.spin({ value: ethers.utils.parseEther("0.001") });
+        status.innerText = "Transaction sent! Wheel is starting to spin... 🎡";
+        
+        // Animasyon başlat
+        const randomDegree = Math.floor(Math.random() * 360) + 3600; 
+        wheel.style.transform = `rotate(${randomDegree}deg)`;
+
+        const receipt = await tx.wait();
+        const event = receipt.events.find(e => e.event === "SpinResult");
+        const won = event.args.won;
+
+        if(won) {
+            status.innerHTML = "<b style='color:#4ade80'>🔥 WINNER! 0.005 ETH sent to your wallet!</b>";
+        } else {
+            status.innerText = "💀 Better luck next time! (Dice: " + event.args.dice + ")";
+        }
+        spinBtn.disabled = false;
+    } catch (e) {
+        status.innerText = "Error: Check your balance or network.";
+        spinBtn.disabled = false;
+    }
+}
+</script>
+</body>
+</html>
