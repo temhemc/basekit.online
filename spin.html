@@ -9,7 +9,15 @@
         .spin-container { background:#111827; padding:40px; border-radius:30px; width:450px; margin:auto; box-shadow:0 0 60px rgba(0,82,255,0.25); border: 1px solid #1e293b; }
         
         .wheel-box { position: relative; width: 320px; height: 320px; margin: 30px auto; }
-        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 8px solid #0052ff; position: relative; overflow: hidden; transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1); background: conic-gradient(#ffd700 0% 1%, #0052ff 1% 100%); }
+        /* Yeni, Kademeli Ödül Renkleri (Hassas Segmentler) */
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 8px solid #0052ff; position: relative; overflow: hidden; transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1); 
+            background: conic-gradient(
+                #ffd700 0% 0.1%,    /* 1/1000: 0.003 ETH */
+                #4ade80 0.1% 0.4%,  /* 3/1000: 0.002 ETH */
+                #60a5fa 0.4% 0.9%,  /* 5/1000: 0.001 ETH */
+                #0a1120 0.9% 100%   /* 991/1000: Next Time */
+            ); 
+        }
         .wheel-marker { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 24px; height: 35px; background: #ff4444; clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 20; }
 
         .btn-main { background:#0052ff; border:none; padding:18px 30px; color:white; font-size:18px; border-radius:15px; cursor:pointer; margin-top:10px; font-weight: 800; width: 100%; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,82,255,0.4); }
@@ -24,7 +32,7 @@
 <body>
     <div class="spin-container">
         <h1 style="margin-bottom:5px;">🎡 Base SPIN</h1>
-        <p style="color:#60a5fa; font-weight:bold; margin-top:0;">Jackpot: 0.003 ETH (1/1000)</p>
+        <p style="color:#60a5fa; font-weight:bold; margin-top:0;">1/1000 Jackpot: 0.003 ETH</p>
         
         <div class="wheel-box">
             <div class="wheel-marker"></div>
@@ -39,7 +47,7 @@
 
 <script>
 let provider, signer, user;
-const contractAddress = "0xF4b2C87a8d661B276843dc2Cbf3468cA39eCCA9c";
+const contractAddress = "SON_GUNCEL_KONTRAT_ADRESINIZ"; // Remix'teki yeni adresi buraya yazın
 const contractABI = [
     "function spin() payable",
     "event SpinResult(address indexed player, bool won, uint256 prize, uint256 dice)"
@@ -70,11 +78,11 @@ async function launchSpin() {
         status.innerText = "Confirm transaction in MetaMask...";
 
         const tx = await contract.spin({ value: ethers.utils.parseEther("0.0005") });
-        status.innerText = "Transaction confirmed! Spinning the wheel... 🎡";
+        status.innerText = "Spinning! Good luck! 🎡";
         
-        // Rastgele görsel dönüş (En az 10 tur)
-        const randomDegree = Math.floor(Math.random() * 360) + 3600; 
-        wheel.style.transform = `rotate(${randomDegree}deg)`;
+        // Rastgele görsel dönüş (Onay beklenirken en az 10 tur)
+        const baseDegree = Math.floor(Math.random() * 360) + 3600; 
+        wheel.style.transform = `rotate(${baseDegree}deg)`;
 
         const receipt = await tx.wait();
         const event = receipt.events.find(e => e.event === "SpinResult");
@@ -83,14 +91,25 @@ async function launchSpin() {
         const prize = ethers.utils.formatEther(event.args.prize);
         const dice = event.args.dice.toNumber();
 
+        // 🎯 Çarkın Duracağı Noktayı Kontrat Verisine Göre Belirleme
+        // Jackpot (dice 0) ise 0 dereceye getirir (sarı çizgi)
+        let stopDegree = 0; 
+        if (dice == 0) stopDegree = 0;
+        else if (dice >= 1 && dice <= 3) stopDegree = 70; // 0.002 dilimi
+        else if (dice >= 4 && dice <= 8) stopDegree = 140; // 0.001 dilimi
+        else stopDegree = Math.floor(Math.random() * (355 - 180 + 1)) + 180; // Next Time
+
+        // Görsel dönüşü kontrat sonucuna göre güncelle
+        wheel.style.transform = `rotate(${baseDegree + stopDegree}deg)`;
+
         setTimeout(() => {
             if(won) {
                 status.innerHTML = `<span class="win-text">🔥 JACKPOT! You won ${prize} ETH!</span><br>Dice: ${dice}`;
             } else {
-                status.innerHTML = `💀 Not this time! Dice: ${dice}<br>Try again for the 1/1000 prize!`;
+                status.innerHTML = `💀 Not this time! Dice: ${dice}<br>Try again!`;
             }
             spinBtn.disabled = false;
-        }, 5000); // Çark durana kadar bekle
+        }, 5000); // Dönüş animasyonu bitene kadar bekle
 
     } catch (e) {
         status.innerText = "Transaction failed or cancelled.";
