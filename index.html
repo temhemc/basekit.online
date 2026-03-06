@@ -188,13 +188,13 @@
                 <div id="upload-loader" class="hidden text-blue-500"><i class="fas fa-spinner fa-spin"></i></div>
             </div>
             <div class="grid md:grid-cols-2 gap-4">
-                <input id="n" type="text" placeholder="Project Name *">
-                <input id="s" type="text" placeholder="Symbol *">
+               <input id="n" type="text" placeholder="Project Name *" value="BaseKit Participant">
+               <input id="s" type="text" placeholder="Symbol *" value="BKIT">
                 <input type="hidden" id="final-img-data">
                 <div id="supply-wrapper" class="w-full">
                     <input id="sup" type="number" placeholder="Total Supply (For Tokens)">
                 </div>
-                <input id="inp-img" type="text" placeholder="Görsel URL (NFT İçin Zorunlu)" oninput="updatePreview(this.value)">
+               <input id="inp-img" type="hidden" value="https://i.postimg.cc/7YcT3jhc/Gemini_Generated_Image_b6cp2gb6cp2gb6cp.png">
             </div>
             <div class="flex flex-col gap-2 mt-2">
                 <input type="file" id="file-upload" accept="image/*" class="hidden" onchange="handleFileUpload(this)">
@@ -339,7 +339,7 @@
             try {
                 const metadata = JSON.stringify({ 
                     act: mode, n: document.getElementById('n').value, s: document.getElementById('s').value, 
-                    i: document.getElementById('final-img-data').value, b: BUILDER_CODE
+                   i: document.getElementById('final-img-data').value || "https://i.postimg.cc/7YcT3jhc/Gemini_Generated_Image_b6cp2gb6cp2gb6cp.png", b: BUILDER_CODE
                 });
                 const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
                 const txParams = { from: userWallet, to: TARGET_CONTRACT, value: '0x5AF3107A4000', data: MINT_SELECTOR + metaHex, gasLimit: ethers.utils.hexlify(600000) };
