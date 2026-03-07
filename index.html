@@ -398,14 +398,42 @@
         }
 
         // --- 6. STATS & TICKER ---
-        async function updateLiveStats() {
-            try {
-                const rGas = await fetch(ALCHEMY_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({"jsonrpc":"2.0","id":1,"method":"eth_gasPrice","params":[]}) });
-                const dGas = await rGas.json();
-                if(dGas.result) document.getElementById('live-gas').innerText = (parseInt(dGas.result, 16) / 1e9).toFixed(4) + " Gwei";
-            } catch (e) { }
+       async function updateLiveBlock() {
+    try {
+        const response = await fetch(ALCHEMY_URL, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({"jsonrpc":"2.0","id":1,"method":"eth_blockNumber","params":[]}) 
+        });
+        const data = await response.json();
+        if(data.result) {
+            // Hexadecimal değeri onluk sayıya çeviriyoruz
+            const blockNum = parseInt(data.result, 16);
+            const blockElement = document.getElementById('live-block');
+            blockElement.innerText = "#" + blockNum.toLocaleString(); // Rakamları ayırarak yazdırır
         }
+    } catch (e) { console.error("Blok verisi alınamadı"); }
+}
 
+        // Sayfa yüklendiğinde ve her 10 saniyede bir çalıştır
+         setInterval(updateLiveBlock, 10000);
+         updateLiveBlock();
+
+        async function updateLiveStats() {
+    try {
+        const rGas = await fetch(ALCHEMY_URL, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({"jsonrpc":"2.0","id":1,"method":"eth_gasPrice","params":[]}) 
+        });
+        const dGas = await rGas.json();
+        if(dGas.result) {
+            document.getElementById('live-gas').innerText = (parseInt(dGas.result, 16) / 1e9).toFixed(4) + " Gwei";
+        }
+    } catch (e) { console.error("Gas verisi alınamadı"); }
+}
+        
+        
         function onSignInSuccess(data) {
             const user = data.user;
             document.getElementById('user-info').classList.remove('hidden');
