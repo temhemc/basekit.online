@@ -527,23 +527,22 @@
 
       <script>
     // Farcaster Mini-app Gri Ekran Çözümü
-    async function initFarcaster() {
-        const sdk = window.farcaster?.sdk;
-        if (sdk) {
-            try {
-                await sdk.actions.ready(); // Splash screen'i kapatır
-                console.log("Farcaster Ready!");
-            } catch (e) {
-                console.error("SDK Error:", e);
-            }
+   async function initFarcaster() {
+    // SDK'yı bulmak için biraz daha esnek bir kontrol
+    const sdk = window.farcaster?.sdk || (window.parent?.farcaster?.sdk);
+    
+    if (sdk) {
+        try {
+            await sdk.actions.ready();
+            console.log("Farcaster Ready!");
+        } catch (e) {
+            console.error("SDK Error:", e);
         }
-    }
-    // Sayfa yüklenince çalıştır
-    if (document.readyState === 'complete') {
-        initFarcaster();
     } else {
-        window.addEventListener('load', initFarcaster);
+        // Eğer sdk hala yoksa 500ms sonra tekrar dene
+        setTimeout(initFarcaster, 500);
     }
+}
 </script>
       
 </body>
