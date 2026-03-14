@@ -40,6 +40,7 @@
         .wallet-option { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s; cursor: pointer; border-radius: 1.5rem; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; font-weight: bold; width: 100%; }
         .wallet-option:hover { background: rgba(0, 82, 255, 0.2); border-color: #0052FF; transform: scale(1.02); }
     </style>
+     
 </head>
 
 <body class="p-4 bg-slate-900 text-white">
@@ -523,5 +524,27 @@
             document.getElementById('analyzeMintBtn')?.addEventListener('click', () => { openM('NFT Engine'); });
         });
     </script>
+
+      <script>
+    // Farcaster Mini-app Gri Ekran Çözümü
+    async function initFarcaster() {
+        const sdk = window.farcaster?.sdk;
+        if (sdk) {
+            try {
+                await sdk.actions.ready(); // Splash screen'i kapatır
+                console.log("Farcaster Ready!");
+            } catch (e) {
+                console.error("SDK Error:", e);
+            }
+        }
+    }
+    // Sayfa yüklenince çalıştır
+    if (document.readyState === 'complete') {
+        initFarcaster();
+    } else {
+        window.addEventListener('load', initFarcaster);
+    }
+</script>
+      
 </body>
 </html>
