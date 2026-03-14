@@ -17,6 +17,7 @@
    
     <title>BaseKit Online | Farcaster & Base Hub</title>
 
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <script src="https://unpkg.com/@thirdweb-dev/storage@latest/dist/thirdweb-dev-storage.browser.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -219,6 +220,31 @@
         </div>
     </div>
 
+<div class="bg-[#111111] border border-gray-800 rounded-3xl p-6 shadow-2xl transition-all hover:border-blue-500/50 mt-4">
+    <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 bg-blue-600/20 rounded-full flex items-center justify-center text-xl">✍️</div>
+        <div>
+            <h3 class="text-xl font-bold text-white">BaseKit Journal</h3>
+            <p class="text-[10px] text-gray-500 uppercase tracking-tighter">On-chain Message Hub</p>
+        </div>
+    </div>
+
+    <textarea id="journal-message" 
+        class="w-full bg-black border border-gray-800 rounded-2xl p-4 text-sm text-gray-300 focus:border-blue-500 outline-none transition-all mb-4"
+        placeholder="Write a permanent message on Base..." rows="3"></textarea>
+    
+    <button onclick="writeToJournal()" 
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl transition-all active:scale-95">
+        Post Message
+    </button>
+
+    <div class="mt-4 flex items-center justify-between text-[10px] text-gray-600">
+        <span id="journal-status">Ready to Build</span>
+        <a href="https://basescan.org/address/0x0a42E264B75A681A05c14D80F4d9eA4F4643eaA2" target="_blank" class="hover:text-blue-400">View Contract</a>
+    </div>
+</div>
+      
+      
     <footer class="text-center py-20 opacity-30 text-[10px] uppercase font-bold tracking-[0.5em]">© 2026 BaseKit.online • Powered by Base Network</footer>
 
     <script src="https://neynarxyz.github.io/siwn/raw/1.2.0/index.js" async></script>
@@ -283,6 +309,49 @@
             }
         }
 
+       async function writeToJournal() {
+            const msgInput = document.getElementById('journal-message');
+            const status = document.getElementById('journal-status');
+            
+            // Senin yukarıdaki mantığınla cüzdan kontrolü
+            if (!userWallet) {
+                alert("Please connect your wallet first!");
+                return;
+            }
+
+            const message = msgInput.value;
+            if (!message) {
+                alert("Please write a message!");
+                return;
+            }
+
+            try {
+                status.innerText = "Connecting...";
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                const signer = provider.getSigner();
+                
+                const contractAddress = "0x0a42E264B75A681A05c14D80F4d9eA4F4643eaA2";
+                const abi = [{"inputs":[{"internalType":"string","name":"_message","type":"string"}],"name":"writeEntry","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+
+                const contract = new ethers.Contract(contractAddress, abi, signer);
+                
+                status.innerText = "Confirming...";
+                const tx = await contract.writeEntry(message);
+                
+                status.innerText = "Mining on Base...";
+                await tx.wait();
+                
+                status.innerText = "Success! Saved.";
+                msgInput.value = "";
+                alert("Message successfully posted to Base Mainnet!");
+            } catch (error) {
+                console.error("Journal Error:", error);
+                status.innerText = "Failed.";
+                alert("Transaction failed! Check your connection.");
+            }
+        }
+          
+          
         // --- 3. DİLLER ---
     const dict = {
     en: { welcome: "Welcome to BaseKit", sub: "\"Converting Information to Onchain Value\"", factory: "Builder Factory", token: "🚀 Deploy New Token (ERC-20)", nft: "🖼️ Launch NFT Collection (ERC-721)" },
