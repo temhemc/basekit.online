@@ -525,24 +525,29 @@
         });
     </script>
 
-      <script>
-    // Farcaster Mini-app Gri Ekran Çözümü
-   async function initFarcaster() {
-    // SDK'yı bulmak için biraz daha esnek bir kontrol
-    const sdk = window.farcaster?.sdk || (window.parent?.farcaster?.sdk);
-    
-    if (sdk) {
-        try {
-            await sdk.actions.ready();
-            console.log("Farcaster Ready!");
-        } catch (e) {
-            console.error("SDK Error:", e);
+    <script>
+    // En sağlam Farcaster Handshake (Susturucu)
+    function forceFarcasterReady() {
+        // Hem window.farcaster hem de parent frame kontrolü
+        const sdk = window.farcaster?.sdk || window.parent?.farcaster?.sdk;
+
+        if (sdk && typeof sdk.actions.ready === 'function') {
+            sdk.actions.ready()
+                .then(() => console.log("Farcaster Splash Screen Dismissed!"))
+                .catch((err) => console.error("Farcaster Ready Error:", err));
+        } else {
+            // SDK henüz yoksa veya hazır değilse, her 200ms'de bir tekrar dene (Maksimum 10 kere)
+            if (!window.fcRetryCount) window.fcRetryCount = 0;
+            if (window.fcRetryCount < 10) {
+                window.fcRetryCount++;
+                setTimeout(forceFarcasterReady, 200);
+            }
         }
-    } else {
-        // Eğer sdk hala yoksa 500ms sonra tekrar dene
-        setTimeout(initFarcaster, 500);
     }
-}
+
+    // Hem sayfa yüklenince hem de DOM hazır olunca tetikle
+    window.addEventListener('load', forceFarcasterReady);
+    document.addEventListener('DOMContentLoaded', forceFarcasterReady);
 </script>
       
 </body>
