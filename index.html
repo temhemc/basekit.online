@@ -237,10 +237,41 @@
         class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl transition-all active:scale-95">
         Post Message
     </button>
+<div class="mt-6 pt-4 border-t border-white/10">
+        <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-3">Recent On-Chain Messages</p>
+        <div id="journal-list" class="space-y-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+            <p class="text-gray-500 text-[10px] italic animate-pulse">Base ağından veriler çekiliyor...</p>
+        </div>
+    </div>
+    ```
 
+### **Neden Buraya Koyuyoruz?**
+1.  **Mantıksal Akış:** Kullanıcı mesajı yazar, "Post Message" butonuna tıklar ve hemen altında kendi mesajının da dahil olduğu listeyi görür.
+2.  **Görsellik:** `mt-6` (üstten boşluk) ve `border-t` (üst çizgi) ekledim ki, mesaj formu ile liste birbirinden şık bir şekilde ayrılsın.
+3.  **Kaydırma:** `max-h-64` sayesinde eğer 10-20 mesaj birikirse sayfan sonsuza kadar uzamaz, kutu içinde kaydırılabilir olur.
+
+### **Şimdi Sonuç:**
+* **JS tarafında** yazdığımız `loadJournalEntries` fonksiyonu, sayfada bu `id="journal-list"` olan yeri arayacak.
+* Bulduğunda, Base ağındaki kontratından verileri çekip bu kutunun içine şık kartlar halinde dizecek.
+
+**Bu eklemeyi de yaptıysan artık projede eksik parça kalmadı.** Kaydet, commit et ve Vercel'in deploy etmesini bekle. Warpcast'te gri ekranın kapanıp, mesajların butun altında belirdiğini gördüğünde bu iş tamamdır!
+
+Warpcast'te denedikten sonra mesajların görünüp görünmediğini bana haber ver, merakla bekliyorum! 🚀🔵
+      
+      
     <div class="mt-4 flex items-center justify-between text-[10px] text-gray-600">
         <span id="journal-status">Ready to Build</span>
         <a href="https://basescan.org/address/0x0a42E264B75A681A05c14D80F4d9eA4F4643eaA2" target="_blank" class="hover:text-blue-400">View Contract</a>
+    </div>
+</div>
+
+      <div class="mt-6 border-t border-gray-800 pt-4">
+    <div class="flex justify-between items-center mb-3">
+        <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Live Journal Feed</p>
+        <span class="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+    </div>
+    <div id="journal-list" class="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar text-[12px]">
+        <p class="text-gray-600 italic animate-pulse">Fetching on-chain messages...</p>
     </div>
 </div>
       
@@ -525,30 +556,99 @@
         });
     </script>
 
-    <script>
-    // En sağlam Farcaster Handshake (Susturucu)
-    function forceFarcasterReady() {
-        // Hem window.farcaster hem de parent frame kontrolü
-        const sdk = window.farcaster?.sdk || window.parent?.farcaster?.sdk;
+ <script>
+        // Mevcut Gas ve stats fonksiyonların bittikten sonra burası başlar
+        function onSignInSuccess(data) {
+            const user = data.user;
+            const userInfo = document.getElementById('user-info');
+            if (userInfo) {
+                userInfo.classList.remove('hidden');
+                userInfo.innerHTML = `<img src="${user.pfp_url}" class="w-12 h-12 rounded-full border-2 border-purple-500"><div><p class="text-white font-bold">@${user.username}</p></div>`;
+            }
+            if(document.getElementById('feed-placeholder')) document.getElementById('feed-placeholder').style.display = 'none';
+        }
 
-        if (sdk && typeof sdk.actions.ready === 'function') {
-            sdk.actions.ready()
-                .then(() => console.log("Farcaster Splash Screen Dismissed!"))
-                .catch((err) => console.error("Farcaster Ready Error:", err));
-        } else {
-            // SDK henüz yoksa veya hazır değilse, her 200ms'de bir tekrar dene (Maksimum 10 kere)
-            if (!window.fcRetryCount) window.fcRetryCount = 0;
-            if (window.fcRetryCount < 10) {
-                window.fcRetryCount++;
-                setTimeout(forceFarcasterReady, 200);
+        // Journal Mesajlarını Okuma Fonksiyonu
+        async function loadJournalEntries() {
+            const listElement = document.getElementById('journal-list');
+            if (!listElement) return;
+
+            try {
+                const provider = new ethers.providers.JsonRpcProvider("https://mainnet.base.org");
+                const contractAddress = "0x0a42E264B75A681A05c14D80F4d9eA4F4643eaA2";
+                const abi = [
+                    "function getTotalEntries() public view returns (uint256)",
+                    "function entries(uint256) public view returns (address author, string message, uint256 timestamp)"
+                ];
+                const contract = new ethers.Contract(contractAddress, abi, provider);
+
+                const total = await contract.getTotalEntries();
+                let html = "";
+                
+                if (total.eq(0)) {
+                    html = "<p class='text-gray-500 text-center py-4 text-[10px]'>Henüz on-chain mesaj yok.</p>";
+                } else {
+                    const totalNum = total.toNumber();
+                    const start = totalNum - 1;
+                    const end = Math.max(0, totalNum - 5);
+                    
+                    for (let i = start; i >= end; i--) {
+                        const entry = await contract.entries(i);
+                        const date = new Date(entry.timestamp.toNumber() * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        html += `
+                            <div class="bg-blue-500/5 p-3 rounded-xl border border-blue-500/10 mb-2">
+                                <div class="flex justify-between items-start mb-1 text-[10px]">
+                                    <span class="text-blue-400 font-mono">${entry.author.slice(0,6)}...${entry.author.slice(-4)}</span>
+                                    <span class="text-gray-600">${date}</span>
+                                </div>
+                                <p class="text-gray-200 text-[11px] leading-snug">${entry.message}</p>
+                            </div>`;
+                    }
+                }
+                listElement.innerHTML = html;
+            } catch (e) {
+                console.error("Journal Load Error:", e);
+                listElement.innerHTML = "<p class='text-red-900/40 text-center text-[10px] italic'>Veri senkronize edilemedi.</p>";
             }
         }
-    }
 
-    // Hem sayfa yüklenince hem de DOM hazır olunca tetikle
-    window.addEventListener('load', forceFarcasterReady);
-    document.addEventListener('DOMContentLoaded', forceFarcasterReady);
-</script>
-      
+        // Sayfa Yüklendiğinde Çalışacak Ana Bölüm
+        window.addEventListener('load', () => {
+            if (typeof ThirdwebStorage !== 'undefined') {
+                storage = new ThirdwebStorage.ThirdwebStorage({ clientId: "d6217d1424a9cc05fedeb79e446cf545" });
+            }
+            
+            // İstatistikleri ve mesajları yükle
+            if (typeof updateLiveStats === 'function') {
+                updateLiveStats();
+                setInterval(updateLiveStats, 10000);
+            }
+            
+            loadJournalEntries();
+
+            document.getElementById('analyzeMintBtn')?.addEventListener('click', () => { 
+                if (typeof openM === 'function') openM('NFT Engine'); 
+            });
+        });
+    </script>
+
+    <script type="module">
+        import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk'
+
+        async function initializeFarcaster() {
+            try {
+                await sdk.actions.ready();
+                console.log("Farcaster Splash Screen Dismissed!");
+            } catch (error) {
+                console.error("Farcaster SDK Error:", error);
+            }
+        }
+
+        if (document.readyState === 'complete') {
+            initializeFarcaster();
+        } else {
+            window.addEventListener('load', initializeFarcaster);
+        }
+    </script>
 </body>
 </html>
