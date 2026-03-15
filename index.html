@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-      
+     <script type="module">
+    import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk'
+    sdk.actions.ready().catch(console.error);
+    </script> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="talentapp:project_verification" content="606a998090366632eeeee53a8fc999a103878fd7633b8c01a5df4df0a6e127e25879cdabfcec28d4e755560379a184b56ad9922cbf74938f0d6f9cd79e3bad6e">
@@ -602,10 +605,6 @@
             });
         });
     </script>
-
-    <script type="module">
-        import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk'          
-        sdk.actions.ready().catch(console.error);
-    </script>
+   
 </body>
 </html>
