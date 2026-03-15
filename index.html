@@ -237,16 +237,7 @@
         class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl transition-all active:scale-95">
         Post Message
     </button>
-<div class="mt-6 pt-4 border-t border-white/10">
-        <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-3">Recent On-Chain Messages</p>
-        <div id="journal-list" class="space-y-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
-            <p class="text-gray-500 text-[10px] italic animate-pulse">Base ağından veriler çekiliyor...</p>
-        </div>
-    </div>
-    ```
-
-     
-      
+          
     <div class="mt-4 flex items-center justify-between text-[10px] text-gray-600">
         <span id="journal-status">Ready to Build</span>
         <a href="https://basescan.org/address/0x0a42E264B75A681A05c14D80F4d9eA4F4643eaA2" target="_blank" class="hover:text-blue-400">View Contract</a>
@@ -268,7 +259,7 @@
 
     <script src="https://neynarxyz.github.io/siwn/raw/1.2.0/index.js" async></script>
     <script>
-        // --- 1. AYARLAR ---
+       
         const ALCHEMY_URL = "https://mainnet.base.org";
         const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
         const BUILDER_CODE = "bc_h8ua8gs9";
@@ -280,7 +271,7 @@
         let mode = "NFT Engine";
         let walletProviders = [];
 
-        // --- 2. CÜZDAN DEDEKTÖRÜ ---
+       
         window.addEventListener("eip6963:announceProvider", (event) => {
             if (!walletProviders.some(p => p.info.uuid === event.detail.info.uuid)) {
                 walletProviders.push(event.detail);
@@ -332,7 +323,7 @@
             const msgInput = document.getElementById('journal-message');
             const status = document.getElementById('journal-status');
             
-            // Senin yukarıdaki mantığınla cüzdan kontrolü
+           
             if (!userWallet) {
                 alert("Please connect your wallet first!");
                 return;
@@ -371,7 +362,7 @@
         }
           
           
-        // --- 3. DİLLER ---
+       
     const dict = {
     en: { welcome: "Welcome to BaseKit", sub: "\"Converting Information to Onchain Value\"", factory: "Builder Factory", token: "🚀 Deploy New Token (ERC-20)", nft: "🖼️ Launch NFT Collection (ERC-721)" },
     tr: { welcome: "BaseKit'e Hoş Geldiniz", sub: "\"Bilgiyi Onchain Değere Dönüştürüyoruz\"", factory: "Geliştirici Fabrikası", token: "🚀 Yeni Token Oluştur (ERC-20)", nft: "🖼️ NFT Koleksiyonu Başlat (ERC-721)" },
@@ -392,7 +383,7 @@
             btn.classList.add('lang-active');
         }
 
-        // --- 4. MEDIA & IPFS ---
+        
         async function handleFileUpload(input) {
             if (input.files && input.files[0] && storage) {
                 const loader = document.getElementById('upload-loader');
@@ -412,7 +403,7 @@
             if(preview && val) { preview.src = val; preview.style.display = 'block'; document.getElementById('final-img-data').value = val; }
         }
 
-        // --- 5. MODAL VE MINT ---
+       
         function openM(t) { 
             mode = t; document.getElementById('m-title').innerText = t; 
             document.getElementById('supply-wrapper').style.display = t === 'Token Lab' ? 'block' : 'none'; 
@@ -430,14 +421,14 @@
     async function pay() {
             if(!userWallet) return alert("Cüzdan bağlayın!");
 
-            // 1. Aynı Cüzdan Kontrolü (Aynı tarayıcıdan ikinci kez yapmasın)
+            
             const hasMinted = localStorage.getItem('minted_' + userWallet.toLowerCase());
             if (hasMinted) {
                 return alert("Bu cüzdan ile zaten ödül talebinde bulundunuz! Ödül her cüzdan için 1 defadır.");
             }
 
             try {
-                // 2. Metadata Hazırlama (Otomatik Görsel ve Proje Bilgileri)
+               
                 const metadata = JSON.stringify({ 
                     act: mode, 
                     n: document.getElementById('n').value || "BaseKit Participant", 
@@ -448,7 +439,7 @@
 
                 const metaHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(metadata)).slice(2);
                 
-                // 3. İşlem Parametreleri (0.0001 ETH Ücretli)
+              
                 const txParams = { 
                     from: userWallet, 
                     to: TARGET_CONTRACT, 
@@ -457,13 +448,13 @@
                     gasLimit: ethers.utils.hexlify(600000) 
                 };
 
-                // 4. İşlemi Başlat ve TX Hash'i Yakala
+               
                 const txHash = await window.ethereum.request({ method: 'eth_sendTransaction', params: [txParams] });
 
-                // 5. Başarılı İşlemden Sonra Cüzdanı Yerel Hafızaya Kaydet
+               
                 localStorage.setItem('minted_' + userWallet.toLowerCase(), 'true');
 
-                // 6. Ekranda Başarı Mesajı ve 0.5 USDC Ödül Kutusunu Göster
+                
                 const txLink = `https://basescan.org/tx/${txHash}`;
                 document.getElementById('res').classList.remove('hidden');
                 document.getElementById('out').innerHTML = `
@@ -484,13 +475,13 @@
                     </div>
                 `;
                 
-                // Modalı kapatmıyoruz ki kullanıcı TX numarasını rahatça kopyalasın
+               
             } catch (e) { 
                 alert("Hata: " + e.message); 
             }
         }
 
-        // --- 6. STATS & TICKER ---
+        
        async function updateLiveBlock() {
     try {
         const response = await fetch(ALCHEMY_URL, { 
@@ -500,7 +491,7 @@
         });
         const data = await response.json();
         if(data.result) {
-            // Hexadecimal değeri onluk sayıya çeviriyoruz
+            
             const blockNum = parseInt(data.result, 16);
             const blockElement = document.getElementById('live-block');
             blockElement.innerText = "#" + blockNum.toLocaleString(); // Rakamları ayırarak yazdırır
@@ -508,7 +499,7 @@
     } catch (e) { console.error("Blok verisi alınamadı"); }
 }
 
-        // Sayfa yüklendiğinde ve her 10 saniyede bir çalıştır
+        
          setInterval(updateLiveBlock, 10000);
          updateLiveBlock();
 
@@ -525,15 +516,7 @@
         }
     } catch (e) { console.error("Gas verisi alınamadı"); }
 }
-        
-        
-        function onSignInSuccess(data) {
-            const user = data.user;
-            document.getElementById('user-info').classList.remove('hidden');
-            document.getElementById('feed-placeholder').style.display = 'none';
-            document.getElementById('user-info').innerHTML = `<img src="${user.pfp_url}" class="w-12 h-12 rounded-full border-2 border-purple-500"><div><p class="text-white font-bold">@${user.username}</p></div>`;
-        }
-
+                  
         window.addEventListener('load', () => {
             if (typeof ThirdwebStorage !== 'undefined') {
                 storage = new ThirdwebStorage.ThirdwebStorage({ clientId: "d6217d1424a9cc05fedeb79e446cf545" });
@@ -545,7 +528,7 @@
     </script>
 
  <script>
-        // Mevcut Gas ve stats fonksiyonların bittikten sonra burası başlar
+       
         function onSignInSuccess(data) {
             const user = data.user;
             const userInfo = document.getElementById('user-info');
@@ -556,7 +539,7 @@
             if(document.getElementById('feed-placeholder')) document.getElementById('feed-placeholder').style.display = 'none';
         }
 
-        // Journal Mesajlarını Okuma Fonksiyonu
+        
         async function loadJournalEntries() {
             const listElement = document.getElementById('journal-list');
             if (!listElement) return;
@@ -600,13 +583,13 @@
             }
         }
 
-        // Sayfa Yüklendiğinde Çalışacak Ana Bölüm
+       
         window.addEventListener('load', () => {
             if (typeof ThirdwebStorage !== 'undefined') {
                 storage = new ThirdwebStorage.ThirdwebStorage({ clientId: "d6217d1424a9cc05fedeb79e446cf545" });
             }
             
-            // İstatistikleri ve mesajları yükle
+           
             if (typeof updateLiveStats === 'function') {
                 updateLiveStats();
                 setInterval(updateLiveStats, 10000);
@@ -621,22 +604,8 @@
     </script>
 
     <script type="module">
-        import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk'
-
-        async function initializeFarcaster() {
-            try {
-                await sdk.actions.ready();
-                console.log("Farcaster Splash Screen Dismissed!");
-            } catch (error) {
-                console.error("Farcaster SDK Error:", error);
-            }
-        }
-
-        if (document.readyState === 'complete') {
-            initializeFarcaster();
-        } else {
-            window.addEventListener('load', initializeFarcaster);
-        }
+        import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk'          
+        sdk.actions.ready().catch(console.error);
     </script>
 </body>
 </html>
