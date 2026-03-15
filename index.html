@@ -245,19 +245,7 @@
     </div>
     ```
 
-### **Neden Buraya Koyuyoruz?**
-1.  **Mantıksal Akış:** Kullanıcı mesajı yazar, "Post Message" butonuna tıklar ve hemen altında kendi mesajının da dahil olduğu listeyi görür.
-2.  **Görsellik:** `mt-6` (üstten boşluk) ve `border-t` (üst çizgi) ekledim ki, mesaj formu ile liste birbirinden şık bir şekilde ayrılsın.
-3.  **Kaydırma:** `max-h-64` sayesinde eğer 10-20 mesaj birikirse sayfan sonsuza kadar uzamaz, kutu içinde kaydırılabilir olur.
-
-### **Şimdi Sonuç:**
-* **JS tarafında** yazdığımız `loadJournalEntries` fonksiyonu, sayfada bu `id="journal-list"` olan yeri arayacak.
-* Bulduğunda, Base ağındaki kontratından verileri çekip bu kutunun içine şık kartlar halinde dizecek.
-
-**Bu eklemeyi de yaptıysan artık projede eksik parça kalmadı.** Kaydet, commit et ve Vercel'in deploy etmesini bekle. Warpcast'te gri ekranın kapanıp, mesajların butun altında belirdiğini gördüğünde bu iş tamamdır!
-
-Warpcast'te denedikten sonra mesajların görünüp görünmediğini bana haber ver, merakla bekliyorum! 🚀🔵
-      
+     
       
     <div class="mt-4 flex items-center justify-between text-[10px] text-gray-600">
         <span id="journal-status">Ready to Build</span>
