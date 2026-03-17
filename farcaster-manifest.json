@@ -1,8 +1,8 @@
 {
-  "accountAssociation": {
+  "account_association": {
     "header": "eyJmaWQiOjg4OTA0NywidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDQ2MDRhMEZENTY1ODQzRjhiNmU3Y0Q4RTY3QzVFM2RGZjdCMGM5YzEyIn0",
     "payload": "eyJkb21haW4iOiJiYXNla2l0Lm9ubGluZSJ9",
-    "signature": "MHg5MmU5NWRjZDA2ZDM0Y2NlZGRlYWRlMzRhYjYyMDNjMThmZDRiNGE0NDNhMTUyN2Y3NmM2NTNjMzRjYWY3MmI3Mzg1Mjg2ZGM0MzI4YzBhMmRmMmIxMDQyMzI1Y2ZkM2E3ZWE3YjBlNjBlZjM4MGFhMzg5OTFmMWE3NzUwNzJjYzFj"
+    "signature": "MHgyYmVhMjhhNDgzNDc1YTcyOTBiZTkxZTIzNDU4NWI4Y2I2ZTJmYzQ1MDUyZDM0NWNkZTA5MTFmYjQwMmQwNTRiMTRjMmYwODJmMjI0YzNiNTM4ZWQ5MmM5MzI5MmU3MDU3ZmE4MDVjOTM5OTgzY2I4NWU3ZDYwZjg5YmM3YzMwNzFj"
   },
   "domain": "basekit.online",
   "homeUrl": "https://basekit.online",
