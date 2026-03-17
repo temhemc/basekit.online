@@ -1,22 +1,21 @@
 {
   "accountAssociation": {
-    "header": "eyJmaWQiOjkyNDY0NSwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDVEMDkzMTYwNzM1NzJjRWM4MTNERjYyMjVCOTE2QjFFZThlNzU5MzEifQ",
+    "header": "eyJmaWQiOjg4OTA0NywidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDQ2MDRhMEZENTY1ODQzRjhiNmU3Y0Q4RTY3QzVFM2RGZjdCMGM5YzEyIn0",
     "payload": "eyJkb21haW4iOiJiYXNla2l0Lm9ubGluZSJ9",
-    "signature": "tVZxybeEklXd5GF4INT4M287uhVEF9CYLFu73dj5+tU/AChCZ5hYURy2el0nA7rpWfzohML9wJPDaciohaMsjxw="
+    "signature": "MHg5MmU5NWRjZDA2ZDM0Y2NlZGRlYWRlMzRhYjYyMDNjMThmZDRiNGE0NDNhMTUyN2Y3NmM2NTNjMzRjYWY3MmI3Mzg1Mjg2ZGM0MzI4YzBhMmRmMmIxMDQyMzI1Y2ZkM2E3ZWE3YjBlNjBlZjM4MGFhMzg5OTFmMWE3NzUwNzJjYzFj"
   },
   "domain": "basekit.online",
   "homeUrl": "https://basekit.online",
-  "name": "BaseKit Supporter",
-  "description": "Base Network Builder Hub & On-chain Journal",
-  "iconUrl": "https://basekit.online/icon.jpg"
-  "imageUrl": "https://basekit.online/icon.jpg"
-  "buttonTitle": "Launch BaseKit",
+  "name": "BaseKit Builder",
+  "iconUrl": "https://basekit.online/icon.jpg",
+  "imageUrl": "https://basekit.online/icon.jpg",
   "frame": {
     "version": "1",
-    "name": "BaseKit Supporter",
-    "iconUrl": "https://basekit.online/icon.jpg"
+    "name": "BaseKit Builder",
+    "iconUrl": "https://basekit.online/icon.jpg",
     "homeUrl": "https://basekit.online",
-    "imageUrl": "https://basekit.online/icon.jpg"
-    "buttonTitle": "Launch BaseKit",
-    "splashImageUrl": "https://basekit.online/icon.jpg"
+    "imageUrl": "https://basekit.online/icon.jpg",
+    "splashImageUrl": "https://basekit.online/icon.jpg",
     "splashBackgroundColor": "#00050a"
+  }
+}
