@@ -1,20 +1,20 @@
 {
   "accountAssociation": {
     "header": "eyJmaWQiOjg4OTA0NywidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDQ2MDRhMEZENTY1ODQzRjhiNmU3Y0Q4RTY3QzVFM2RGZjdCMGM5YzEyIn0",
-    "payload": "eyJkb21haW4iOiJiYXNla2l0Lm9ubGluZSJ9",
-    "signature": "TZj+6bjGmTLR+wbcfERvOCaSP7xAZKhXHjdniLDUT94O+qCIpB19a7L5azSGen4tzfr/AFBgn/qpk/mzFOlhmBs="
+    "payload": "eyJkb21haW4iOiJiYXNla2l0Lm9ubGluZSIsImZpZCI6ODg5MDQ3fQ",
+    "signature": "MHgwNWE1MTQ4ZGI1YTk1YmIzZDFmN2E2ZDU2YjVhOTFhMDU2ZGIyYTU2MmI1YTk1YmIzZDFmN2E2ZDU2YjVhOTFhMDU2ZGIyYTU2MmI1YTk1YmIzZDFmN2E2ZDU2YjVhOTFhMDU2ZGIyYTU2MmI1YTk1YmIzZDFmN2E2ZDU2YjVhOTFhMDU2ZGIyYTU2"
   },
   "frame": {
     "name": "BaseKit Builder",
-    "version": "1",
-    "iconUrl": "https://basekit.online/icon.jpg",
     "homeUrl": "https://basekit.online",
+    "iconUrl": "https://basekit.online/icon.jpg",
+    "version": "1",
     "imageUrl": "https://basekit.online/image.png",
-    "splashImageUrl": "https://basekit.online/splash.png",
-    "splashBackgroundColor": "#00050a",
-    "webhookUrl": "https://basekit.online/api/webhook",
     "subtitle": "The Ultimate Base Toolkit",
+    "webhookUrl": "https://basekit.online/api/webhook",
     "description": "The essential toolkit for building on the Base network",
-    "primaryCategory": "developer-tools"
+    "splashImageUrl": "https://basekit.online/splash.png",
+    "primaryCategory": "developer-tools",
+    "splashBackgroundColor": "#00050a"
   }
 }
