@@ -8,8 +8,7 @@
   "homeUrl": "https://basekit.online",
   "name": "BaseKit Builder",
   "iconUrl": "https://basekit.online/icon.jpg",
-  "imageUrl": "https://basekit.online/icon.jpg",
-  "frame": {
+  "miniapp": {
     "version": "1",
     "name": "BaseKit Builder",
     "iconUrl": "https://basekit.online/icon.jpg",
