@@ -1,4 +1,9 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false
+  "redirects": [
+    {
+      "source": "/.well-known/farcaster.json",
+      "destination": "https://api.farcaster.xyz/miniapps/hosted-manifest/019cfdb3-9d15-5e62-e4ec-cdf286e10c9a",
+      "permanent": false
+    }
+  ]
 }
