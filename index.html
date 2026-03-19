@@ -218,7 +218,7 @@
             <button onclick="gen()" class="w-full bg-[#0052FF] py-5 mt-4 rounded-2xl font-bold uppercase shadow-lg tracking-tighter">Generate Onchain Contract</button>
             <div id="res" class="hidden mt-6">
                 <pre id="out" class="text-[9px] text-green-400 bg-black p-4 rounded-xl border border-green-900 overflow-x-auto"></pre>
-                <button onclick="pay()" class="w-full border-2 border-blue-600 py-4 rounded-xl font-black text-xl hover:bg-blue-600 transition mt-4 uppercase italic">Execute Deployment (0.0001 ETH)</button>
+                <button onclick="pay()" class="w-full border-2 border-blue-600 py-4 rounded-xl font-black text-xl hover:bg-blue-600 transition mt-4 uppercase italic">Execute Deployment (FREE)</button>
             </div>
             <button onclick="closeM()" class="w-full text-gray-600 text-[10px] mt-6 uppercase font-bold">Vazgeç</button>
         </div>
@@ -262,19 +262,20 @@
     <footer class="text-center py-20 opacity-30 text-[10px] uppercase font-bold tracking-[0.5em]">© 2026 BaseKit.online • Powered by Base Network</footer>
 
     <script src="https://neynarxyz.github.io/siwn/raw/1.2.0/index.js" async></script>
-    <script>
+    
+   <script>
+    const ALCHEMY_URL = "https://mainnet.base.org";
+    const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
+    const BUILDER_CODE = "bc_h8ua8gs9";
+    const TARGET_CONTRACT = "0x6540D5400Bc811B06325c11d1E678bE1d117EA07";
+    const MINT_SELECTOR = "0x6a622086";
+
+    let storage;
+    let userWallet = null;
+    let activeProvider = null;  // <--- TAM BURAYA EKLE
+    let mode = "NFT Engine";
+    let walletProviders = [];
        
-        const ALCHEMY_URL = "https://mainnet.base.org";
-        const OWNER = "0x4604a0FD65843F8b6E7cD8E67C5E3dFf7B0c9c12";
-        const BUILDER_CODE = "bc_h8ua8gs9";
-        const TARGET_CONTRACT = "0x6540D5400Bc811B06325c11d1E678bE1d117EA07";
-        const MINT_SELECTOR = "0x6a622086";
-
-        let storage;
-        let userWallet = null;
-        let mode = "NFT Engine";
-        let walletProviders = [];
-
        
         window.addEventListener("eip6963:announceProvider", (event) => {
             if (!walletProviders.some(p => p.info.uuid === event.detail.info.uuid)) {
@@ -300,6 +301,7 @@
                 try {
                     const accounts = await provider.request({ method: 'eth_requestAccounts' });
                     userWallet = accounts[0];
+                    activeProvider = provider;
                     window.ethereum = provider;
                     updateUI(true);
                     closeWalletSelector();
@@ -453,10 +455,11 @@
         };
 
         // 3. Cüzdan onayı
-        const txHash = await window.ethereum.request({ 
-            method: 'eth_sendTransaction', 
-            params: [txParams] 
-        });
+     
+        const txHash = await activeProvider.request({ 
+        method: 'eth_sendTransaction', 
+         params: [txParams] 
+  });
 
         // 4. Başarı ekranı
         document.getElementById('res').classList.remove('hidden');
