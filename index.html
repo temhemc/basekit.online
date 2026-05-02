@@ -480,6 +480,14 @@
     }
 }
 
+async function getFarcasterContext() {
+    const context = await sdk.context;
+    if (context?.user?.address) {
+        userWallet = context.user.address;
+        updateUI(true);
+    }
+}
+        
         
        async function updateLiveBlock() {
     try {
@@ -539,48 +547,37 @@
         }
 
         
-        async function loadJournalEntries() {
-            const listElement = document.getElementById('journal-list');
-            if (!listElement) return;
+       async function loadJournalEntries() {
+    const listElement = document.getElementById('journal-list');
+    try {
+        const provider = new ethers.providers.JsonRpcProvider("https://mainnet.base.org");
+        const contractAddress = "0x0a42E264B75A681A05c14D80F4d9eA4F4643eaA2";
+        const abi = [
+            "function getTotalEntries() public view returns (uint256)",
+            "function entries(uint256) public view returns (address author, string message, uint256 timestamp)"
+        ];
+        const contract = new ethers.Contract(contractAddress, abi, provider);
 
-            try {
-                const provider = new ethers.providers.JsonRpcProvider("https://mainnet.base.org");
-                const contractAddress = "0x0a42E264B75A681A05c14D80F4d9eA4F4643eaA2";
-                const abi = [
-                    "function getTotalEntries() public view returns (uint256)",
-                    "function entries(uint256) public view returns (address author, string message, uint256 timestamp)"
-                ];
-                const contract = new ethers.Contract(contractAddress, abi, provider);
+        const total = await contract.getTotalEntries();
+        listElement.innerHTML = ""; // Yükleniyor yazısını temizle
 
-                const total = await contract.getTotalEntries();
-                let html = "";
-                
-                if (total.eq(0)) {
-                    html = "<p class='text-gray-500 text-center py-4 text-[10px]'>Henüz on-chain mesaj yok.</p>";
-                } else {
-                    const totalNum = total.toNumber();
-                    const start = totalNum - 1;
-                    const end = Math.max(0, totalNum - 5);
-                    
-                    for (let i = start; i >= end; i--) {
-                        const entry = await contract.entries(i);
-                        const date = new Date(entry.timestamp.toNumber() * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                        html += `
-                            <div class="bg-blue-500/5 p-3 rounded-xl border border-blue-500/10 mb-2">
-                                <div class="flex justify-between items-start mb-1 text-[10px]">
-                                    <span class="text-blue-400 font-mono">${entry.author.slice(0,6)}...${entry.author.slice(-4)}</span>
-                                    <span class="text-gray-600">${date}</span>
-                                </div>
-                                <p class="text-gray-200 text-[11px] leading-snug">${entry.message}</p>
-                            </div>`;
-                    }
-                }
-                listElement.innerHTML = html;
-            } catch (e) {
-                console.error("Journal Load Error:", e);
-                listElement.innerHTML = "<p class='text-red-900/40 text-center text-[10px] italic'>Veri senkronize edilemedi.</p>";
-            }
+        // Son 10 mesajı getir
+        const start = total.gt(10) ? total.sub(10) : ethers.BigNumber.from(0);
+        for (let i = total.toNumber() - 1; i >= start.toNumber(); i--) {
+            const entry = await contract.entries(i);
+            const date = new Date(entry.timestamp.toNumber() * 1000).toLocaleDateString();
+            listElement.innerHTML += `
+                <div class="bg-white/5 p-3 rounded-xl border border-white/10 mb-2">
+                    <p class="text-blue-400 font-bold text-[10px]">${entry.author.slice(0,6)}...${entry.author.slice(-4)}</p>
+                    <p class="text-white my-1">${entry.message}</p>
+                    <p class="text-gray-600 text-[8px] uppercase">${date}</p>
+                </div>`;
         }
+    } catch (e) {
+        console.error("Journal yüklenemedi:", e);
+        listElement.innerHTML = "<p class='text-red-500'>Yükleme hatası.</p>";
+    }
+}
 
        
         window.addEventListener('load', () => {
