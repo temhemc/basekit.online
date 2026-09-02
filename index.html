@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     <script type="module">
-    import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk'
-    sdk.actions.ready().catch(console.error);
+     
     </script> 
      <meta name="base:app_id" content="6939c0348a7c4e55fec73d26" />
     <meta charset="UTF-8">
@@ -624,6 +622,11 @@ async function getFarcasterContext() {
             });
         });
     </script>
-   
+     
+<script type="module">
+  import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
+  sdk.actions.ready().catch(console.error);
+</script>
+
 </body>
 </html>
